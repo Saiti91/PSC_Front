@@ -1,0 +1,3 @@
+npm install -g gulp
+npm install vue-router
+npm install semantic-ui-css
