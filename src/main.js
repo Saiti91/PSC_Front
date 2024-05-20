@@ -1,6 +1,9 @@
-import './assets/main.css'
-import 'semantic-ui-css/semantic.min.css'
-import { createApp } from 'vue'
-import App from './App.vue'
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './routers/router.js'; // Importez votre routeur
 
-createApp(App).mount('#app')
+const app = createApp(App);
+
+app.use(router); // Utilisez le routeur
+
+app.mount('#app');
