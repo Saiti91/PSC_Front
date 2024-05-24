@@ -2,13 +2,13 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Cookies from 'js-cookie';
-import VueJwtDecode from 'vue-jwt-decode'
+import VueJwtDecode from 'vue-jwt-decode';
+import { useRoleVerification } from '/src/composables/useRoleVerification.js';
 
-
-let email = ref('');
-let password = ref('');
-
+const email = ref('');
+const password = ref('');
 const router = useRouter();
+const { userRole } = useRoleVerification();
 
 const submitForm = async () => {
   const data = {
@@ -30,22 +30,23 @@ const submitForm = async () => {
       return;
     }
 
-    // Récupérer le jeton de l'en-tête Authorization
+    // Check the response headers
+    console.log('Response Headers:', response.headers);
+
     const authHeader = response.headers.get('Authorization');
-    const token = authHeader?.split(' ')[1]; // Supposant le format 'Bearer token'
+    console.log('Authorization Header:', authHeader);
+
+    const token = authHeader?.split(' ')[1];
     if (token) {
       Cookies.set('token', token);
       console.log('Token stored in cookies:', token);
 
-      // Décoder le token pour obtenir le rôle de l'utilisateur
       const decodedToken = VueJwtDecode.decode(token);
-      console.log('Decoded Token:', decodedToken);
-
-      // Vérifier le rôle de l'utilisateur et rediriger en conséquence
+      userRole.value = decodedToken.urole;
       if (decodedToken.urole === 'admin') {
-        await router.push('/accueil-admin');
+        router.push('/accueil-admin');
       } else {
-        await router.push('/accueil');
+        router.push('/accueil');
       }
     } else {
       console.error('Token not found in response headers');
@@ -65,15 +66,15 @@ const submitForm = async () => {
       <h2 class="login-title">ACCOUNT LOGIN</h2>
       <div class="input-group">
         <label for="email">E-Mail</label>
-        <input type="email" v-model="email" id="email" placeholder="Email" required />
+        <input type="email" v-model="email" id="email" placeholder="Email" required/>
       </div>
       <div class="input-group">
         <label for="password">PASSWORD</label>
-        <input type="password" v-model="password" id="password" placeholder="Password" required />
+        <input type="password" v-model="password" id="password" placeholder="Password" required/>
       </div>
       <div class="options">
         <div>
-          <input type="checkbox" id="remember-me" />
+          <input type="checkbox" id="remember-me"/>
           <label for="remember-me">Remember me</label>
         </div>
         <a href="#" class="forgot-password">Forgot Password?</a>
