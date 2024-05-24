@@ -4,7 +4,7 @@ import AuthGuard from './AuthGuard.vue';
 </script>
 
 <template>
-  <AuthGuard requiredRole="user">
+  <AuthGuard requiredRole="customer">
     <slot></slot>
   </AuthGuard>
 </template>
