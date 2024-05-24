@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import HeaderComponent from '/src/components/HeaderAdmin.vue';
 import FooterComponent from '/src/components/FooterComponent.vue';
+import axiosInstance from '/src/utils/axios.js'; // Adjust the path accordingly
 
 const services = ref([]);
 const currentPage = ref(1);
@@ -11,12 +12,11 @@ const error = ref(null);
 const fetchServices = async () => {
   error.value = null;
   try {
-    const response = await fetch('http://localhost:80/services');
-    if (!response.ok) {
+    const response = await axiosInstance.get('/services');
+    if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const data = await response.json();
-    services.value = data;
+    services.value = response.data;
   } catch (err) {
     error.value = err.message;
   }
@@ -45,10 +45,9 @@ const nextPage = () => {
 onMounted(fetchServices);
 </script>
 
-
 <template>
   <div class="admin-container">
-    <HeaderComponent />
+    <HeaderComponent/>
     <div class="content">
       <h1>Admin Services</h1>
       <div v-if="error" class="error">{{ error }}</div>
@@ -65,14 +64,18 @@ onMounted(fetchServices);
           <tr>
             <th>ID</th>
             <th>Name</th>
-            <th>Description</th>
+            <th>Type</th>
+            <th>Provider Address</th>
+            <th>Price</th>
           </tr>
           </thead>
           <tbody>
-          <tr v-for="service in paginatedServices" :key="service.id">
-            <td>{{ service.id }}</td>
+          <tr v-for="service in paginatedServices" :key="service.services_id">
+            <td>{{ service.services_id }}</td>
             <td>{{ service.name }}</td>
-            <td>{{ service.description }}</td>
+            <td>{{ service.type }}</td>
+            <td>{{ service.provideraddress }}</td>
+            <td>{{ service.price }}</td>
           </tr>
           </tbody>
         </table>
@@ -83,7 +86,7 @@ onMounted(fetchServices);
         </div>
       </div>
     </div>
-    <FooterComponent />
+    <FooterComponent/>
   </div>
 </template>
 
