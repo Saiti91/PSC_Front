@@ -29,7 +29,7 @@ function logout() {
       <router-link to="/" class="brand">Admin Dashboard</router-link>
       <ul class="nav-links">
         <li><router-link to="/service-admin">Services</router-link></li>
-        <li><router-link to="/admin/users">Users</router-link></li>
+        <li><router-link to="/user-admin">Users</router-link></li>
         <li><router-link to="/admin/settings">Settings</router-link></li>
         <li @click="logout"><a href="#">Logout</a></li>
       </ul>
