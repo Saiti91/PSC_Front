@@ -2,6 +2,8 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import Cookies from 'js-cookie';
+import VueJwtDecode from 'vue-jwt-decode'
+
 
 let email = ref('');
 let password = ref('');
@@ -34,8 +36,17 @@ const submitForm = async () => {
     if (token) {
       Cookies.set('token', token);
       console.log('Token stored in cookies:', token);
-      // Rediriger vers la page Accueil.vue
-      await router.push('/accueil');
+
+      // Décoder le token pour obtenir le rôle de l'utilisateur
+      const decodedToken = VueJwtDecode.decode(token);
+      console.log('Decoded Token:', decodedToken);
+
+      // Vérifier le rôle de l'utilisateur et rediriger en conséquence
+      if (decodedToken.urole === 'admin') {
+        await router.push('/accueil-admin');
+      } else {
+        await router.push('/accueil');
+      }
     } else {
       console.error('Token not found in response headers');
     }

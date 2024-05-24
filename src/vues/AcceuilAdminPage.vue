@@ -8,7 +8,7 @@ import FooterComponent from '../components/FooterComponent.vue'
   <div class="container">
     <HeaderComponent />
     <div class="content">
-      <h1>Accueil</h1>
+      <h1>Accueil Admin</h1>
     </div>
     <FooterComponent />
   </div>
@@ -33,3 +33,4 @@ h1 {
   font-size: 3em;
 }
 </style>
+é
