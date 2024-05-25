@@ -11,10 +11,12 @@
   "dependencies": {
     "axios": "^1.7.2",
     "cors": "^2.8.5",
+    "i18n": "^0.15.1",
     "js-cookie": "^3.0.5",
     "semantic-ui-css": "^2.5.0",
     "store": "^2.0.12",
     "vue": "^3.4.21",
+    "vue-i18n": "^10.0.0-beta.1",
     "vue-jwt-decode": "^0.1.0",
     "vue-router": "^4.3.2"
   },

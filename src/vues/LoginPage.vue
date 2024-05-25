@@ -39,7 +39,7 @@ const submitForm = async () => {
       if (decodedToken.urole === 'admin') {
         router.push('/accueil-admin')
       } else {
-        router.push('/accueil');
+        router.push('/');
       }
     } else {
       console.error('Token not found in response headers');
@@ -66,22 +66,21 @@ const submitForm = async () => {
           <div class="field">
             <div class="ui left icon input">
               <i class="user icon"></i>
-              <input type="email" v-model="email" name="email" placeholder="E-mail address" required>
+              <input type="email" v-model="email" name="email" :placeholder="$t('email')" required>
             </div>
           </div>
           <div class="field">
             <div class="ui left icon input">
               <i class="lock icon"></i>
-              <input type="password" v-model="password" name="password" placeholder="Password" required>
+              <input type="password" v-model="password" name="password" :placeholder="$t('password')" required>
             </div>
           </div>
-          <button class="ui fluid large teal submit button" type="submit">Login</button>
+          <button class="ui fluid large teal submit button" type="submit">{{ $t('login') }}</button>
         </div>
 
         <div class="ui error message"></div>
       </form>
-      <div class="ui message">
-        New to us? <a href="#">Sign Up</a>
+      <div class="ui message">{{ $t('new_to_us') }}<a href="#">{{ $t('sign_up') }}</a>
       </div>
     </div>
   </div>

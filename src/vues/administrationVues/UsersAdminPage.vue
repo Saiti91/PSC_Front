@@ -47,16 +47,16 @@ const nextPage = () => {
 onMounted(fetchUsers);
 </script>
 <template>
-  <div class="ui container" style="height: 100vh; display: flex; flex-direction: column;">
+  <div class="ui container" style="min-height: 100vh; display: flex; flex-direction: column;">
     <HeaderComponent/>
-    <div class="ui basic segment flex-grow" style="overflow: auto;">
+    <div class="ui basic segment flex-grow" style="flex: 1 0 auto; overflow: auto;">
       <h1 class="ui header">Admin Users</h1>
       <div v-if="error" class="ui negative message">{{ error }}</div>
       <div v-else>
         <div class="ui form">
           <div class="field">
             <label>Users per page:</label>
-            <select class="ui dropdown" v-model="pageSize" @change="fetchUsers">
+            <select class="ui dropdown narrow-dropdown" v-model="pageSize" @change="fetchUsers">
               <option value="10">10</option>
               <option value="20">20</option>
             </select>
@@ -76,7 +76,7 @@ onMounted(fetchUsers);
           <tbody>
           <tr v-for="user in paginatedUsers" :key="user.users_id">
             <td>{{ user.users_id }}</td>
-            <td>{{ new Date(user.created_at).toLocaleString() }}</td>
+            <td>{{ new Date(user.created_at).toLocaleDateString() }}</td>
             <td>{{ user.first_name }}</td>
             <td>{{ user.last_name }}</td>
             <td>{{ user.role }}</td>
@@ -96,5 +96,8 @@ onMounted(fetchUsers);
 </template>
 
 <style scoped>
-
+.narrow-dropdown {
+  width: auto !important;
+  display: inline-block;
+}
 </style>

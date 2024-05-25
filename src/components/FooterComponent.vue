@@ -17,9 +17,12 @@
   background-color: #333 !important; /* Dark background for the footer */
   padding: 1em 0; /* Add padding for visual space */
   color: #fff; /* Light text color for contrast */
+  width: 100%; /* Ensure the footer spans the full width */
+  position: relative;
+  bottom: 0;
 }
-
 .ui.footer .list .item {
   color: #ccc !important; /* Lighter grey for links to be less prominent than main text */
 }
 </style>
+

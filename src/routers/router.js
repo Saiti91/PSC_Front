@@ -8,14 +8,18 @@ import UserAdminPage from '/src/vues/administrationVues/UsersAdminPage.vue';
 import useAuthGuard from '/src/components/Auth/AuthGuard.js';
 
 const routes = [
-    { path: '/', name: 'Login', component: LoginPage },
-    { path: '/accueil', name: 'Accueil', component: AccueilPage },
+    { path: '/login', name: 'Login', component: LoginPage },
+    { path: '/', name: 'Accueil', component: AccueilPage },
     {
         path: '/accueil-admin',
         name: 'AccueilAdmin',
         component: AccueilAdminPage,
         beforeEnter: useAuthGuard(['admin'])
     },
+    // path: '/le nom du service que tu appelera dans ta page',
+    // name: 'nom de la page ex: ServiceAdmin',
+    // component: la variable que tu import en haud du fichier router,
+    // beforeEnter: useAuthGuard(['role_1', 'role_2', 'etc...'])
     {
         path: '/service-admin',
         name: 'ServiceAdmin',
