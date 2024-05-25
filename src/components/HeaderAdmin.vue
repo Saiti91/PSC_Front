@@ -6,7 +6,6 @@ import { useRouter } from 'vue-router';
 import Cookies from 'js-cookie';
 import 'semantic-ui-css/semantic.min.css';
 
-
 const services = ref([]);
 const router = useRouter();
 
@@ -21,7 +20,7 @@ onMounted(async () => {
 
 function logout() {
   Cookies.remove('token');
-  router.push('/logout');
+  router.push('/login');
 }
 </script>
 
@@ -29,7 +28,7 @@ function logout() {
   <div class="ui top fixed menu">
     <div class="ui container">
       <router-link to="/" class="header item">
-        <img class="logo" src="logo.png" alt="Admin Dashboard Logo"> Admin Dashboard
+        <img class="logo" src="" alt="Admin Dashboard Logo"> Admin Dashboard
       </router-link>
       <div class="right menu">
         <router-link to="/service-admin" class="item">Services</router-link>

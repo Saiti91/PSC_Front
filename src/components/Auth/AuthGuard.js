@@ -1,33 +1,28 @@
-// AuthGuard.js
-import { ref, onMounted } from 'vue';
+// src/components/Auth/AuthGuard.js
+import { ref } from 'vue';
 import Cookies from 'js-cookie';
 import VueJwtDecode from 'vue-jwt-decode';
 import { useRouter } from 'vue-router';
 
 export default function useAuthGuard(permittedRoles) {
-  const isAuthenticated = ref(false);
-  const router = useRouter();
-  const userRole = ref(null);
-
-  const checkAuth = () => {
+  return (to, from, next) => {
     const token = Cookies.get('token');
     if (token) {
       try {
         const decodedToken = VueJwtDecode.decode(token);
-        userRole.value = decodedToken.urole;
-        isAuthenticated.value = permittedRoles.includes(userRole.value);
-        if (!isAuthenticated.value) {
-          router.push('/login');
+        const userRole = decodedToken.urole; // assuming the role is stored in 'urole'
+        const isAuthenticated = permittedRoles.includes(userRole);
+        if (!isAuthenticated) {
+          next('/login');
+        } else {
+          next();
         }
       } catch (error) {
         console.error('Invalid token', error);
-        router.push('/login');
+        next('/login');
       }
     } else {
-      router.push('/login');
+      next('/login');
     }
   };
-
-  onMounted(checkAuth);
-  return { isAuthenticated, userRole };
 }
