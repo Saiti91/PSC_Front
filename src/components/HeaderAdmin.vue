@@ -4,6 +4,8 @@ import { ref, onMounted } from 'vue';
 import axiosInstance from '../utils/axios.js'; // Assurez-vous que le chemin est correct
 import { useRouter } from 'vue-router';
 import Cookies from 'js-cookie';
+import 'semantic-ui-css/semantic.min.css';
+
 
 const services = ref([]);
 const router = useRouter();
@@ -24,61 +26,33 @@ function logout() {
 </script>
 
 <template>
-  <div class="header-admin">
-    <nav class="navbar">
-      <router-link to="/" class="brand">Admin Dashboard</router-link>
-      <ul class="nav-links">
-        <li><router-link to="/service-admin">Services</router-link></li>
-        <li><router-link to="/user-admin">Users</router-link></li>
-        <li><router-link to="/admin/settings">Settings</router-link></li>
-        <li @click="logout"><a href="#">Logout</a></li>
-      </ul>
-    </nav>
+  <div class="ui top fixed menu">
+    <div class="ui container">
+      <router-link to="/" class="header item">
+        <img class="logo" src="logo.png" alt="Admin Dashboard Logo"> Admin Dashboard
+      </router-link>
+      <div class="right menu">
+        <router-link to="/service-admin" class="item">Services</router-link>
+        <router-link to="/user-admin" class="item">Users</router-link>
+        <router-link to="/admin/settings" class="item">Settings</router-link>
+        <a class="item" @click="logout">Logout</a>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.header-admin {
-  height: 50px;
-  background-color: #343a40;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 1rem;
+.ui.menu {
+  background-color: #343a40 !important; /* Overriding default Semantic UI color */
+  border-radius: 0; /* Remove rounding corners if present */
 }
 
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
+.logo {
+  width: 30px; /* Adjust according to your preference */
+  margin-right: 10px; /* Space between logo and text */
 }
 
-.brand {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #fff;
-  text-decoration: none;
-}
-
-.nav-links {
-  list-style: none;
-  display: flex;
-  gap: 1rem;
-}
-
-.nav-links li {
-  display: inline;
-}
-
-.nav-links a {
-  color: #fff;
-  text-decoration: none;
-  font-size: 1rem;
-}
-
-.nav-links a:hover {
-  text-decoration: underline;
+.header.item {
+  color: #fff !important; /* Ensuring text is white */
 }
 </style>

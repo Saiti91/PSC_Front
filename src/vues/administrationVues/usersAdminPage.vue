@@ -2,7 +2,9 @@
 import { ref, computed, onMounted } from 'vue';
 import HeaderComponent from '/src/components/HeaderAdmin.vue';
 import FooterComponent from '/src/components/FooterComponent.vue';
-import axiosInstance from '/src/utils/axios.js'; // Adjust the path accordingly
+import axiosInstance from '/src/utils/axios.js';
+import 'semantic-ui-css/semantic.min.css';
+
 
 const users = ref([]);
 const currentPage = ref(1);
@@ -45,20 +47,22 @@ const nextPage = () => {
 onMounted(fetchUsers);
 </script>
 <template>
-  <div class="admin-container">
+  <div class="ui container" style="height: 100vh; display: flex; flex-direction: column;">
     <HeaderComponent/>
-    <div class="content">
-      <h1>Admin Users</h1>
-      <div v-if="error" class="error">{{ error }}</div>
+    <div class="ui basic segment flex-grow" style="overflow: auto;">
+      <h1 class="ui header">Admin Users</h1>
+      <div v-if="error" class="ui negative message">{{ error }}</div>
       <div v-else>
-        <div class="controls">
-          <label for="pageSize">Users per page:</label>
-          <select v-model="pageSize" @change="fetchUsers">
-            <option value="10">10</option>
-            <option value="20">20</option>
-          </select>
+        <div class="ui form">
+          <div class="field">
+            <label>Users per page:</label>
+            <select class="ui dropdown" v-model="pageSize" @change="fetchUsers">
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </select>
+          </div>
         </div>
-        <table class="users-table">
+        <table class="ui celled table">
           <thead>
           <tr>
             <th>ID</th>
@@ -80,59 +84,17 @@ onMounted(fetchUsers);
           </tr>
           </tbody>
         </table>
-        <div class="pagination">
-          <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
-          <span>Page {{ currentPage }}</span>
-          <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+        <div class="ui pagination menu">
+          <a class="item" @click="prevPage" :class="{disabled: currentPage === 1}">Previous</a>
+          <div class="item">Page {{ currentPage }}</div>
+          <a class="item" @click="nextPage" :class="{disabled: currentPage === totalPages}">Next</a>
         </div>
       </div>
     </div>
     <FooterComponent/>
   </div>
 </template>
+
 <style scoped>
-.admin-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
 
-.content {
-  flex-grow: 1;
-  padding: 2rem;
-  background-color: #f9f9f9;
-}
-
-.controls {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.controls label {
-  margin-right: 0.5rem;
-}
-
-.users-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 1rem;
-}
-
-.users-table th, .users-table td {
-  border: 1px solid #ddd;
-  padding: 0.5rem;
-  text-align: left;
-}
-
-.pagination {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.error {
-  color: red;
-  font-weight: bold;
-}
 </style>

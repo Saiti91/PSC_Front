@@ -2,34 +2,27 @@
 <script setup>
 import HeaderComponent from '../components/HeaderComponent.vue'
 import FooterComponent from '../components/FooterComponent.vue'
+import 'semantic-ui-css/semantic.min.css';
+
 </script>
 
 <template>
-  <div class="container">
+  <div class="ui container" style="height: 100vh; display: flex; flex-direction: column;">
     <HeaderComponent />
-    <div class="content">
-      <h1>Accueil</h1>
+
+    <div class="ui basic segment flex-fill" style="display: flex; justify-content: center; align-items: center;">
+      <h1 class="ui header">Accueil</h1>
     </div>
+
     <FooterComponent />
   </div>
 </template>
 
 <style scoped>
-.container {
+.flex-fill {
+  flex: 1;
   display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
-.content {
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
   align-items: center;
-  background-color: lightgrey;
-}
-
-h1 {
-  font-size: 3em;
+  justify-content: center;
 }
 </style>

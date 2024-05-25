@@ -2,35 +2,31 @@
 <script setup>
 import HeaderComponent from '/src/components/HeaderAdmin.vue'
 import FooterComponent from '/src/components/FooterComponent.vue'
+import 'semantic-ui-css/semantic.min.css';
+
 </script>
 
 <template>
-  <div class="container">
+  <div class="ui container" style="height: 100vh; display: flex; flex-direction: column;">
     <HeaderComponent />
-    <div class="content">
-      <h1>Accueil Admin</h1>
+
+    <div class="ui basic segment flex-grow" style="display: flex; justify-content: center; align-items: center;">
+      <h1 class="ui center aligned icon header">
+        <i class="cogs icon"></i>
+        Accueil Admin
+      </h1>
     </div>
+
     <FooterComponent />
   </div>
 </template>
 
 <style scoped>
-.container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
-.content {
-  flex-grow: 1;
+.flex-grow {
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: lightgrey;
-}
-
-h1 {
-  font-size: 3em;
+  background-color: #f9f9f9;
 }
 </style>
-é
