@@ -7,14 +7,21 @@ import en from './langues/en.json';
 import fr from './langues/fr.json';
 
 const messages = {
-    en,
-    fr
+    En: en,
+    Fr: fr
 };
 
 const i18n = createI18n({
-    locale: 'fr', // Langue par défaut
-    fallbackLocale: 'fr',
+    locale: 'Fr', // Langue par défaut
+    fallbackLocale: 'Fr',
     messages,
 });
 
 export default i18n;
+
+//Pour l'utiliser soit tu import le plugin
+// import in18n from "@/i18n";
+// {{$i18n.t('User')}}
+
+//Soit, tu utilises directement
+//{{$t('User')}}

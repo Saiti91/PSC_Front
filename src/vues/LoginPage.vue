@@ -57,9 +57,7 @@ const submitForm = async () => {
   <div class="ui middle aligned center aligned grid" style="height: 100vh;">
     <div class="column" style="max-width: 450px;">
       <h2 class="ui teal image header">
-        <div class="content">
-          Account Login
-        </div>
+        <div class="content">{{ $t('account_Login') }}</div>
       </h2>
       <form class="ui large form" @submit.prevent="submitForm">
         <div class="ui stacked segment">

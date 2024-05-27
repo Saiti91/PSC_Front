@@ -38,13 +38,13 @@ function logout() {
   <div class="ui top fixed menu">
     <div class="ui container">
       <router-link to="/" class="header item logo-container">
-        <img class="logo" src="/src/assets/logo.svg" alt="Company Logo"> Admin DashBoard
+        <img class="logo" src="/src/assets/logo.svg" alt="Company Logo"> {{ $t('admin_DashBoard')}}
       </router-link>
       <div class="right menu">
         <router-link to="/service-admin" class="item">{{ $t('services') }}</router-link>
         <router-link to="/user-admin" class="item">{{ $t('users') }}</router-link>
         <router-link to="/admin/settings" class="item">{{ $t('settings') }}</router-link>
-        <a class="item" @click="logout">Logout</a>
+        <a class="item" @click="logout">{{$t('logout')}}</a>
         <div class="ui simple dropdown item">
           <i class="world icon"></i> {{ currentLocale }}
           <div class="menu">
