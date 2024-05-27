@@ -51,12 +51,12 @@ onMounted(fetchServices);
   <div class="ui container" style="height: 100vh; display: flex; flex-direction: column;">
     <HeaderComponent/>
     <div class="ui basic segment flex-grow" style="overflow: auto;">
-      <h1 class="ui header">Admin Services</h1>
+      <h1 class="ui header">{{$t('admin_Services')}}</h1>
       <div v-if="error" class="ui negative message">{{ error }}</div>
       <div v-else>
         <div class="ui form">
           <div class="inline field">
-            <label>Services per page:</label>
+            <label>{{$t('services_per_page')}}</label>
             <select class="ui dropdown" v-model="pageSize" @change="fetchServices">
               <option value="10">10</option>
               <option value="20">20</option>
@@ -67,10 +67,10 @@ onMounted(fetchServices);
           <thead>
           <tr>
             <th>ID</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Provider Address</th>
-            <th>Price</th>
+            <th>{{$t('name')}}</th>
+            <th>{{$t('type')}}</th>
+            <th>{{$t('provider_address')}}</th>
+            <th>{{$t('price')}}</th>
           </tr>
           </thead>
           <tbody>
@@ -84,9 +84,9 @@ onMounted(fetchServices);
           </tbody>
         </table>
         <div class="ui pagination menu">
-          <a class="item" @click="prevPage" :class="{disabled: currentPage === 1}">Previous</a>
+          <a class="item" @click="prevPage" :class="{disabled: currentPage === 1}">{{$t('previous')}}</a>
           <div class="item">Page {{ currentPage }}</div>
-          <a class="item" @click="nextPage" :class="{disabled: currentPage === totalPages}">Next</a>
+          <a class="item" @click="nextPage" :class="{disabled: currentPage === totalPages}">{{$t('next')}}</a>
         </div>
       </div>
     </div>

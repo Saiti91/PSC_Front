@@ -13,7 +13,7 @@ import 'semantic-ui-css/semantic.min.css';
     <div class="ui basic segment flex-grow" style="display: flex; justify-content: center; align-items: center;">
       <h1 class="ui center aligned icon header">
         <i class="cogs icon"></i>
-        Accueil Admin
+        {{ $t('admin_home')}}
       </h1>
     </div>
 

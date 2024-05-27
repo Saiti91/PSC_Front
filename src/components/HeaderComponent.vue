@@ -18,19 +18,17 @@ const currentLocale = computed(() => locale.value);
         <img class="logo" src="/src/assets/logo.svg" alt="Company Logo">
       </router-link>
       <div class="right menu">
-        <router-link to="/login" class="item">Login</router-link>
+        <router-link to="/login" class="item">{{$t('login')}}</router-link>
         <router-link to="/" class="item">{{ $t('home') }}</router-link>
         <router-link to="/about" class="item">{{ $t('about') }}</router-link>
         <router-link to="/contact" class="item">{{ $t('contact') }}</router-link>
         <div class="ui simple dropdown item">
           <i class="world icon"></i> {{ currentLocale }}
           <div class="menu">
-            <div
-                v-for="lang in availableLocales"
+            <div v-for="lang in availableLocales"
                 :key="lang"
                 class="item"
-                @click="changeLocale(lang)"
-            >
+                @click="changeLocale(lang)">
               {{ lang }}
             </div>
           </div>

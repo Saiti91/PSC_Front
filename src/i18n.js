@@ -7,13 +7,13 @@ import en from './langues/en.json';
 import fr from './langues/fr.json';
 
 const messages = {
-    en,
-    fr
+    En: en,
+    Fr: fr
 };
 
 const i18n = createI18n({
-    locale: 'fr', // Langue par défaut
-    fallbackLocale: 'fr',
+    locale: 'Fr', // Langue par défaut
+    fallbackLocale: 'Fr',
     messages,
 });
 

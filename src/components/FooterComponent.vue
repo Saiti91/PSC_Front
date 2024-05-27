@@ -3,10 +3,10 @@
     <div class="ui center aligned container">
       <!-- Add footer content here -->
       <div class="ui horizontal inverted small divided link list">
-        <a class="item" href="#">Site Map</a>
-        <a class="item" href="#">Contact Us</a>
-        <a class="item" href="#">Terms and Conditions</a>
-        <a class="item" href="#">Privacy Policy</a>
+        <a class="item" href="#">{{$t('site_Map')}}</a>
+        <a class="item" href="#">{{$t('contact')}}</a>
+        <a class="item" href="#">{{$t('terms_and_Conditions')}}</a>
+        <a class="item" href="#">{{$t('privacy_Policy')}}</a>
       </div>
     </div>
   </div>

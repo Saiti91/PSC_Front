@@ -4,7 +4,8 @@ import HeaderComponent from '/src/components/HeaderAdmin.vue';
 import FooterComponent from '/src/components/FooterComponent.vue';
 import axiosInstance from '/src/utils/axios.js';
 import 'semantic-ui-css/semantic.min.css';
-
+import AddUser from "@/vues/administrationVues/addUser.vue";
+import { useRouter } from 'vue-router'
 
 const users = ref([]);
 const currentPage = ref(1);
@@ -43,31 +44,33 @@ const nextPage = () => {
     currentPage.value++;
   }
 };
+const router = useRouter();
+
+const navigateToAddUser = () => {
+  router.push('/AddUser');
+};
 
 onMounted(fetchUsers);
 </script>
+
 <template>
   <div class="ui container" style="min-height: 100vh; display: flex; flex-direction: column;">
     <HeaderComponent/>
+    <div class="spacer"></div> <!-- Ajout d'un espace -->
     <div class="ui basic segment flex-grow" style="flex: 1 0 auto; overflow: auto;">
-      <h1 class="ui header">Admin Users</h1>
+      <div class="header-container">
+        <h1 class="ui header">{{$t('user_administration')}}</h1>
+        <button class="ui primary button" @click="navigateToAddUser">+</button>
+      </div>
+
       <div v-if="error" class="ui negative message">{{ error }}</div>
       <div v-else>
-        <div class="ui form">
-          <div class="field">
-            <label>Users per page:</label>
-            <select class="ui dropdown narrow-dropdown" v-model="pageSize" @change="fetchUsers">
-              <option value="10">10</option>
-              <option value="20">20</option>
-            </select>
-          </div>
-        </div>
         <table class="ui celled table">
           <thead>
           <tr>
             <th>ID</th>
             <th>{{$t('created_At')}}</th>
-            <th>{{$t('first Name')}}</th>
+            <th>{{$t('first_Name')}}</th>
             <th>{{$t('last_Name')}}</th>
             <th>{{$t('roles')}}</th>
             <th>{{$t('email')}}</th>
@@ -79,15 +82,24 @@ onMounted(fetchUsers);
             <td>{{ new Date(user.created_at).toLocaleDateString() }}</td>
             <td>{{ user.first_name }}</td>
             <td>{{ user.last_name }}</td>
-            <td>{{ user.role }}</td>
+            <td>{{ user.role}}</td>
             <td>{{ user.email }}</td>
           </tr>
           </tbody>
         </table>
-        <div class="ui pagination menu">
-          <a class="item" @click="prevPage" :class="{disabled: currentPage === 1}">Previous</a>
-          <div class="item">Page {{ currentPage }}</div>
-          <a class="item" @click="nextPage" :class="{disabled: currentPage === totalPages}">Next</a>
+        <div class="pagination-container">
+          <div class="ui pagination menu">
+            <a class="item" @click="prevPage" :class="{disabled: currentPage === 1}">{{$t('previous')}}</a>
+            <div class="item">Page {{ currentPage }}</div>
+            <a class="item" @click="nextPage" :class="{disabled: currentPage === totalPages}">{{$t('next')}}</a>
+          </div>
+          <div class="items-per-page">
+            <label>{{$t('users_per_page')}}</label>
+            <select class="ui dropdown narrow-dropdown" v-model="pageSize" @change="fetchUsers">
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
@@ -96,8 +108,34 @@ onMounted(fetchUsers);
 </template>
 
 <style scoped>
+.spacer {
+  margin-top: 7%; /* Ajustez la marge selon vos besoins */
+}
+
 .narrow-dropdown {
   width: auto !important;
   display: inline-block;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1em;
+}
+
+.items-per-page {
+  display: flex;
+  align-items: center;
+}
+
+.items-per-page label {
+  margin-right: 0.5em;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 </style>
