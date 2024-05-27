@@ -66,11 +66,11 @@ onMounted(fetchUsers);
           <thead>
           <tr>
             <th>ID</th>
-            <th>Created At</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Role</th>
-            <th>Email</th>
+            <th>{{$t('created_At')}}</th>
+            <th>{{$t('first Name')}}</th>
+            <th>{{$t('last_Name')}}</th>
+            <th>{{$t('roles')}}</th>
+            <th>{{$t('email')}}</th>
           </tr>
           </thead>
           <tbody>
