@@ -1,13 +1,13 @@
 // src/routers/router.js
 import { createRouter, createWebHistory } from 'vue-router';
 import LoginPage from '/src/vues/LoginPage.vue';
-import AccueilPage from '/src/vues/AccueilPage.vue';
-import AccueilAdminPage from '/src/vues/administrationVues/AccueilAdminPage.vue';
+import AccueilPage from '/src/vues/HomePage.vue';
+import AccueilAdminPage from '/src/vues/administrationVues/HomeAdminPage.vue';
 import ServiceAdminPage from '/src/vues/administrationVues/ServicesAdminPage.vue';
 import UserAdminPage from '/src/vues/administrationVues/UsersAdminPage.vue';
 import useAuthGuard from '/src/components/Auth/AuthGuard.js';
-import AddUser from '/src/vues/administrationVues/addUser.vue';
-import UserDetails from '/src/vues/administrationVues/userDetails.vue';
+import AddUser from '/src/vues/administrationVues/AddUserPage.vue';
+import UserDetails from '/src/vues/administrationVues/UserDetailsPage.vue';
 
 const routes = [
     { path: '/login', name: 'Login', component: LoginPage },

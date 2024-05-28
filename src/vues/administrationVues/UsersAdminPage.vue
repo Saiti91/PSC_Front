@@ -11,6 +11,11 @@ const currentPage = ref(1);
 const pageSize = ref(10);
 const error = ref(null);
 const router = useRouter();
+const showDeleteModal = ref(false);
+const showSuccessModal = ref(false);
+const userIdToDelete = ref(null);
+const deletedUserDetails = ref({});
+const selectedRole = ref('');
 
 const fetchUsers = async () => {
   error.value = null;
@@ -25,13 +30,20 @@ const fetchUsers = async () => {
   }
 };
 
+const filteredUsers = computed(() => {
+  if (!selectedRole.value) {
+    return users.value;
+  }
+  return users.value.filter(user => user.role === selectedRole.value);
+});
+
 const paginatedUsers = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value;
   const end = start + pageSize.value;
-  return users.value.slice(start, end);
+  return filteredUsers.value.slice(start, end);
 });
 
-const totalPages = computed(() => Math.ceil(users.value.length / pageSize.value));
+const totalPages = computed(() => Math.ceil(filteredUsers.value.length / pageSize.value));
 
 const prevPage = () => {
   if (currentPage.value > 1) {
@@ -53,19 +65,27 @@ const viewUserDetails = (userId) => {
   router.push(`/user/${userId}`);
 };
 
-const deleteUser = async (userId) => {
-  if (confirm("Are you sure you want to delete this user?")) {
-    try {
-      await axiosInstance.delete(`/users/${userId}`);
-      fetchUsers(); // Refresh the list after deletion
-    } catch (err) {
-      error.value = 'Failed to delete the user.';
-    }
+const openDeleteModal = (userId) => {
+  userIdToDelete.value = userId;
+  showDeleteModal.value = true;
+};
+
+const confirmDelete = async () => {
+  try {
+    const user = users.value.find(u => u.users_id === userIdToDelete.value);
+    await axiosInstance.delete(`/users/${userIdToDelete.value}/`);
+    deletedUserDetails.value = { id: user.users_id, role: user.role, email: user.email };
+    await fetchUsers(); // Refresh the list after deletion
+    showDeleteModal.value = false;
+    showSuccessModal.value = true;
+  } catch (err) {
+    error.value = 'Failed to delete the user.';
   }
 };
 
 onMounted(fetchUsers);
 </script>
+
 <template>
   <div class="ui container" style="min-height: 100vh; display: flex; flex-direction: column;">
     <HeaderComponent/>
@@ -73,10 +93,23 @@ onMounted(fetchUsers);
     <div class="ui basic segment flex-grow" style="flex: 1 0 auto; overflow: auto;">
       <div class="header-container">
         <h1 class="ui header">{{$t('user_administration')}}</h1>
-        <button class="ui primary button" @click="navigateToAddUser">
-          <i class="plus icon"></i>
-        </button>
+        <div class="ui right aligned">
+          <div class="custom-dropdown">
+            <select v-model="selectedRole">
+              <option value="">{{$t('all_roles')}}</option>
+              <option value="admin">{{$t('admin')}}</option>
+              <option value="customer">{{ $t('customer') }}</option>
+              <option value="provider">{{ $t('provider') }}</option>
+              <option value="owner">{{ $t('owner') }}</option>
+              <option value="staff">{{ $t('staff') }}</option>
+            </select>
+          </div>
+          <button class="ui primary button" @click="navigateToAddUser">
+            <i class="plus icon"></i>
+          </button>
+        </div>
       </div>
+
 
       <div v-if="error" class="ui negative message">{{ error }}</div>
       <div v-else>
@@ -104,7 +137,7 @@ onMounted(fetchUsers);
               <button class="ui icon button" @click="viewUserDetails(user.users_id)">
                 <i class="eye icon"></i>
               </button>
-              <button class="ui icon button" @click="deleteUser(user.users_id)">
+              <button class="ui icon button" @click="openDeleteModal(user.users_id)">
                 <i class="trash icon"></i>
               </button>
               <button class="ui icon button">
@@ -131,6 +164,36 @@ onMounted(fetchUsers);
       </div>
     </div>
     <FooterComponent/>
+
+    <!-- Custom Delete Modal -->
+    <div v-if="showDeleteModal" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">{{$t('delete_user')}}</div>
+        <div class="modal-body">
+          <p>{{$t('confirm_delete_user')}}</p>
+        </div>
+        <div class="modal-actions">
+          <button class="ui button" @click="showDeleteModal = false">{{$t('cancel')}}</button>
+          <button class="ui button red" @click="confirmDelete">{{$t('delete')}}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Success Modal -->
+    <div v-if="showSuccessModal" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">Suppression réussie</div>
+        <div class="modal-body">
+          <p>L'utilisateur a été supprimé avec succès.</p>
+          <p><strong>ID:</strong> {{ deletedUserDetails.id }}</p>
+          <p><strong>Rôle:</strong> {{ deletedUserDetails.role }}</p>
+          <p><strong>Email:</strong> {{ deletedUserDetails.email }}</p>
+        </div>
+        <div class="modal-actions">
+          <button class="ui button" @click="showSuccessModal = false">Fermer</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -138,11 +201,34 @@ onMounted(fetchUsers);
 .spacer {
   margin-top: 7%;
 }
+.custom-dropdown {
+  display: inline-block;
+  position: relative;
+}
 
-.ui.container {
-  max-width: 1000px;
-  margin: 0 auto; /* Centrer le conteneur horizontalement */
-  padding-bottom: 50px; /* Assurez-vous qu'il y a suffisamment d'espace en bas pour le footer */
+.custom-dropdown select {
+  display: block;
+  width: 150px; /* Ajustez la largeur selon vos besoins */
+  padding: 10px; /* Ajouter du padding pour l'apparence */
+  font-size: 14px; /* Ajuster la taille de la police */
+  border: 1px solid #ccc; /* Bordure pour une meilleure visibilité */
+  border-radius: 4px; /* Bordure arrondie pour une apparence moderne */
+  appearance: none; /* Supprimer l'apparence par défaut du navigateur */
+  -webkit-appearance: none; /* Supprimer l'apparence par défaut du navigateur pour Safari */
+  -moz-appearance: none; /* Supprimer l'apparence par défaut du navigateur pour Firefox */
+  background: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5H7z' fill='%23666'/%3E%3C/svg%3E") no-repeat right 10px center; /* Icône de la flèche vers le bas */
+  background-color: white; /* Couleur de fond blanche */
+  background-size: 12px; /* Taille de l'icône */
+}
+
+.custom-dropdown::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  width: 0;
+  height: 0;
+  pointer-events: none;
 }
 
 .header-container {
@@ -150,6 +236,15 @@ onMounted(fetchUsers);
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+}
+
+.header-container .ui.right.aligned {
+  display: flex;
+  align-items: center;
+}
+
+.header-container .ui.right.aligned .ui.dropdown {
+  margin-right: 10px;
 }
 
 .ui.form .field {
@@ -165,6 +260,7 @@ onMounted(fetchUsers);
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
+  width: 100%;
 }
 
 .items-per-page {
@@ -181,16 +277,37 @@ onMounted(fetchUsers);
   align-items: center;
 }
 
-.footer {
-  width: 100%;
-  background-color: #333 !important;
-  color: #fff !important;
+.modal-overlay {
   position: fixed;
-  bottom: 0;
+  top: 0;
   left: 0;
-  padding: 1em 0;
-  text-align: center;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
 
+.modal-header {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.modal-body {
+  margin-bottom: 20px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+}
 </style>
