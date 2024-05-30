@@ -1,7 +1,7 @@
 <!-- MainComponent.vue -->
 <script setup>
-import HeaderComponent from '../components/HeaderComponent.vue'
-import FooterComponent from '../components/FooterComponent.vue'
+import HeaderComponent from '../../components/HeaderComponent.vue'
+import FooterComponent from '../../components/FooterComponent.vue'
 import 'semantic-ui-css/semantic.min.css';
 
 </script>
