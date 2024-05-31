@@ -1,8 +1,6 @@
 // src/components/Auth/AuthGuard.js
-import { ref } from 'vue';
 import Cookies from 'js-cookie';
 import VueJwtDecode from 'vue-jwt-decode';
-import { useRouter } from 'vue-router';
 
 export default function useAuthGuard(permittedRoles) {
   return (to, from, next) => {
