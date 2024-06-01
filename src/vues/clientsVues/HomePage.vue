@@ -9,12 +9,37 @@ import 'semantic-ui-css/semantic.min.css';
 <template>
   <div class="ui container full-width" style="min-height: 100vh; display: flex; flex-direction: column;">
     <HeaderComponent />
+    <div class="spacer"></div>
+    <h2>{{ $t('our-housing') }}</h2>
+    <div class="ui special cards">
+      <div class="card">
+        <div class="blurring dimmable image">
+          <div class="ui dimmer">
+            <div class="content">
+              <div class="center">
+                <div class="ui inverted button">{{ $t('housing-details') }}</div>
+              </div>
+            </div>
+          </div>
+          <img src="/src/assets/housing/maison1.jpg">
+        </div>
+        <div class="content">
+          <a class="header">variable de titre</a>
+          <div class="meta">
+            <span class="address">variable d'adresse</span>
 
-    <div class="ui basic segment flex-fill" style="flex: 1;">
-      <h1 class="ui header">{{$t('home')}}</h1>
-    </div>
+          </div>
+        </div>
+        <div class="extra content">
+          <a>
+            <i class="users icon"></i>
+            2 Members
+          </a>
+        </div>
+      </div>
 
     <FooterComponent />
+  </div>
   </div>
 </template>
 
@@ -22,6 +47,10 @@ import 'semantic-ui-css/semantic.min.css';
 <style scoped>
 .full-width {
   width: 100% !important;
+}
+
+.spacer {
+  margin-top: 7%;
 }
 
 .flex-fill {
