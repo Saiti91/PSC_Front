@@ -1,4 +1,4 @@
-// src/routers/router.js
+// src/routers/Router.js
 import { createRouter, createWebHistory } from 'vue-router';
 import LoginPage from '/src/vues/LoginPage.vue';
 import AccueilPage from '/src/vues/clientsVues/HomePage.vue';

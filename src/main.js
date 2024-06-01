@@ -1,6 +1,6 @@
 import { createApp } from 'vue';
 import App from './App.vue';
-import router from './routers/router.js'; // Importez votre routeur
+import router from './routers/Router.js'; // Importez votre routeur
 import i18n from './i18n';
 
 

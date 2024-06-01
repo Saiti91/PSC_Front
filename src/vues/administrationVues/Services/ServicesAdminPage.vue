@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import HeaderComponent from '/src/components/HeaderAdmin.vue';
 import FooterComponent from '/src/components/FooterComponent.vue';
-import axiosInstance from '/src/utils/axios.js'; // Adjust the path accordingly
+import axiosInstance from '/src/utils/Axios.js'; // Adjust the path accordingly
 import 'semantic-ui-css/semantic.min.css';
 
 

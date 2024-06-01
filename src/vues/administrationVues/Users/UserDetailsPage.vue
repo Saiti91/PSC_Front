@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import axiosInstance from '/src/utils/axios.js';
+import axiosInstance from '/src/utils/Axios.js';
 import HeaderComponent from "@/components/HeaderAdmin.vue";
 import FooterComponent from "@/components/FooterComponent.vue";
 

@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import HeaderComponent from '/src/components/HeaderAdmin.vue';
 import FooterComponent from '/src/components/FooterComponent.vue';
-import axiosInstance from '/src/utils/axios.js';
+import axiosInstance from '/src/utils/Axios.js';
 import 'semantic-ui-css/semantic.min.css';
 import { useRouter } from 'vue-router'
 
@@ -89,7 +89,7 @@ onMounted(fetchUsers);
 <template>
   <div class="ui container" style="min-height: 100vh; display: flex; flex-direction: column;">
     <HeaderComponent/>
-    <div class="spacer"></div> <!-- Ajout d'un espace -->
+    <div class="spacer"></div>
     <div class="ui basic segment flex-grow" style="flex: 1 0 auto; overflow: auto;">
       <div class="header-container">
         <h1 class="ui header">{{$t('user_administration')}}</h1>

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import axiosInstance from '../utils/axios.js'; // Assurez-vous que le chemin est correct
+import axiosInstance from '../utils/Axios.js'; // Assurez-vous que le chemin est correct
 import { useRouter } from 'vue-router';
 import Cookies from 'js-cookie';
 import 'semantic-ui-css/semantic.min.css';

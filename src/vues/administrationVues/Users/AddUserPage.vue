@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import axiosInstance from '/src/utils/axios.js';
+import axiosInstance from '/src/utils/Axios.js';
 import HeaderComponent from "@/components/HeaderAdmin.vue";
 import 'semantic-ui-css/semantic.min.css';
 
