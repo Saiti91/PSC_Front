@@ -3,6 +3,7 @@ import {ref} from 'vue';
 import {useRouter} from 'vue-router';
 import 'semantic-ui-css/semantic.min.css';
 import axiosInstance from "@/utils/Axios.js";
+import { useI18n } from 'vue-i18n'; // Importation de useI18n
 
 const email = ref('');
 const password = ref('');
@@ -11,12 +12,19 @@ const router = useRouter();
 const last_name = ref('');
 const first_name = ref('');
 const message = ref(false);
+const error = ref(null);
+const success = ref(null);
+
+const { t } = useI18n(); // Obtenir la fonction t pour les traductions
 
 
 const submitForm = async () => {
+
+  error.value = null;
+  success.value = null;
+
   if (password.value !== confirmPassword.value) {
-    message.value = true;
-    console.log("mauvais mot de passe")
+    error.value = t('pwd-dont-match');
     return;
   }
   try {
@@ -28,7 +36,7 @@ const submitForm = async () => {
       role: "customer"
     };
 
-    const response = await fetch('http://localhost:80/auth/login', {
+    const response = await fetch('http://localhost:80/auth/register/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -41,7 +49,7 @@ const submitForm = async () => {
     }
     router.push('/login');
   } catch (error) {
-    console.error('An error occurred:', error);
+    Console.log("error");
   }
 }
 </script>
@@ -52,6 +60,8 @@ const submitForm = async () => {
       <h2 class="ui teal image header">
         <div class="content">{{ $i18n.t('account_creation') }}</div>
       </h2>
+      <div v-if="error" class="ui negative message">{{ error }}</div>
+      <div v-if="success" class="ui positive message">{{ success }}</div>
       <form class="ui large form" @submit.prevent="submitForm">
         <div class="ui stacked segment">
           <div class="field">
@@ -86,10 +96,6 @@ const submitForm = async () => {
           </div>
           <button class="ui fluid large teal submit button" type="submit">{{ $t('sign_up') }}</button>
         </div>
-
-        <template v-if="message.value === true">
-          <div class="ui error message">{{ $t('pwd-dont-match') }}</div>
-        </template>
       </form>
       <div class="ui message">{{ $t('older_to_us') }}
         <router-link to="/login" class="item">{{ $t('login') }}</router-link>
