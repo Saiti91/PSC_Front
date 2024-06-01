@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import Cookies from 'js-cookie';
+import VueJwtDecode from 'vue-jwt-decode';
 
 const { locale, availableLocales } = useI18n();
 
@@ -9,6 +11,31 @@ const changeLocale = (lang) => {
 };
 
 const currentLocale = computed(() => locale.value);
+
+const token = Cookies.get('token');
+const isAuthenticated = ref(false);
+
+if (token) {
+  try {
+    const decodedToken = VueJwtDecode.decode(token);
+    const expirationTime = decodedToken.exp * 1000;
+    if (Date.now() < expirationTime) {
+      isAuthenticated.value = true;
+    } else {
+      Cookies.remove('token');
+    }
+  } catch (error) {
+    console.error('Invalid token', error);
+    Cookies.remove('token');
+  }
+}
+
+const logout = () => {
+  Cookies.remove('token');
+  isAuthenticated.value = false;
+  // Redirection ou autre logique après déconnexion
+};
+
 </script>
 
 <template>
@@ -18,7 +45,8 @@ const currentLocale = computed(() => locale.value);
         <img class="logo" src="/src/assets/logo.svg" alt="Company Logo">
       </router-link>
       <div class="right menu">
-        <router-link to="/login" class="item">{{$t('login')}}</router-link>
+        <router-link v-if="!isAuthenticated" to="/login" class="item">{{ $t('login') }}</router-link>
+        <a v-if="isAuthenticated" @click="logout" class="item">{{ $t('logout') }}</a>
         <router-link to="/" class="item">{{ $t('home') }}</router-link>
         <router-link to="" class="item">{{ $t('about') }}</router-link>
         <router-link to="" class="item">{{ $t('contact') }}</router-link>
@@ -26,9 +54,9 @@ const currentLocale = computed(() => locale.value);
           <i class="world icon"></i> {{ currentLocale }}
           <div class="menu">
             <div v-for="lang in availableLocales"
-                :key="lang"
-                class="item"
-                @click="changeLocale(lang)">
+                 :key="lang"
+                 class="item"
+                 @click="changeLocale(lang)">
               {{ lang }}
             </div>
           </div>

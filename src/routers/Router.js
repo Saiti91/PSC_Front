@@ -8,7 +8,9 @@ import UserAdminPage from '/src/vues/administrationVues/Users/UsersAdminPage.vue
 import useAuthGuard from '/src/components/Auth/AuthGuard.js';
 import AddUser from '/src/vues/administrationVues/Users/AddUserPage.vue';
 import UserDetails from '/src/vues/administrationVues/Users/UserDetailsPage.vue';
+import ApartmentDetails from '/src/vues/administrationVues/Apartments/ApartmentDetailsPage.vue';
 import ApartmentAdmin from '/src/vues/administrationVues/Apartments/ApartmentAdminPage.vue';
+
 
 const routes = [
     { path: '/login', name: 'Login', component: LoginPage },
@@ -52,6 +54,12 @@ const routes = [
         path: '/user/:id',
         name: 'UserDetails',
         component: UserDetails,
+        beforeEnter: useAuthGuard(['admin','staff'])
+    },
+    {
+        path: '/apartments/:id',
+        name: 'ApartmentDetails',
+        component: ApartmentDetails,
         beforeEnter: useAuthGuard(['admin','staff'])
     }
 ];
