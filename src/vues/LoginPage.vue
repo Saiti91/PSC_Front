@@ -78,7 +78,7 @@ const submitForm = async () => {
 
         <div class="ui error message"></div>
       </form>
-      <div class="ui message">{{ $t('new_to_us') }}<a href="#">{{ $t('sign_up') }}</a>
+      <div class="ui message">{{ $t('new_to_us') }}<router-link to="/sign-up" class="item">{{$t('sign_up')}}</router-link>
       </div>
     </div>
   </div>
