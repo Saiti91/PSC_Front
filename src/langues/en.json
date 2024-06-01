@@ -1,5 +1,4 @@
 {
-  "Michel": "",
   "about": "About",
   "account_Login": "Account Login",
   "account_creation": "Account Creation",
@@ -37,6 +36,9 @@
   "logout": "Logout",
   "name": "Name",
   "new_to_us": "New to us?",
+  "newhouse": "New House",
+  "newprovider": "New Provider",
+  "news": "News",
   "next": "Next",
   "older_to_us": "Do you already have an account with us? ",
   "owner": "Owner",

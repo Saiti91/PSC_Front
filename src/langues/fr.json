@@ -1,5 +1,4 @@
 {
-  "Michel": "Michel",
   "about": "À propos",
   "account_Login": "Connexion au compte",
   "account_creation": "Création de compte",
@@ -37,6 +36,9 @@
   "logout": "Déconnexion",
   "name": "Nom",
   "new_to_us": "Nouveau chez nous?",
+  "newhouse": "Nouvelle Maiseon",
+  "newprovider": "Nouveau Service",
+  "news": "Nouveautées",
   "next": "Suivant",
   "older_to_us": "Vous avez déjà un compte chez nous ? ",
   "owner": "Buyeur",

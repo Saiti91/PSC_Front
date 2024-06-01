@@ -10,6 +10,9 @@ import AddUser from '/src/vues/administrationVues/Users/AddUserPage.vue';
 import UserDetails from '/src/vues/administrationVues/Users/UserDetailsPage.vue';
 import ApartmentDetails from '/src/vues/administrationVues/Apartments/ApartmentDetailsPage.vue';
 import ApartmentAdmin from '/src/vues/administrationVues/Apartments/ApartmentAdminPage.vue';
+import NewsAdmin from '/src/vues/administrationVues/News/NewsAdminPage.vue';
+import NewHouse from '/src/vues/administrationVues/News/NewHouse.vue';
+import NewProvider from '/src/vues/administrationVues/News/NewProvider.vue';
 import SignUpPage from '/src/vues/clientsVues/SignUpPage.vue';
 
 const routes = [
@@ -51,21 +54,28 @@ const routes = [
         beforeEnter: useAuthGuard(['admin','staff'])
     },
     {
+        path: '/news-admin',
+        name: 'NewsAdmin',
+        component: NewsAdmin,
+        beforeEnter: useAuthGuard(['admin','staff'])
+    },
+    {
+        path: '/new-house',
+        name: 'NewHouse',
+        component: NewHouse,
+        beforeEnter: useAuthGuard(['admin','staff'])
+    },
+    {
+        path: '/new-provider',
+        name: 'NewProvider',
+        component: NewProvider,
+        beforeEnter: useAuthGuard(['admin','staff'])
+    },
+    {
         path: '/user/:id',
         name: 'UserDetails',
         component: UserDetails,
         beforeEnter: useAuthGuard(['admin','staff'])
-    },
-    {
-        path: '/apartments/:id',
-        name: 'ApartmentDetails',
-        component: ApartmentDetails,
-        beforeEnter: useAuthGuard(['admin','staff'])
-    },
-    {
-        path: '/sign-up',
-        name: 'SignUp',
-        component: SignUpPage
     }
 ];
 
