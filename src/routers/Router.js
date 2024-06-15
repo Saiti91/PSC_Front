@@ -15,7 +15,7 @@ import NewHouse from '/src/vues/administrationVues/News/NewHouse.vue';
 import NewProvider from '/src/vues/administrationVues/News/NewProvider.vue';
 import SignUpPage from '/src/vues/clientsVues/SignUpPage.vue';
 import CataloguePage from "/src/vues/clientsVues/CataloguePage.vue";
-import HousingDetailsPage from "/src/vues/administrationVues/HousingDetailsPage.vue";
+import HousingDetailsPage from "/src/vues/clientsVues/HousingDetailsPage.vue";
 
 
 const routes = [

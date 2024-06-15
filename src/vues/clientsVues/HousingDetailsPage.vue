@@ -1,20 +1,25 @@
 <script setup>
 import HeaderComponent from '../../components/HeaderComponent.vue'
 import FooterComponent from '../../components/FooterComponent.vue'
+import { useRoute } from 'vue-router';
+
 import {onMounted, ref} from "vue";
 import axiosInstance from "@/utils/Axios.js";
 
-const apartment = ref(null);
-const error = ref(null);
 const route = useRoute();
+const apartment = ref(null);
+const apartmentId = ref(route.params.id);
+const error = ref(null);
 
+console.log('hello');
 const fetchApartmentDetails = async () => {
   error.value = null;
   try {
-    const response = await axiosInstance.get(`/apartments/${route.params.id}`);
+    const response = await axiosInstance.get(`/apartments/${apartmentId.value}/`);
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
+    console.log("Fetched Apartment: ", fetchApartmentDetails);
     apartment.value = response.data;
   } catch (err) {
     error.value = err.message;
