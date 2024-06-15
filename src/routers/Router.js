@@ -18,6 +18,7 @@ import SignUpPage from '/src/vues/clientsVues/SignUpPage.vue';
 const routes = [
     { path: '/login', name: 'Login', component: LoginPage },
     { path: '/', name: 'Accueil', component: AccueilPage },
+    { path: '/sign-up', name: 'Sign-Up', component: SignUpPage },
 
     {
         path: '/accueil-admin',

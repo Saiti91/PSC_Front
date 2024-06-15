@@ -34,7 +34,7 @@ const submitForm = async () => {
       first_name: first_name.value,
       last_name: last_name.value,
       role: "customer"
-    };
+    }
 
     const response = await fetch('http://localhost:80/auth/register/', {
       method: 'POST',
@@ -49,7 +49,7 @@ const submitForm = async () => {
     }
     router.push('/login');
   } catch (error) {
-    Console.log("error");
+    console.log("error");
   }
 }
 </script>
