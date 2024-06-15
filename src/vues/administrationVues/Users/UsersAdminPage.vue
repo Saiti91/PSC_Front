@@ -4,7 +4,9 @@ import HeaderComponent from '/src/components/HeaderAdmin.vue';
 import FooterComponent from '/src/components/FooterComponent.vue';
 import axiosInstance from '/src/utils/Axios.js';
 import 'semantic-ui-css/semantic.min.css';
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router';
+import DeleteModal from '@/components/DeleteModal.vue';
+import SuccessModal from '@/components/SuccessModal.vue';
 
 const users = ref([]);
 const currentPage = ref(1);
@@ -74,7 +76,7 @@ const confirmDelete = async () => {
   try {
     const user = users.value.find(u => u.users_id === userIdToDelete.value);
     await axiosInstance.delete(`/users/${userIdToDelete.value}/`);
-    deletedUserDetails.value = { id: user.users_id, role: user.role, email: user.email };
+    deletedUserDetails.value = {id: user.users_id, role: user.role, email: user.email};
     await fetchUsers(); // Refresh the list after deletion
     showDeleteModal.value = false;
     showSuccessModal.value = true;
@@ -92,12 +94,12 @@ onMounted(fetchUsers);
     <div class="spacer"></div>
     <div class="ui basic segment flex-grow" style="flex: 1 0 auto; overflow: auto;">
       <div class="header-container">
-        <h1 class="ui header">{{$t('user_administration')}}</h1>
+        <h1 class="ui header">{{ $t('user_administration') }}</h1>
         <div class="ui right aligned">
           <div class="custom-dropdown">
             <select v-model="selectedRole">
-              <option value="">{{$t('all_roles')}}</option>
-              <option value="admin">{{$t('admin')}}</option>
+              <option value="">{{ $t('all_roles') }}</option>
+              <option value="admin">{{ $t('admin') }}</option>
               <option value="customer">{{ $t('customer') }}</option>
               <option value="provider">{{ $t('provider') }}</option>
               <option value="owner">{{ $t('owner') }}</option>
@@ -110,18 +112,17 @@ onMounted(fetchUsers);
         </div>
       </div>
 
-
       <div v-if="error" class="ui negative message">{{ error }}</div>
       <div v-else>
         <table class="ui celled table">
           <thead>
           <tr>
             <th>ID</th>
-            <th>{{$t('created_At')}}</th>
-            <th>{{$t('first_Name')}}</th>
-            <th>{{$t('last_Name')}}</th>
-            <th>{{$t('roles')}}</th>
-            <th>{{$t('email')}}</th>
+            <th>{{ $t('created_At') }}</th>
+            <th>{{ $t('first_Name') }}</th>
+            <th>{{ $t('last_Name') }}</th>
+            <th>{{ $t('roles') }}</th>
+            <th>{{ $t('email') }}</th>
             <th>Actions</th>
           </tr>
           </thead>
@@ -149,16 +150,16 @@ onMounted(fetchUsers);
         </table>
         <div class="pagination-settings">
           <div class="items-per-page">
-            <label>{{$t('users_per_page')}}</label>
+            <label>{{ $t('users_per_page') }}</label>
             <select class="ui dropdown narrow-dropdown" v-model="pageSize" @change="fetchUsers">
               <option value="10">10</option>
               <option value="20">20</option>
             </select>
           </div>
           <div class="ui pagination menu">
-            <a class="item" @click="prevPage" :class="{disabled: currentPage === 1}">{{$t('previous')}}</a>
+            <a class="item" @click="prevPage" :class="{disabled: currentPage === 1}">{{ $t('previous') }}</a>
             <div class="item">Page {{ currentPage }}</div>
-            <a class="item" @click="nextPage" :class="{disabled: currentPage === totalPages}">{{$t('next')}}</a>
+            <a class="item" @click="nextPage" :class="{disabled: currentPage === totalPages}">{{ $t('next') }}</a>
           </div>
         </div>
       </div>
@@ -166,34 +167,11 @@ onMounted(fetchUsers);
     <FooterComponent/>
 
     <!-- Custom Delete Modal -->
-    <div v-if="showDeleteModal" class="modal-overlay">
-      <div class="modal">
-        <div class="modal-header">{{$t('delete_user')}}</div>
-        <div class="modal-body">
-          <p>{{$t('confirm_delete_user')}}</p>
-        </div>
-        <div class="modal-actions">
-          <button class="ui button" @click="showDeleteModal = false">{{$t('cancel')}}</button>
-          <button class="ui button red" @click="confirmDelete">{{$t('delete')}}</button>
-        </div>
-      </div>
-    </div>
+    <DeleteModal :show="showDeleteModal" :apartmentId="userIdToDelete" @close="showDeleteModal = false"
+                 @confirm="confirmDelete"/>
 
     <!-- Custom Success Modal -->
-    <div v-if="showSuccessModal" class="modal-overlay">
-      <div class="modal">
-        <div class="modal-header">Suppression réussie</div>
-        <div class="modal-body">
-          <p>L'utilisateur a été supprimé avec succès.</p>
-          <p><strong>ID:</strong> {{ deletedUserDetails.id }}</p>
-          <p><strong>Rôle:</strong> {{ deletedUserDetails.role }}</p>
-          <p><strong>Email:</strong> {{ deletedUserDetails.email }}</p>
-        </div>
-        <div class="modal-actions">
-          <button class="ui button" @click="showSuccessModal = false">Fermer</button>
-        </div>
-      </div>
-    </div>
+    <SuccessModal :show="showSuccessModal" :details="deletedUserDetails" @close="showSuccessModal = false"/>
   </div>
 </template>
 
@@ -201,6 +179,7 @@ onMounted(fetchUsers);
 .spacer {
   margin-top: 7%;
 }
+
 .custom-dropdown {
   display: inline-block;
   position: relative;
@@ -208,17 +187,16 @@ onMounted(fetchUsers);
 
 .custom-dropdown select {
   display: block;
-  width: 150px; /* Ajustez la largeur selon vos besoins */
-  padding: 10px; /* Ajouter du padding pour l'apparence */
-  font-size: 14px; /* Ajuster la taille de la police */
-  border: 1px solid #ccc; /* Bordure pour une meilleure visibilité */
-  border-radius: 4px; /* Bordure arrondie pour une apparence moderne */
-  appearance: none; /* Supprimer l'apparence par défaut du navigateur */
-  -webkit-appearance: none; /* Supprimer l'apparence par défaut du navigateur pour Safari */
-  -moz-appearance: none; /* Supprimer l'apparence par défaut du navigateur pour Firefox */
-  background: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5H7z' fill='%23666'/%3E%3C/svg%3E") no-repeat right 10px center; /* Icône de la flèche vers le bas */
-  background-color: white; /* Couleur de fond blanche */
-  background-size: 12px; /* Taille de l'icône */
+  width: 150px;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: white url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5H7z' fill='%23666'/%3E%3C/svg%3E") no-repeat right 10px center;
+  background-size: 12px;
 }
 
 .custom-dropdown::after {

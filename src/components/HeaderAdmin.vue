@@ -20,12 +20,7 @@ const services = ref([]);
 const router = useRouter();
 
 onMounted(async () => {
-  try {
-    const response = await axiosInstance.get('/services');
-    services.value = response.data;
-  } catch (error) {
-    console.error('Error loading services', error);
-  }
+
 });
 
 function logout() {

@@ -91,12 +91,6 @@ body, html {
   height: 100%;
 }
 
-#app {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
 .spacer {
   margin-top: 2%; /* Réduisez la marge supérieure si nécessaire */
 }
