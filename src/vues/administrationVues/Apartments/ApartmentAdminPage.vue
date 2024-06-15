@@ -17,6 +17,11 @@ const apartmentIdToDelete = ref(null);
 const deletedApartmentDetails = ref({});
 const selectedType = ref('');
 
+const parseStringArray = (stringArray) => {
+  // Removing the curly braces and splitting by comma
+  return stringArray.replace(/{|}/g, '').split(',');
+};
+
 const fetchApartments = async () => {
   error.value = null;
   try {
@@ -24,25 +29,27 @@ const fetchApartments = async () => {
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
+    console.log(response.data);
     apartments.value = response.data.map(apartment => ({
-      appartements_id: apartment.appartements_id,
+      apartments_id: apartment.apartments_id,
       created_at: apartment.created_at.split('T')[0],
       surface: apartment.surface,
       capacity: apartment.capacity,
       available: apartment.available,
-      apartmentstype: apartment.apartmentstype,
-      garden: apartment.garden,
-      roomnumber: apartment.roomnumber,
+      apartment_type: apartment.apartment_type,
+      numberofroom: apartment.numberofroom,
       pool: apartment.pool,
       price: apartment.price,
       owner_email: apartment.owner_email,
       number: apartment.number,
-      addresscomplement: apartment.addresscomplement,
+      addressComplement: apartment.addressComplement,
       building: apartment.building,
-      apartmentnumber: apartment.apartmentnumber,
+      apartmentNumber: apartment.apartmentNumber,
       street: apartment.street,
-      cp: apartment.cp,
-      ville: apartment.ville,
+      CP: apartment.CP,
+      town: apartment.town,
+      images: parseStringArray(apartment.images),
+      features: parseStringArray(apartment.features)
     }));
   } catch (err) {
     error.value = err.message;
@@ -53,7 +60,7 @@ const filteredApartments = computed(() => {
   if (!selectedType.value) {
     return apartments.value;
   }
-  return apartments.value.filter(apartment => apartment.apartmentstype === selectedType.value);
+  return apartments.value.filter(apartment => apartment.apartment_type === selectedType.value);
 });
 
 const paginatedApartments = computed(() => {
@@ -87,11 +94,11 @@ const openDeleteModal = (apartmentId) => {
 
 const confirmDelete = async () => {
   try {
-    const apartment = apartments.value.find(a => a.appartements_id === apartmentIdToDelete.value);
+    const apartment = apartments.value.find(a => a.apartments_id === apartmentIdToDelete.value);
     await axiosInstance.delete(`/apartments/${apartmentIdToDelete.value}/`);
     deletedApartmentDetails.value = {
-      id: apartment.appartements_id,
-      type: apartment.apartmentstype,
+      id: apartment.apartments_id,
+      type: apartment.apartment_type,
       email: apartment.owner_email
     };
     await fetchApartments(); // Refresh the list after deletion
@@ -100,10 +107,6 @@ const confirmDelete = async () => {
   } catch (err) {
     error.value = 'Failed to delete the apartment.';
   }
-};
-
-const capitalizeFirstLetter = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
 onMounted(fetchApartments);
@@ -120,9 +123,9 @@ onMounted(fetchApartments);
           <div class="custom-dropdown">
             <select v-model="selectedType">
               <option value="">Tous les types</option>
-              <option value="apartment">Appartement</option>
-              <option value="house">Maison</option>
-              <option value="studio">Studio</option>
+              <option value="Appartement">Appartement</option>
+              <option value="Maison">Maison</option>
+              <option value="Studio">Studio</option>
             </select>
           </div>
         </div>
@@ -130,7 +133,7 @@ onMounted(fetchApartments);
 
       <div v-if="error" class="ui negative message">{{ error }}</div>
       <div v-else>
-        <table class="ui celled table">
+        <table class="ui celled table auto-layout">
           <thead>
           <tr>
             <th>Date de Création</th>
@@ -138,31 +141,29 @@ onMounted(fetchApartments);
             <th>Capacité</th>
             <th>Disponible</th>
             <th>Type</th>
-            <th>Jardin</th>
+            <th>Fonctionnalités</th>
             <th>Nombre de Pièces</th>
-            <th>Piscine</th>
             <th>Prix</th>
             <th>Email Propriétaire</th>
             <th>Actions</th>
           </tr>
           </thead>
           <tbody>
-          <tr v-for="apartment in paginatedApartments" :key="apartment.appartements_id">
+          <tr v-for="apartment in paginatedApartments" :key="apartment.apartments_id">
             <td>{{ apartment.created_at }}</td>
             <td>{{ apartment.surface }} m²</td>
             <td>{{ apartment.capacity }}</td>
             <td>{{ apartment.available ? 'Oui' : 'Non' }}</td>
-            <td>{{ capitalizeFirstLetter(apartment.apartmentstype) }}</td>
-            <td>{{ apartment.garden ? 'Oui' : 'Non' }}</td>
-            <td>{{ apartment.roomnumber }}</td>
-            <td>{{ apartment.pool ? 'Oui' : 'Non' }}</td>
+            <td>{{ apartment.apartment_type }}</td>
+            <td>{{ apartment.features.join(', ') }}</td>
+            <td>{{ apartment.numberofroom }}</td>
             <td>{{ apartment.price }} €</td>
             <td>{{ apartment.owner_email }}</td>
             <td>
-              <button class="ui icon button" @click="viewApartmentDetails(apartment.appartements_id)">
+              <button class="ui icon button" @click="viewApartmentDetails(apartment.apartments_id)">
                 <i class="eye icon"></i>
               </button>
-              <button class="ui icon button" @click="openDeleteModal(apartment.appartements_id)">
+              <button class="ui icon button" @click="openDeleteModal(apartment.apartments_id)">
                 <i class="trash icon"></i>
               </button>
               <button class="ui icon button">
@@ -301,6 +302,11 @@ onMounted(fetchApartments);
 .ui.pagination.menu {
   display: flex;
   align-items: center;
+}
+
+/* Add this class */
+.auto-layout {
+  table-layout: auto;
 }
 
 .modal-overlay {

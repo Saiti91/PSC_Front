@@ -76,6 +76,12 @@ const routes = [
         name: 'UserDetails',
         component: UserDetails,
         beforeEnter: useAuthGuard(['admin','staff'])
+    },
+    {
+        path: '/apartment/:id',
+        name: 'ApartmentDetails',
+        component: ApartmentDetails,
+        beforeEnter: useAuthGuard(['admin','staff'])
     }
 ];
 

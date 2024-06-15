@@ -4,11 +4,19 @@ import { useRoute } from 'vue-router';
 import axiosInstance from '/src/utils/Axios.js';
 import HeaderComponent from "/src/components/HeaderAdmin.vue";
 import FooterComponent from "/src/components/FooterComponent.vue";
+//import PhotoCarousel from "/src/components/PhotoCarousel.vue";  // Assurez-vous d'importer le composant du carrousel de photos
 
 const route = useRoute();
 const apartmentId = ref(route.params.id);
-const apartment = ref(null);
+const apartments = ref({});
 const error = ref(null);
+
+
+const parseStringArray = (stringArray) => {
+  // Removing the curly braces and splitting by comma
+  return stringArray.replace(/{|}/g, '').split(',');
+};
+
 
 const fetchApartmentDetails = async () => {
   error.value = null;
@@ -17,7 +25,28 @@ const fetchApartmentDetails = async () => {
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    apartment.value = response.data;
+    console.log(response.data);
+    apartments.value = {
+      apartments_id: response.data.apartments_id,
+      created_at: response.data.created_at.split('T')[0],
+      surface: response.data.surface,
+      capacity: response.data.capacity,
+      available: response.data.available,
+      apartment_type: response.data.apartment_type,
+      numberofroom: response.data.numberofroom,
+      pool: response.data.pool,
+      price: response.data.price,
+      owner_email: response.data.owner_email,
+      number: response.data.number,
+      addressComplement: response.data.addressComplement,
+      building: response.data.building,
+      apartmentNumber: response.data.apartmentNumber,
+      street: response.data.street,
+      CP: response.data.CP,
+      town: response.data.town,
+      images: parseStringArray(response.data.images),  // Assurez-vous que les images sont disponibles ici
+      features: parseStringArray(response.data.features)
+    };
   } catch (err) {
     error.value = err.message;
   }
@@ -27,34 +56,46 @@ onMounted(fetchApartmentDetails);
 </script>
 
 <template>
-  <div class="ui container" style="min-height: 100vh; display: flex; flex-direction: column;">
+  <div class="ui container">
     <HeaderComponent/>
     <div class="spacer"></div>
+    <div class="ui segment">
+      <header class="ui header">
+        <h1>{{ apartments.apartments_id }}</h1>
+        <p>{{ apartments.street }}, {{ apartments.town }}</p>
+      </header>
 
-    <div class="ui basic segment flex-grow" style="flex: 1 0 auto; overflow: auto;">
-      <h1 class="ui header">Détails de l'Appartement</h1>
+      <div class="ui divider"></div>
 
-      <div v-if="error" class="ui negative message">{{ error }}</div>
-      <div v-else-if="apartment">
-        <div class="ui segment">
-          <h2 class="ui header">{{ apartment.street }} {{ apartment.number }}, {{ apartment.ville }}</h2>
-          <p><strong>Date de Création:</strong> {{ new Date(apartment.created_at).toLocaleDateString() }}</p>
-          <p><strong>Surface:</strong> {{ apartment.surface }} m²</p>
-          <p><strong>Capacité:</strong> {{ apartment.capacity }} personnes</p>
-          <p><strong>Disponible:</strong> {{ apartment.available ? 'Oui' : 'Non' }}</p>
-          <p><strong>Type:</strong> {{ apartment.apartmentstype }}</p>
-          <p><strong>Jardin:</strong> {{ apartment.garden ? 'Oui' : 'Non' }}</p>
-          <p><strong>Nombre de Pièces:</strong> {{ apartment.roomnumber }}</p>
-          <p><strong>Piscine:</strong> {{ apartment.pool ? 'Oui' : 'Non' }}</p>
-          <p><strong>Prix:</strong> {{ apartment.price }} €</p>
-          <p><strong>Email Propriétaire:</strong> {{ apartment.owner_email }}</p>
-          <p><strong>Complément d'adresse:</strong> {{ apartment.addresscomplement }}</p>
-          <p><strong>Bâtiment:</strong> {{ apartment.building }}</p>
-          <p><strong>Numéro d'Appartement:</strong> {{ apartment.apartmentnumber }}</p>
-          <p><strong>Code Postal:</strong> {{ apartment.cp }}</p>
+      <div class="ui two column stackable grid">
+        <div class="column">
+          <PhotoCarousel :photos="apartments.images" class="ui medium images"/>
+        </div>
+        <div class="column">
+          <div class="ui segment">
+            <h2 class="ui header">Informations de base</h2>
+            <p><strong>Prix :</strong> {{ apartments.price }}€</p>
+            <p><strong>Surface :</strong> {{ apartments.surface }} m²</p>
+            <p><strong>Nombre de chambres :</strong> {{ apartments.numberofroom }}</p>
+            <p><strong>Disponibilité :</strong> {{ apartments.available }}</p>
+          </div>
         </div>
       </div>
-      <div v-else class="ui active inline loader"></div>
+
+      <div class="ui segment">
+        <h2 class="ui header">Description détaillée</h2>
+        <p>{{ apartments.description }}</p>
+        <h3 class="ui header">Équipements</h3>
+        <ul class="ui list">
+          <li v-for="amenity in apartments.features" :key="amenity">{{ amenity }}</li>
+        </ul>
+      </div>
+
+      <div class="ui segment">
+        <h2 class="ui header">Informations supplémentaires</h2>
+        <p><strong>Règles de location :</strong> {{ apartments.rules }}</p>
+        <p><strong>Conditions de paiement :</strong></p>
+      </div>
     </div>
 
     <FooterComponent/>
@@ -65,7 +106,6 @@ onMounted(fetchApartmentDetails);
 .spacer {
   margin-top: 7%;
 }
-
 .ui.container {
   max-width: 800px;
   margin-top: 50px;

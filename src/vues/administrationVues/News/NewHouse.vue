@@ -1,65 +1,103 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref } from 'vue';
 import HeaderComponent from '/src/components/HeaderAdmin.vue';
 import FooterComponent from '/src/components/FooterComponent.vue';
 import axiosInstance from '/src/utils/Axios.js';
 import 'semantic-ui-css/semantic.min.css';
-import { useRouter } from 'vue-router'
+// import { useRouter } from 'vue-router'
 
-const apartments = ref([]);
-const currentPage = ref(1);
-const pageSize = ref(10);
+const form = ref({
+  ownerEmail: '',
+  surface: 0,
+  capacity: 0,
+  apartmentsType: '',
+  numberOfRoom: 0,
+  price: 0,
+  address: {
+    longitude: null,
+    latitude: null,
+    number: 0,
+    addressComplement: '',
+    building: '',
+    apartmentNumber: null,
+    street: '',
+    CP: 0,
+    town: ''
+  },
+  imagePaths: []
+});
+
 const error = ref(null);
-const router = useRouter();
+// const router = useRouter();
+
+const submitForm = async () => {
+  console.log(form.value);
+  try {
+    const response = await axiosInstance.post('/apartments', form.value);
+    // router.push('/success');
+  } catch (err) {
+    error.value = err.response ? err.response.data.message : err.message;
+  }
+};
 </script>
 
 <template>
   <div class="ui container" style="min-height: 100vh; display: flex; flex-direction: column;">
     <HeaderComponent/>
     <div class="spacer"></div>
-    <div class="ui basic segment flex-grow" style="flex: 1 0 auto; overflow: auto;">
-      <div v-if="error" class="ui negative message">{{ error }}</div>
-      <div v-else>
-        <table class="ui celled table">
-          <thead>
-          <tr>
-            <!-- TODO: Add table headers here -->
-          </tr>
-          </thead>
-          <tbody>
-          <div class="ui two column grid">
-            <router-link to="/new-house" class="column">
-              <div class="ui fluid card">
-                <div class="image">
-                  <img src="/src/assets/newhouse.svg">
-                </div>
-                <div class="content">
-                  <a class="header">Nouveau Bien</a>
-                </div>
-              </div>
-            </router-link>
-            <router-link to="/new-provider" class="column">
-              <div class="ui fluid card">
-                <div class="image">
-                  <img src="/src/assets/newprovider.svg">
-                </div>
-                <div class="content">
-                  <a class="header">Nouveau Service</a>
-                </div>
-              </div>
-            </router-link>
-          </div>
-          </tbody>
-        </table>
-        <!-- TODO: Add more UI here -->
+    <form class="ui form" @submit.prevent="submitForm">
+      <div class="field">
+        <label>Owner Email</label>
+        <input type="email" v-model="form.ownerEmail" required />
       </div>
-    </div>
+      <div class="field">
+        <label>Surface</label>
+        <input type="number" v-model="form.surface" required />
+      </div>
+      <div class="field">
+        <label>Capacity</label>
+        <input type="number" v-model="form.capacity" required />
+      </div>
+      <div class="field">
+        <label>Apartment Type</label>
+        <input type="text" v-model="form.apartmentsType" required />
+      </div>
+      <div class="field">
+        <label>Number of Rooms</label>
+        <input type="number" v-model="form.numberOfRoom" required />
+      </div>
+      <div class="field">
+        <label>Price</label>
+        <input type="number" v-model="form.price" required />
+      </div>
+      <div class="field">
+        <label>Address</label>
+        <input type="text" v-model="form.address.street" placeholder="Street" required />
+        <input type="number" v-model="form.address.number" placeholder="Number" required />
+        <input type="text" v-model="form.address.addressComplement" placeholder="Complement" />
+        <input type="text" v-model="form.address.building" placeholder="Building" />
+        <input type="number" v-model="form.address.apartmentNumber" placeholder="Apartment Number" />
+        <input type="number" v-model="form.address.CP" placeholder="Postal Code" required />
+        <input type="text" v-model="form.address.town" placeholder="Town" required />
+        <input type="number" v-model="form.address.longitude" placeholder="Longitude" />
+        <input type="number" v-model="form.address.latitude" placeholder="Latitude" />
+      </div>
+      <div class="field">
+        <label>Image Paths</label>
+        <input type="text" v-model="form.imagePaths" placeholder="Image Paths (comma separated)" />
+      </div>
+      <button class="ui button" type="submit">Submit</button>
+      <div v-if="error" class="ui red message">
+        {{ error }}
+      </div>
+    </form>
+    <div class="spacer"></div>
     <FooterComponent/>
   </div>
 </template>
 
 <style scoped>
 .spacer {
-  margin-top: 12%;
+  margin-top: 7%;
 }
 </style>

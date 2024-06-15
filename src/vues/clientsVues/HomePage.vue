@@ -21,7 +21,7 @@ import 'semantic-ui-css/semantic.min.css';
               </div>
             </div>
           </div>
-          <img src="/src/assets/housing/maison1.jpg">
+          <img src="" alt="">
         </div>
         <div class="content">
           <a class="header">variable de titre</a>
