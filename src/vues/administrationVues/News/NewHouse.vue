@@ -13,31 +13,48 @@ const form = ref({
   numberOfRoom: '',
   price: '',
   address: {
-    longitude: null,
-    latitude: null,
+    longitude: '',
+    latitude: '',
     number: '',
-    addressComplement: '',
-    building: '',
+    addressComplement: null,
+    building: null,
     apartmentNumber: null,
     street: '',
     CP: '',
     town: ''
   },
-  imagePaths: []
+  images: [] // Holds the image files
 });
 
 const error = ref(null);
+const imagePreviews = ref([]); // Holds the image preview URLs
 
-const handleFileUpload = (event) => {
-  const files = event.target.files;
-  form.value.imagePaths = [];
+const handleFileUpload = (files) => {
   for (let i = 0; i < files.length; i++) {
     if (files[i].type === 'image/png' || files[i].type === 'image/jpeg') {
-      form.value.imagePaths.push(files[i]);
+      form.value.images.push(files[i]);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        imagePreviews.value.push(e.target.result);
+      };
+      reader.readAsDataURL(files[i]);
     } else {
       alert('Only PNG or JPEG images are allowed');
     }
   }
+};
+
+const onFileChange = (event) => {
+  handleFileUpload(event.target.files);
+};
+
+const onDrop = (event) => {
+  event.preventDefault();
+  handleFileUpload(event.dataTransfer.files);
+};
+
+const onDragOver = (event) => {
+  event.preventDefault();
 };
 
 const submitForm = async () => {
@@ -45,14 +62,15 @@ const submitForm = async () => {
   try {
     const formData = new FormData();
     for (const key in form.value) {
-      if (key !== 'imagePaths') {
-        formData.append(key, form.value[key]);
+      if (key !== 'images') {
+        formData.append(key, JSON.stringify(form.value[key]));
       } else {
-        for (let i = 0; i < form.value.imagePaths.length; i++) {
-          formData.append('imagePaths', form.value.imagePaths[i]);
+        for (let i = 0; i < form.value.images.length; i++) {
+          formData.append('images', form.value.images[i]);
         }
       }
     }
+    console.log(form.value)
     const response = await axiosInstance.post('/apartments', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
@@ -89,7 +107,6 @@ const submitForm = async () => {
           <option value="Apartment">Apartment</option>
           <option value="House">House</option>
           <option value="Studio">Studio</option>
-          <!-- Add more options as needed -->
         </select>
       </div>
       <div class="field">
@@ -116,14 +133,27 @@ const submitForm = async () => {
         <input type="text" v-model="form.address.building" placeholder="Building" />
         <label>Apartment Number</label>
         <input type="number" v-model="form.address.apartmentNumber" placeholder="Apartment Number" />
-        <label>State</label>
-        <input type="text" v-model="form.address.CP" placeholder="State" required />
+        <label>CP</label>
+        <input type="number" v-model="form.address.CP" placeholder="CP" required />
         <label>Town</label>
         <input type="text" v-model="form.address.town" placeholder="Town" required/>
       </div>
       <div class="field">
-        <label>Image Paths</label>
-        <input type="file" @change="handleFileUpload" accept=".png, .jpeg" multiple/>
+        <label>Image Upload</label>
+        <div class="ui segment" @dragover="onDragOver" @drop="onDrop" @click="$refs.fileInput.click()">
+          <input type="file" @change="onFileChange" accept=".png, .jpeg" multiple style="display: none;" ref="fileInput" />
+          <div class="ui placeholder segment">
+            <div class="ui icon header">
+              <i class="file image outline icon"></i>
+              Drag & Drop Images Here
+            </div>
+            <div class="ui divider"></div>
+            <div class="ui secondary button">Or Select Files</div>
+          </div>
+          <div v-if="imagePreviews.length" class="ui small images">
+            <img v-for="(src, index) in imagePreviews" :key="index" :src="src" class="ui image" style="max-width: 150px; margin: 10px 10px 0 0;" />
+          </div>
+        </div>
       </div>
       <button class="ui button" type="submit">Submit</button>
       <div v-if="error" class="ui red message">
@@ -138,5 +168,13 @@ const submitForm = async () => {
 <style scoped>
 .spacer {
   margin-top: 7%;
+}
+.ui.small.images {
+  display: flex;
+  flex-wrap: wrap;
+}
+.ui.small.images img {
+  display: inline-block;
+  margin-right: 10px;
 }
 </style>
