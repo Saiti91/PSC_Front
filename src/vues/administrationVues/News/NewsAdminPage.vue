@@ -31,7 +31,7 @@ const router = useRouter();
             <router-link to="/new-house" class="column">
               <div class="ui fluid card">
                 <div class="image">
-                  <img src="/src/assets/newhouse.svg">
+                  <img src="/src/assets/newhouse.svg" alt="">
                 </div>
                 <div class="content">
                   <a class="header">Nouveau Bien</a>
@@ -41,7 +41,7 @@ const router = useRouter();
             <router-link to="/new-provider" class="column">
               <div class="ui fluid card">
                 <div class="image">
-                  <img src="/src/assets/newprovider.svg">
+                  <img src="/src/assets/newprovider.svg" alt="">
                 </div>
                 <div class="content">
                   <a class="header">Nouveau Service</a>

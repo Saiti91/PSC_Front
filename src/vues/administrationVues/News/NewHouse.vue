@@ -16,9 +16,9 @@ const form = ref({
     longitude: '',
     latitude: '',
     number: '',
-    addressComplement: null,
-    building: null,
-    apartmentNumber: null,
+    addressComplement: '',
+    building: '',
+    apartmentNumber: '',
     street: '',
     CP: '',
     town: ''
@@ -62,15 +62,20 @@ const submitForm = async () => {
   try {
     const formData = new FormData();
     for (const key in form.value) {
-      if (key !== 'images') {
-        formData.append(key, JSON.stringify(form.value[key]));
-      } else {
+      if (key === 'address') {
+        // Ajouter chaque propriété de l'objet address séparément
+        for (const addressKey in form.value.address) {
+          formData.append(`address[${addressKey}]`, form.value.address[addressKey]);
+        }
+      } else if (key === 'images') {
         for (let i = 0; i < form.value.images.length; i++) {
           formData.append('images', form.value.images[i]);
         }
+      } else {
+        formData.append(key, form.value[key]);
       }
     }
-    console.log(form.value)
+    console.log(form.value);
     const response = await axiosInstance.post('/apartments', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'

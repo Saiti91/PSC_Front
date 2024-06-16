@@ -68,7 +68,7 @@ onMounted(fetchApartments);
                     </div>
                   </div>
                 </div>
-                <img src="/src/assets/housing/cottage.jpg" alt="Image de {{ apartment.name }}">
+                <img src="" alt="Image de {{ apartment.name }}">
               </div>
               <div class="content">
                 <a class="header">{{ apartment.name }}</a>

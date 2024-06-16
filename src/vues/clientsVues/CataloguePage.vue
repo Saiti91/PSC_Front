@@ -54,7 +54,7 @@ onMounted(fetchApartments);
         <router-link :to="`/housing/${apartment.apartments_id}`" class="ui card">
         <div class="ui card">
           <div class="image">
-            <img src="/src/assets/housing/villa.jpg" alt="Image de {{ apartment.name }}">
+            <img src="" alt="Image de {{ apartment.name }}">
           </div>
           <div class="content">
             <a class="header">{{ apartment.name }}</a>
