@@ -14,11 +14,16 @@ import NewsAdmin from '/src/vues/administrationVues/News/NewsAdminPage.vue';
 import NewHouse from '/src/vues/administrationVues/News/NewHouse.vue';
 import NewProvider from '/src/vues/administrationVues/News/NewProvider.vue';
 import SignUpPage from '/src/vues/clientsVues/SignUpPage.vue';
+import CataloguePage from "/src/vues/clientsVues/CataloguePage.vue";
+import HousingDetailsPage from "/src/vues/clientsVues/HousingDetailsPage.vue";
+
 
 const routes = [
     { path: '/login', name: 'Login', component: LoginPage },
     { path: '/', name: 'Accueil', component: AccueilPage },
     { path: '/sign-up', name: 'Sign-Up', component: SignUpPage },
+    { path: '/housing', name: 'Housing', component: CataloguePage },
+    { path: '/housing/:id', name: 'HousingDetails', component: HousingDetailsPage },
 
     {
         path: '/accueil-admin',

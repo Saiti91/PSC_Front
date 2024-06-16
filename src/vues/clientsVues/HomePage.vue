@@ -32,7 +32,7 @@ const fetchApartments = async () => {
       apartments_id: 'view-all',
       name: 'Voir tous nos biens',
       town: '',
-      images: ['/src/assets/housing/default.jpg'] // Image par défaut
+      images: ['/src/assets/image_right_arrow.jpg']
     });
 
     console.log("Fetched Apartments: ", fetchedApartments);
@@ -50,7 +50,9 @@ onMounted(fetchApartments);
   <div class="ui container full-width" style="min-height: 100vh; display: flex; flex-direction: column; overflow: hidden;">
     <HeaderComponent />
     <div class="spacer"></div>
-    <h2>{{ $t('our-housing') }}</h2>
+    <router-link to="/housing">
+      <h2 class="clickable-title">{{ $t('our-housing') }}</h2>
+    </router-link>
     <div v-if="error">{{ error }}</div>
     <div v-else-if="apartments.length === 0">Aucun appartement trouvé.</div>
     <div class="carousel-wrapper">
@@ -66,7 +68,7 @@ onMounted(fetchApartments);
                     </div>
                   </div>
                 </div>
-                <img src="/src/assets/housing/maison4.jpg" alt="Image de {{ apartment.name }}">
+                <img src="/src/assets/housing/cottage.jpg" alt="Image de {{ apartment.name }}">
               </div>
               <div class="content">
                 <a class="header">{{ apartment.name }}</a>
