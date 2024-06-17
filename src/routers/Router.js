@@ -1,5 +1,5 @@
 // src/routers/Router.js
-import { createRouter, createWebHistory } from 'vue-router';
+import {createRouter, createWebHistory} from 'vue-router';
 import LoginPage from '/src/vues/LoginPage.vue';
 import AccueilPage from '/src/vues/clientsVues/HomePage.vue';
 import AccueilAdminPage from '/src/vues/administrationVues/HomeAdminPage.vue';
@@ -17,25 +17,46 @@ import SignUpPage from '/src/vues/clientsVues/SignUpPage.vue';
 import CataloguePage from "/src/vues/clientsVues/CataloguePage.vue";
 import HousingDetailsPage from "/src/vues/clientsVues/HousingDetailsPage.vue";
 
+import AddProvider from "/src/vues/administrationVues/News/Provider/AddProvider.vue";
+import AddServiceToProvider from "/src/vues/administrationVues/News/Provider/AddServiceToProvider.vue";
+import AddServiceType from "/src/vues/administrationVues/News/Provider/AddServiceType.vue";
+
 
 const routes = [
-    { path: '/login', name: 'Login', component: LoginPage },
-    { path: '/', name: 'Accueil', component: AccueilPage },
-    { path: '/sign-up', name: 'Sign-Up', component: SignUpPage },
-    { path: '/housing', name: 'Housing', component: CataloguePage },
-    { path: '/housing/:id', name: 'HousingDetails', component: HousingDetailsPage },
-
+    {path: '/login', name: 'Login', component: LoginPage},
+    {path: '/', name: 'Accueil', component: AccueilPage},
+    {path: '/sign-up', name: 'Sign-Up', component: SignUpPage},
+    {path: '/housing', name: 'Housing', component: CataloguePage},
+    {path: '/housing/:id', name: 'HousingDetails', component: HousingDetailsPage},
+    {
+        path: '/add-provider',
+        name: 'Add-Provider',
+        component: AddProvider,
+        beforeEnter: useAuthGuard(['admin', 'staff'])
+    },
+    {
+        path: '/add-serviceType',
+        name: 'Add-ServiceType',
+        component: AddServiceType,
+        beforeEnter: useAuthGuard(['admin', 'staff'])
+    },
+    {
+        path: '/add-serviceToProvider',
+        name: 'Add-serviceToProvider',
+        component: AddServiceToProvider,
+        beforeEnter: useAuthGuard(['admin', 'staff'])
+    },
     {
         path: '/accueil-admin',
         name: 'AccueilAdmin',
         component: AccueilAdminPage,
-        beforeEnter: useAuthGuard(['admin','staff'])
+        beforeEnter: useAuthGuard(['admin', 'staff'])
     },
     {
         path: '/addUser',
         name: 'AddUser',
         component: AddUser,
-        beforeEnter: useAuthGuard(['admin','staff'])
+        beforeEnter: useAuthGuard(['admin', 'staff'])
     },
     // path: '/le nom du service que tu appelera dans ta page',
     // name: 'nom de la page ex: ServiceAdmin',
@@ -45,49 +66,49 @@ const routes = [
         path: '/service-admin',
         name: 'ServiceAdmin',
         component: ServiceAdminPage,
-        beforeEnter: useAuthGuard(['admin','staff'])
+        beforeEnter: useAuthGuard(['admin', 'staff'])
     },
     {
         path: '/user-admin',
         name: 'UserAdmin',
         component: UserAdminPage,
-        beforeEnter: useAuthGuard(['admin','staff'])
+        beforeEnter: useAuthGuard(['admin', 'staff'])
     },
     {
         path: '/apartment-admin',
         name: 'ApartmentAdmin',
         component: ApartmentAdmin,
-        beforeEnter: useAuthGuard(['admin','staff'])
+        beforeEnter: useAuthGuard(['admin', 'staff'])
     },
     {
         path: '/news-admin',
         name: 'NewsAdmin',
         component: NewsAdmin,
-        beforeEnter: useAuthGuard(['admin','staff'])
+        beforeEnter: useAuthGuard(['admin', 'staff'])
     },
     {
         path: '/new-house',
         name: 'NewHouse',
         component: NewHouse,
-        beforeEnter: useAuthGuard(['admin','staff'])
+        beforeEnter: useAuthGuard(['admin', 'staff'])
     },
     {
         path: '/new-provider',
         name: 'NewProvider',
         component: NewProvider,
-        beforeEnter: useAuthGuard(['admin','staff'])
+        beforeEnter: useAuthGuard(['admin', 'staff'])
     },
     {
         path: '/user/:id',
         name: 'UserDetails',
         component: UserDetails,
-        beforeEnter: useAuthGuard(['admin','staff'])
+        beforeEnter: useAuthGuard(['admin', 'staff'])
     },
     {
         path: '/apartment/:id',
         name: 'ApartmentDetails',
         component: ApartmentDetails,
-        beforeEnter: useAuthGuard(['admin','staff'])
+        beforeEnter: useAuthGuard(['admin', 'staff'])
     }
 ];
 

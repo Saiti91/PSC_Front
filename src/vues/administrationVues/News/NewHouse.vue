@@ -137,6 +137,9 @@ const submitForm = async () => {
           <option value="Apartment">Apartment</option>
           <option value="House">House</option>
           <option value="Studio">Studio</option>
+          <option value="Flat">Flat</option>
+          <option value="Villa">Villa</option>
+          <option value="Chalet">Chalet</option>
         </select>
       </div>
       <div class="field">
