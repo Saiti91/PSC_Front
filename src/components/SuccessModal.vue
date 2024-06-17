@@ -1,12 +1,12 @@
 <template>
   <div v-if="show" class="modal-overlay">
     <div class="modal">
-      <div class="modal-header">Suppression réussie</div>
+      <div class="modal-header">{{ title }}</div>
       <div class="modal-body">
-        <p>L'appartement a été supprimé avec succès.</p>
-        <p><strong>ID:</strong> {{ details.id }}</p>
-        <p><strong>Type:</strong> {{ details.type }}</p>
-        <p><strong>Email:</strong> {{ details.email }}</p>
+        <p>{{ message }}</p>
+        <div v-for="(value, key) in details" :key="key">
+          <p><strong>{{ key }}:</strong> {{ value }}</p>
+        </div>
       </div>
       <div class="modal-actions">
         <button class="ui button" @click="closeModal">Fermer</button>
@@ -19,6 +19,8 @@
 export default {
   props: {
     show: Boolean,
+    title: String,
+    message: String,
     details: Object
   },
   emits: ['close'],
