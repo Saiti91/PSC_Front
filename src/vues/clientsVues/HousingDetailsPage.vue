@@ -20,12 +20,12 @@ const dateError = ref(false);
 const startDateError = ref(false);
 const endDateError = ref(false);
 
+//séparation des champs avec plusieurs infos
 const parseStringArray = (stringArray) => {
   return stringArray.replace(/{|}/g, '').split(',');
 };
 
-console.log('hello');
-console.log(`/apartments/${apartmentId.value}/`);
+//récupération des infos de l'appartement
 const fetchApartmentDetails = async () => {
   error.value = null;
   try {
@@ -33,9 +33,6 @@ const fetchApartmentDetails = async () => {
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    console.log("Fetched Apartment: ", fetchApartmentDetails);
-    console.log(response.data);
-    console.log(response);
     apartments.value = {
       apartments_id: response.data.apartments_id,
       created_at: response.data.created_at.split('T')[0],
@@ -62,16 +59,19 @@ const fetchApartmentDetails = async () => {
   }
 };
 
+//choisi image principale
 const selectImage = (image) => {
   selectedImage.value = image;
 };
 
+//formulaire de réservation
 const handleReservation = () => {
-  showError.value = false;
+  showError.value = false; //pour vérifier que tous les champs sont remplis
+
+  //vérification des dates (date début avant date de fin et pas dans le passé
   dateError.value = false;
   startDateError.value = false;
   endDateError.value = false;
-
   const today = new Date().setHours(0, 0, 0, 0);
   const start = new Date(startDate.value).setHours(0, 0, 0, 0);
   const end = new Date(endDate.value).setHours(0, 0, 0, 0);
@@ -98,7 +98,7 @@ const handleReservation = () => {
   }
   if (invalidDates) {
     dateError.value = true;
-    showError.value = true; // S'assurer que le message d'erreur s'affiche également
+    showError.value = true;
     return;
   }
 
