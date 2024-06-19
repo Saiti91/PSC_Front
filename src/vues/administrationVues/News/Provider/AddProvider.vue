@@ -7,7 +7,7 @@ import SuccessModalComponent from '/src/components/SuccessModal.vue';
 import 'semantic-ui-css/semantic.min.css';
 
 const form = reactive({
-  companyName: '',
+  name: '',
   address: {
     number: '',
     street: '',
@@ -77,7 +77,7 @@ const submitForm = async () => {
 
   try {
     const dataToSend = {
-      companyName: form.companyName,
+      name: form.name,
       address: {
         number: form.address.number,
         street: trimmedStreet,
@@ -105,7 +105,7 @@ const submitForm = async () => {
 };
 
 const resetForm = () => {
-  form.companyName = '';
+  form.name = '';
   form.address = {number: '', street: '', CP: '', town: ''};
   form.phone = '';
   form.services = [];
@@ -123,7 +123,7 @@ onMounted(fetchServices);
     <form class="ui form" @submit.prevent="submitForm">
       <div class="field">
         <label>Nom de l'Entreprise</label>
-        <input type="text" v-model="form.companyName" required/>
+        <input type="text" v-model="form.name" required/>
       </div>
       <div class="field">
         <label>Adresse</label>

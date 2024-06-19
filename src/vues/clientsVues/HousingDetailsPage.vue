@@ -116,7 +116,7 @@ onMounted(fetchApartmentDetails);
     <div class="ui stackable grid">
       <div class="eight wide column">
         <div class="main-image">
-          <img src="/src/assets/housing/villa.jpg" :alt="`Image de ${apartments.name}`">
+          <img src="" :alt="`Image de ${apartments.name}`">
         </div>
         <div class="image-thumbnails">
           <img v-for="(image, index) in apartments.images" :src="image" :alt="`Vignette de ${apartments.name} ${index + 1}`" :key="index" @click="selectImage(image)">

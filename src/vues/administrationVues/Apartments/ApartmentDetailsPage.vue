@@ -25,7 +25,6 @@ const fetchApartmentDetails = async () => {
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    console.log(response.data);
     apartments.value = {
       apartments_id: response.data.apartments_id,
       created_at: response.data.created_at.split('T')[0],
