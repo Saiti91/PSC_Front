@@ -11,6 +11,7 @@
   "dependencies": {
     "axios": "^1.7.2",
     "cors": "^2.8.5",
+    "element-plus": "^2.7.5",
     "i18n": "^0.15.1",
     "jquery": "^3.7.1",
     "js-cookie": "^3.0.5",
@@ -20,7 +21,8 @@
     "vue-cal": "^4.8.1",
     "vue-i18n": "^10.0.0-beta.1",
     "vue-jwt-decode": "^0.1.0",
-    "vue-router": "^4.3.2"
+    "vue-router": "^4.3.2",
+    "vuedraggable": "^2.24.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",

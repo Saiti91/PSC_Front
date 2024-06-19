@@ -70,6 +70,7 @@ const resetForm = () => {
 };
 
 const submitForm = async () => {
+  error.value = null; // Clear previous error message
   console.log(form.value);
   try {
     const formData = new FormData();
