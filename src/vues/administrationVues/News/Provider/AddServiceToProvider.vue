@@ -38,12 +38,13 @@ const addServiceToProvider = async () => {
   error.value = null; // Clear previous error message
   try {
     console.log('Submitting form with:', {
-      providerId: selectedProviderId.value,
+      provider_id: selectedProviderId.value,
       serviceType_id: newService.value.serviceType_id,
       price: newService.value.price
     });
 
     const response = await axios.post(`/services/provider/${selectedProviderId.value}/service`, {
+      provider_id: selectedProviderId.value,
       serviceType_id: newService.value.serviceType_id,
       price: newService.value.price
     });

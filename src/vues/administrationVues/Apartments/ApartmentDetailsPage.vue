@@ -4,24 +4,32 @@ import { useRoute } from 'vue-router';
 import axiosInstance from '/src/utils/Axios.js';
 import HeaderComponent from "/src/components/HeaderAdmin.vue";
 import FooterComponent from "/src/components/FooterComponent.vue";
-//import PhotoCarousel from "/src/components/PhotoCarousel.vue";  // Assurez-vous d'importer le composant du carrousel de photos
+import VueCal from 'vue-cal';
+import 'vue-cal/dist/vuecal.css';
 
 const route = useRoute();
 const apartmentId = ref(route.params.id);
 const apartments = ref({});
 const error = ref(null);
-
+const events = ref([]); // Define events state
 
 const parseStringArray = (stringArray) => {
-  // Removing the curly braces and splitting by comma
   return stringArray.replace(/{|}/g, '').split(',');
 };
 
+const transformCalendarData = (calendar) => {
+  return calendar.map(event => ({
+    start: event.date,
+    end: event.date,
+    available: event.available
+  }));
+};
 
 const fetchApartmentDetails = async () => {
   error.value = null;
   try {
     const response = await axiosInstance.get(`/apartments/${apartmentId.value}/`);
+    console.log(response.data);
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -43,11 +51,45 @@ const fetchApartmentDetails = async () => {
       street: response.data.street,
       CP: response.data.CP,
       town: response.data.town,
-      images: parseStringArray(response.data.images),  // Assurez-vous que les images sont disponibles ici
-      features: parseStringArray(response.data.features)
+      images: parseStringArray(response.data.images),
+      features: parseStringArray(response.data.features),
+      description: response.data.description || '',
+      rules: response.data.rules || '',
+      calendar: response.data.calendar || []
     };
+    // Transform and set events
+    events.value = transformCalendarData(apartments.value.calendar);
   } catch (err) {
     error.value = err.message;
+  }
+};
+
+const handleCellClick = async (date) => {
+  console.log('Cell clicked:', date);
+  const clickedDate = date.toISOString().split('T')[0];
+  console.log('Clicked Date:', clickedDate);
+
+  const event = events.value.find(e => e.start === clickedDate);
+  const newAvailability = !event;
+
+  const requestData = {
+    apartment_id: apartmentId.value,
+    dates: [
+      {
+        date: clickedDate,
+        available: !newAvailability
+      }
+    ]
+  };
+  console.log("Sending PATCH request with data:", requestData);
+
+  try {
+    await axiosInstance.patch(`/apartmentsCalendar/availability/${apartmentId.value}/`, requestData);
+    console.log(`Date: ${clickedDate}, Available: ${newAvailability}`);
+    // Refetch apartment details to update the calendar
+    await fetchApartmentDetails();
+  } catch (err) {
+    console.log(`Failed to update availability: ${err.message}`);
   }
 };
 
@@ -58,7 +100,11 @@ onMounted(fetchApartmentDetails);
   <div class="ui container">
     <HeaderComponent/>
     <div class="spacer"></div>
-    <div class="ui segment">
+    <div v-if="error" class="ui negative message">
+      <div class="header">Erreur</div>
+      <p>{{ error }}</p>
+    </div>
+    <div v-else-if="Object.keys(apartments).length" class="ui segment">
       <header class="ui header">
         <h1>{{ apartments.apartments_id }}</h1>
         <p>{{ apartments.street }}, {{ apartments.town }}</p>
@@ -68,7 +114,8 @@ onMounted(fetchApartmentDetails);
 
       <div class="ui two column stackable grid">
         <div class="column">
-          <PhotoCarousel :photos="apartments.images" class="ui medium images"/>
+          <PhotoCarousel v-if="apartments.images && apartments.images.length" :photos="apartments.images"
+                         class="ui medium images"/>
         </div>
         <div class="column">
           <div class="ui segment">
@@ -88,6 +135,14 @@ onMounted(fetchApartmentDetails);
         <ul class="ui list">
           <li v-for="amenity in apartments.features" :key="amenity">{{ amenity }}</li>
         </ul>
+        <vue-cal
+            xsmall
+            :disable-views="['day','year','years','week']"
+            events-count-on-year-view
+            active-view="month"
+            :events="events"
+            @cell-click="handleCellClick">
+        </vue-cal>
       </div>
 
       <div class="ui segment">
@@ -96,18 +151,17 @@ onMounted(fetchApartmentDetails);
         <p><strong>Conditions de paiement :</strong></p>
       </div>
     </div>
-
     <FooterComponent/>
   </div>
 </template>
 
-<style scoped>
+<style>
 .spacer {
   margin-top: 7%;
 }
+
 .ui.container {
   max-width: 800px;
-  margin-top: 50px;
 }
 
 .ui.segment {

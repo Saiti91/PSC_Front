@@ -1,10 +1,10 @@
 <script setup>
-import {computed, onMounted, ref} from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import HeaderComponent from '/src/components/HeaderAdmin.vue';
 import FooterComponent from '/src/components/FooterComponent.vue';
 import axiosInstance from '/src/utils/Axios.js';
 import 'semantic-ui-css/semantic.min.css';
-import {useRouter} from 'vue-router';
+import { useRouter } from 'vue-router';
 import DeleteModal from '@/components/DeleteModal.vue';
 import SuccessModal from '@/components/SuccessModal.vue';
 
@@ -26,14 +26,15 @@ const fetchServices = async () => {
   error.value = null;
   try {
     const response = await axiosInstance.get('/services');
+    console.log('Response:', response.data)
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     services.value = response.data.map(service => ({
       id: service.servicesproviders_id,
-      name: service.provider_name,
-      serviceTypes: service.service_type_names ? service.service_type_names.replace(/[{}]/g, '').split(',').map(type => type.trim()).join(', ') : '',
-      city: service.town,
+      name: service.name,
+      serviceTypes: service.services ? service.services.map(s => s.serviceType_name).join(', ') : '',
+      city: service.city,
       employeeCount: service.employee_count
     }));
 
@@ -281,5 +282,4 @@ onMounted(fetchServices);
   text-align: center; /* Centrer horizontalement */
   vertical-align: middle; /* Centrer verticalement */
 }
-
 </style>

@@ -1,22 +1,14 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useI18n } from 'vue-i18n';
-import axiosInstance from '../utils/Axios.js'; // Assurez-vous que le chemin est correct
-import { useRouter } from 'vue-router';
+import {onMounted, ref} from 'vue';
+import {useLocale} from '/src/composables/useLocale.js';
+import {useRouter} from 'vue-router';
 import Cookies from 'js-cookie';
 import 'semantic-ui-css/semantic.min.css';
 
 // i18n setup
-const { locale, availableLocales } = useI18n();
-
-const changeLocale = (lang) => {
-  locale.value = lang;
-};
-
-const currentLocale = computed(() => locale.value);
+const {locale,availableLocales, changeLocale, currentLocale} = useLocale();
 
 // Component setup
-const services = ref([]);
 const router = useRouter();
 
 onMounted(async () => {
@@ -32,16 +24,16 @@ function logout() {
 <template>
   <div class="ui top fixed menu">
     <div class="ui container">
-      <router-link to="/" class="header item logo-container">
-        <img class="logo" src="/src/assets/logo.svg" alt="Company Logo"> {{ $t('admin_DashBoard')}}
+      <router-link class="header item logo-container" to="/">
+        <img alt="Company Logo" class="logo" src="/src/assets/logo.svg"> {{ $t('admin_DashBoard') }}
       </router-link>
       <div class="right menu">
-        <router-link to="/service-admin" class="item">{{ $t('services') }}</router-link>
-        <router-link to="/user-admin" class="item">{{ $t('users') }}</router-link>
-        <router-link to="/apartment-admin" class="item">{{ $t('apartment') }}</router-link>
-        <router-link to="/news-admin" class="item">{{ $t('news') }}</router-link>
-        <router-link to="/admin/settings" class="item">{{ $t('settings') }}</router-link>
-        <a class="item" @click="logout">{{$t('logout')}}</a>
+        <router-link class="item" to="/service-admin">{{ $t('services') }}</router-link>
+        <router-link class="item" to="/user-admin">{{ $t('users') }}</router-link>
+        <router-link class="item" to="/apartment-admin">{{ $t('apartment') }}</router-link>
+        <router-link class="item" to="/news-admin">{{ $t('news') }}</router-link>
+        <router-link class="item" to="/admin/settings">{{ $t('settings') }}</router-link>
+        <a class="item" @click="logout">{{ $t('logout') }}</a>
         <div class="ui simple dropdown item">
           <i class="world icon"></i> {{ currentLocale }}
           <div class="menu">

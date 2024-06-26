@@ -15,8 +15,7 @@ const form = reactive({
     town: ''
   },
   phone: '',
-  services: [],
-  imagePaths: []
+  services: []
 });
 
 const error = ref(null);
@@ -26,9 +25,6 @@ const successTitle = ref('');
 const successMessage = ref('');
 const successDetails = ref({});
 
-let newImagePath = ref('');
-
-// Fetch available services
 const fetchServices = async () => {
   try {
     const response = await axiosInstance.get('/services/type');
@@ -41,24 +37,15 @@ const fetchServices = async () => {
   }
 };
 
-// Toggle service selection
 const toggleService = (serviceId) => {
   const service = form.services.find(s => s.id === serviceId);
   if (service) {
-    service.selected = !service.selected; // Toggle selection
-  }
-};
-
-// Handle image path input
-const addImagePath = (path) => {
-  if (path) {
-    form.imagePaths.push(path);
-    newImagePath.value = ''; // Clear input after adding
+    service.selected = !service.selected;
   }
 };
 
 const submitForm = async () => {
-  error.value = null; // Clear previous error message
+  error.value = null;
   console.log('Form data before formatting:', JSON.parse(JSON.stringify(form)));
 
   const selectedServices = form.services.filter(service => service.selected && service.price).map(({
@@ -72,7 +59,6 @@ const submitForm = async () => {
     return;
   }
 
-  // Trim spaces from the street field
   const trimmedStreet = form.address.street.trim();
 
   try {
@@ -85,8 +71,7 @@ const submitForm = async () => {
         town: form.address.town,
       },
       phone: form.phone,
-      services: selectedServices,
-      imagePaths: form.imagePaths,
+      services: selectedServices
     };
 
     console.log('Form data being sent:', dataToSend);
@@ -109,10 +94,8 @@ const resetForm = () => {
   form.address = {number: '', street: '', CP: '', town: ''};
   form.phone = '';
   form.services = [];
-  form.imagePaths = [];
 };
 
-// Fetch services on component mount
 onMounted(fetchServices);
 </script>
 
@@ -141,7 +124,7 @@ onMounted(fetchServices);
         <div v-for="service in form.services" :key="service.id" class="ui grid">
           <div class="row">
             <div class="six wide column">
-              <input type="checkbox" :checked="service.selected" @change="toggleService(service.id)">
+              <input type="checkbox" :checked="service.selected" @change="toggleService(service.id)"/>
               <label>{{ service.name }}</label>
             </div>
             <div class="ten wide column">
@@ -149,14 +132,6 @@ onMounted(fetchServices);
             </div>
           </div>
         </div>
-      </div>
-      <div class="field">
-        <label>Image Paths</label>
-        <input type="text" v-model="newImagePath" @keyup.enter="addImagePath(newImagePath)"
-               placeholder="Enter image path and press Enter"/>
-        <ul>
-          <li v-for="(path, index) in form.imagePaths" :key="index">{{ path }}</li>
-        </ul>
       </div>
       <button class="ui button" type="submit">Submit</button>
       <div v-if="error" class="ui red message">{{ error }}</div>

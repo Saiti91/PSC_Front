@@ -1,0 +1,10 @@
+/* src/assets/global.css */
+
+/* Cell background indicator */
+.vuecal__cell--has-events {
+    background-color: #fffacd;
+}
+
+.vuecal__cell-events-count {
+    display: none;
+}
