@@ -20,13 +20,12 @@ const fetchApartments = async () => {
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const fetchedApartments = response.data.map(apartment => ({
+    apartments.value = response.data.map(apartment => ({
       apartments_id: apartment.apartments_id,
       name: apartment.name,
       town: apartment.town,
       images: parseStringArray(apartment.images),
     }));
-    apartments.value = fetchedApartments;
     updateDisplayedApartments();
   } catch (err) {
     error.value = err.message;
