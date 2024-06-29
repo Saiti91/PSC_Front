@@ -20,6 +20,8 @@ import HousingDetailsPage from "/src/vues/clientsVues/HousingDetailsPage.vue";
 import AddProvider from "/src/vues/administrationVues/News/Provider/AddProvider.vue";
 import AddServiceToProvider from "/src/vues/administrationVues/News/Provider/AddServiceToProvider.vue";
 import AddServiceType from "/src/vues/administrationVues/News/Provider/AddServiceType.vue";
+import PaymentPage from "/src/vues/clientsVues/PaymentPage.vue";
+import PaymentSuccess from "/src/vues/clientsVues/PaymentSuccess.vue";
 
 
 const routes = [
@@ -27,6 +29,8 @@ const routes = [
     {path: '/', name: 'Accueil', component: AccueilPage},
     {path: '/sign-up', name: 'Sign-Up', component: SignUpPage},
     {path: '/housing', name: 'Housing', component: CataloguePage},
+    {path: '/payment', name: 'Payment', component: PaymentPage},
+    {path: '/payment-success', name: 'Payment-Success', component: PaymentSuccess},
     {path: '/housing/:id', name: 'HousingDetails', component: HousingDetailsPage},
     {
         path: '/add-provider',
