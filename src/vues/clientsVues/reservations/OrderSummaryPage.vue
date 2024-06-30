@@ -9,7 +9,7 @@ const router = useRouter();
 const route = useRoute();
 
 const reservationDetails = ref({
-  apartmentId: route.query.apartmentId,
+  apartment_id: route.query.apartment_id,
   startDate: route.query.startDate,
   endDate: route.query.endDate,
   guests: route.query.guests,
@@ -20,7 +20,6 @@ const services = ref([]);
 const selectedServices = ref([]);
 const totalPrice = ref(0);
 
-// Récupération des services disponibles
 const fetchServices = async () => {
   try {
     const response = await axiosInstance.get(`/services?city=${reservationDetails.value.town}`);
@@ -30,16 +29,15 @@ const fetchServices = async () => {
   }
 };
 
-// Calculer le prix total
 const calculateTotalPrice = () => {
-  let basePrice = 100; // Exemple de prix de base de la réservation (à adapter)
+  let basePrice = 100;
+  //TODO: get base price from the apartment
   selectedServices.value.forEach(service => {
     basePrice += service.price;
   });
   totalPrice.value = basePrice;
 };
 
-// Gérer la sélection des services
 const toggleService = (service) => {
   const index = selectedServices.value.findIndex(s => s.id === service.id);
   if (index !== -1) {
@@ -50,25 +48,10 @@ const toggleService = (service) => {
   calculateTotalPrice();
 };
 
-// Rediriger vers la page de confirmation
-const confirmBooking = () => {
-  router.push({
-    name: 'BookingConfirmation',
-    query: {
-      apartmentId: reservationDetails.value.apartmentId,
-      startDate: reservationDetails.value.startDate,
-      endDate: reservationDetails.value.endDate,
-      guests: reservationDetails.value.guests,
-      services: selectedServices.value.map(service => service.id).join(',')
-    }
-  });
-};
-
-// Rediriger vers la page précédente
 const goBack = () => {
   router.push({
     name: 'HousingDetails',
-    params: {id: reservationDetails.value.apartmentId},
+    params: {id: reservationDetails.value.apartment_id},
     query: {
       startDate: reservationDetails.value.startDate,
       endDate: reservationDetails.value.endDate,
@@ -78,18 +61,21 @@ const goBack = () => {
   });
 };
 
-// Rediriger vers la page de paiement
 const goToPayment = () => {
   router.push({
     name: 'Payment',
     query: {
-      apartmentId: reservationDetails.value.apartmentId,
+      apartment_id: reservationDetails.value.apartment_id,
       startDate: reservationDetails.value.startDate,
       endDate: reservationDetails.value.endDate,
-      guests: reservationDetails.value.guests,
-      services: selectedServices.value.map(service => service.id).join(',')
+      services: selectedServices.value.map(service => service.id).join(','),
+      totalPrice: totalPrice.value
     }
   });
+};
+
+const confirmAndPay = () => {
+  goToPayment();
 };
 
 onMounted(() => {
@@ -99,34 +85,34 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="order-summary">
+  <div class="ui container order-summary">
     <HeaderComponent/>
-    <div class="container">
-      <h1>Résumé de la commande</h1>
-      <div class="reservation-details">
-        <h2>Détails de la réservation</h2>
-        <p>Date de début: {{ reservationDetails.startDate }}</p>
-        <p>Date de fin: {{ reservationDetails.endDate }}</p>
-        <p>Nombre de personnes: {{ reservationDetails.guests }}</p>
+    <div class="spacer"></div>
+    <div class="ui segment">
+      <h1 class="ui header">Résumé de la commande</h1>
+      <div class="ui grid">
+        <div class="eight wide column">
+          <h2 class="ui header">Détails de la réservation</h2>
+          <p>Date de début: {{ reservationDetails.startDate }}</p>
+          <p>Date de fin: {{ reservationDetails.endDate }}</p>
+          <p>Nombre de personnes: {{ reservationDetails.guests }}</p>
+        </div>
+        <div class="eight wide column">
+          <h2 class="ui header">Services disponibles</h2>
+          <div class="ui list">
+            <div class="item" v-for="service in services" :key="service.id">
+              <div class="ui checkbox">
+                <input type="checkbox" :value="service" @change="toggleService(service)">
+                <label>{{ service.name }} - {{ service.price }}€</label>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div class="services">
-        <h2>Services disponibles</h2>
-        <ul>
-          <li v-for="service in services" :key="service.id">
-            <label>
-              <input type="checkbox" :value="service" @change="toggleService(service)">
-              {{ service.name }} - {{ service.price }}€
-            </label>
-          </li>
-        </ul>
-      </div>
-
-      <div class="total-price">
-        <h2>Prix total: {{ totalPrice }}€</h2>
-        <button @click="confirmBooking">Confirmer la réservation</button>
-        <button @click="goBack">Modifier la réservation</button>
-        <button @click="goToPayment">Procéder au paiement</button>
+      <div class="ui segment">
+        <h2 class="ui header">Prix total: {{ totalPrice }}€</h2>
+        <button class="ui button" @click="goBack">Modifier la réservation</button>
+        <button class="ui primary button" @click="confirmAndPay">Confirmer et payer</button>
       </div>
     </div>
     <FooterComponent/>
@@ -138,26 +124,19 @@ onMounted(() => {
   padding: 20px;
 }
 
-.container {
-  max-width: 800px;
-  margin: 0 auto;
+.ui.segment {
+  padding: 20px;
 }
 
-.reservation-details, .services, .total-price {
+.ui.grid {
   margin-bottom: 20px;
 }
 
-.total-price {
-  font-size: 1.5em;
-  font-weight: bold;
+.ui.header {
+  margin-bottom: 10px;
 }
 
-button {
-  padding: 10px 20px;
-  margin: 10px;
-  background-color: #21ba45;
-  color: white;
-  border: none;
-  cursor: pointer;
+button.ui.button {
+  margin-top: 10px;
 }
 </style>

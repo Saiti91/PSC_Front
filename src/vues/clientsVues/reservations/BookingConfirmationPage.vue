@@ -7,7 +7,7 @@ const route = useRoute();
 const router = useRouter();
 
 const reservationDetails = ref({
-  apartmentId: route.query.apartmentId,
+  apartment_id: route.query.apartment_id,
   startDate: route.query.startDate,
   endDate: route.query.endDate,
   guests: route.query.guests,
@@ -18,10 +18,9 @@ const goToPayment = () => {
   router.push({
     name: 'PaymentPage',
     query: {
-      apartmentId: reservationDetails.value.apartmentId,
+      apartment_id: reservationDetails.value.apartment_id,
       startDate: reservationDetails.value.startDate,
       endDate: reservationDetails.value.endDate,
-      guests: reservationDetails.value.guests,
       services: reservationDetails.value.services.join(',')
     }
   });
@@ -31,7 +30,7 @@ const goBack = () => {
   router.push({
     name: 'OrderSummary',
     query: {
-      apartmentId: reservationDetails.value.apartmentId,
+      apartment_id: reservationDetails.value.apartment_id,
       startDate: reservationDetails.value.startDate,
       endDate: reservationDetails.value.endDate,
       guests: reservationDetails.value.guests,
@@ -44,11 +43,12 @@ const goBack = () => {
 <template>
   <div class="booking-confirmation">
     <HeaderComponent />
+    <div class="spacer"></div>
     <div class="container">
       <h1>Confirmation de réservation</h1>
       <div class="reservation-details">
         <h2>Détails de la réservation</h2>
-        <p>Appartement ID: {{ reservationDetails.apartmentId }}</p>
+        <p>Appartement ID: {{ reservationDetails.apartment_id }}</p>
         <p>Date de début: {{ reservationDetails.startDate }}</p>
         <p>Date de fin: {{ reservationDetails.endDate }}</p>
         <p>Nombre de personnes: {{ reservationDetails.guests }}</p>

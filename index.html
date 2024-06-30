@@ -2,13 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="./src/assets/logomini.svg">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost http://localhost/auth/login/;">
+    <link href="./src/assets/logomini.svg" rel="icon">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="
+    default-src 'self';
+    script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    font-src 'self' https://fonts.gstatic.com data:;
+    connect-src 'self' http://localhost http://localhost/auth/login/;
+    frame-src 'self' https://js.stripe.com;" http-equiv="Content-Security-Policy">
+
     <title>PCS Conciergerie</title>
 </head>
 <body>
 <div id="app"></div>
-<script type="module" src="/src/main.js"></script>
+<script>
+    window.addEventListener('error', function (event) {
+        console.error('An error occurred: ', event.message);
+    });
+
+    window.addEventListener('unhandledrejection', function (event) {
+        console.error('Unhandled promise rejection: ', event.reason);
+    });
+</script>
+<script src="/src/main.js" type="module"></script>
 </body>
 </html>

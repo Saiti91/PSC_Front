@@ -7,7 +7,7 @@ import axiosInstance from "@/utils/Axios.js";
 
 const route = useRoute();
 const apartments = ref({});
-const apartmentId = ref(route.params.id);
+const apartment_id = ref(route.params.id);
 const error = ref(null);
 const router = useRouter();
 const selectedImage = ref(null);
@@ -28,7 +28,7 @@ const parseStringArray = (stringArray) => {
 const fetchApartmentDetails = async () => {
   error.value = null;
   try {
-    const response = await axiosInstance.get(`/apartments/${apartmentId.value}/`);
+    const response = await axiosInstance.get(`/apartments/${apartment_id.value}/`);
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -104,7 +104,7 @@ const handleReservation = () => {
   router.push({
     name: 'OrderSummary',
     query: {
-      apartmentId: apartmentId.value,
+      apartment_id: apartment_id.value,
       startDate: startDate.value,
       endDate: endDate.value,
       guests: guests.value,

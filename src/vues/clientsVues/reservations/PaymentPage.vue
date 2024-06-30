@@ -15,11 +15,11 @@ const router = useRouter();
 const route = useRoute();
 
 const reservationDetails = ref({
-  apartmentId: route.query.apartmentId,
+  apartment_id: route.query.apartment_id,
   startDate: route.query.startDate,
   endDate: route.query.endDate,
-  guests: route.query.guests,
-  services: Array.isArray(route.query.services) ? route.query.services : (route.query.services ? route.query.services.split(',') : [])
+  services: Array.isArray(route.query.services) ? route.query.services : (route.query.services ? route.query.services.split(',') : []),
+  totalPrice: route.query.totalPrice
 });
 
 const setupStripe = async () => {
@@ -53,7 +53,7 @@ const handleSubmit = async () => {
 
     const response = await axiosInstance.post('/stripe/charge', {
       paymentMethodId: paymentMethod.id,
-      amount: totalPrice.value * 100, // Le montant en centimes
+      amount: reservationDetails.value.totalPrice * 100, // Le montant en centimes
     });
 
     if (response.data.success) {
@@ -75,21 +75,37 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
-    <HeaderComponent/>
+  <div class="ui container">
+    <HeaderComponent />
     <div class="spacer"></div>
-    <form @submit.prevent="handleSubmit">
-      <div id="card-element"></div>
-      <button type="submit" :disabled="isSubmitting">Payer</button>
-    </form>
-    <div v-if="paymentError">{{ paymentError }}</div>
-    <FooterComponent/>
+    <div class="ui segment">
+      <h2 class="ui header">Page de Paiement</h2>
+      <form @submit.prevent="handleSubmit" class="ui form">
+        <div class="field">
+          <label for="card-element">Informations de Carte</label>
+          <div id="card-element" class="ui segment"></div>
+        </div>
+        <button type="submit" class="ui primary button" :class="{ loading: isSubmitting }" :disabled="isSubmitting">Payer</button>
+      </form>
+      <div v-if="paymentError" class="ui negative message">
+        <p>{{ paymentError }}</p>
+      </div>
+    </div>
+    <FooterComponent />
   </div>
 </template>
 
 <style scoped>
-.spacer {
-  margin-top: 10%;
+.ui.container {
+  margin-top: 50px;
+}
+
+.ui.segment {
+  padding: 40px;
+}
+
+.field {
+  margin-bottom: 20px;
 }
 
 button[disabled] {
