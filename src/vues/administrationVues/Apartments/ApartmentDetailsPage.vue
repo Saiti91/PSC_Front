@@ -6,6 +6,7 @@ import HeaderComponent from "/src/components/HeaderAdmin.vue";
 import FooterComponent from "/src/components/FooterComponent.vue";
 import VueCal from 'vue-cal';
 import 'vue-cal/dist/vuecal.css';
+import PhotoCarousel from '/src/components/PhotoCarousel.vue';
 
 const route = useRoute();
 const apartmentId = ref(route.params.id);
@@ -14,7 +15,18 @@ const error = ref(null);
 const events = ref([]); // Define events state
 
 const parseStringArray = (stringArray) => {
-  return stringArray.replace(/{|}/g, '').split(',');
+  try {
+    const cleanedString = stringArray.slice(1, -1); // Retirer les accolades
+    const parsedArray = cleanedString.split('","').map(str => {
+      const relativePath = str.replace(/"/g, '').replace(/^D:\\\\Projet_PCS\\\\src\\\\assets\\\\housing\\\\6\\\\/, '/assets/housing/6/');
+      return relativePath;
+    });
+    console.log('Parsed images:', parsedArray);
+    return parsedArray;
+  } catch (e) {
+    console.error('Error parsing string array:', e);
+    return [];
+  }
 };
 
 const transformCalendarData = (calendar) => {
@@ -66,7 +78,7 @@ const fetchApartmentDetails = async () => {
 
 const handleCellClick = async (date) => {
   console.log('Cell clicked:', date);
-  const clickedDate = date.toISOString().split('T')[0];
+  const clickedDate = date.toLocaleDateString('en-CA'); // Format 'YYYY-MM-DD'
   console.log('Clicked Date:', clickedDate);
 
   const event = events.value.find(e => e.start === clickedDate);

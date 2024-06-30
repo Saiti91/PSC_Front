@@ -23,6 +23,7 @@
     "js-cookie": "^3.0.5",
     "semantic-ui-css": "^2.5.0",
     "store": "^2.0.12",
+    "swiper": "^11.1.4",
     "vue": "^3.4.21",
     "vue-cal": "^4.8.1",
     "vue-i18n": "^10.0.0-beta.1",

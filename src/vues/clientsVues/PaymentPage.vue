@@ -1,7 +1,7 @@
 <script setup>
 import HeaderComponent from '../../components/HeaderComponent.vue'
 import FooterComponent from '../../components/FooterComponent.vue'
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { loadStripe } from '@stripe/stripe-js';
 import axiosInstance from "@/utils/Axios.js";
@@ -15,7 +15,7 @@ const router = useRouter();
 
 const setupStripe = async () => {
   try {
-    stripe.value = await loadStripe('pk_test_51PX7r7FYikej8zQ9TWuGDqr9ew7vxrMC1QNZIAlQZRnDHtJChmlkURIWO2k7NqXY4dLSqxYx3jJOx9o7clWPjEKe00gJ3nq1uY'); // Remplace par ta clé de publication de test
+    stripe.value = await loadStripe('pk_test_51PX7r7FYikej8zQ9TWuGDqr9ew7vxrMC1QNZIAlQZRnDHtJChmlkURIWO2k7NqXY4dLSqxYx3jJOx9o7clWPjEKe00gJ3nq1uY');
     elements.value = stripe.value.elements();
     cardElement.value = elements.value.create('card');
     cardElement.value.mount('#card-element');
@@ -31,7 +31,7 @@ const handleSubmit = async () => {
 
   paymentError.value = null;
   try {
-    const { error, paymentMethod } = await stripe.value.createPaymentMethod({
+    const {error, paymentMethod} = await stripe.value.createPaymentMethod({
       type: 'card',
       card: cardElement.value,
     });
@@ -58,26 +58,31 @@ const handleSubmit = async () => {
   }
 };
 
-setupStripe();
+onMounted(() => {
+  setupStripe();
+});
 </script>
-
-
 
 <template>
   <div>
-    <HeaderComponent />
+    <HeaderComponent/>
     <div class="spacer"></div>
     <form @submit.prevent="handleSubmit">
       <div id="card-element"></div>
       <button type="submit" :disabled="isSubmitting">Payer</button>
     </form>
     <div v-if="paymentError">{{ paymentError }}</div>
-    <FooterComponent />
+    <FooterComponent/>
   </div>
 </template>
 
 <style scoped>
 .spacer {
   margin-top: 10%;
+}
+
+button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>

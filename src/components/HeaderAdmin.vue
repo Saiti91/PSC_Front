@@ -32,7 +32,6 @@ function logout() {
         <router-link class="item" to="/user-admin">{{ $t('users') }}</router-link>
         <router-link class="item" to="/apartment-admin">{{ $t('apartment') }}</router-link>
         <router-link class="item" to="/news-admin">{{ $t('news') }}</router-link>
-        <router-link class="item" to="/admin/settings">{{ $t('settings') }}</router-link>
         <a class="item" @click="logout">{{ $t('logout') }}</a>
         <div class="ui simple dropdown item">
           <i class="world icon"></i> {{ currentLocale }}
