@@ -1,8 +1,8 @@
 <script setup>
-import HeaderComponent from '../../components/HeaderComponent.vue'
-import FooterComponent from '../../components/FooterComponent.vue'
+import HeaderComponent from '../../../components/HeaderComponent.vue';
+import FooterComponent from '../../../components/FooterComponent.vue';
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { loadStripe } from '@stripe/stripe-js';
 import axiosInstance from "@/utils/Axios.js";
 
@@ -12,6 +12,15 @@ const cardElement = ref(null);
 const paymentError = ref(null);
 const isSubmitting = ref(false);
 const router = useRouter();
+const route = useRoute();
+
+const reservationDetails = ref({
+  apartmentId: route.query.apartmentId,
+  startDate: route.query.startDate,
+  endDate: route.query.endDate,
+  guests: route.query.guests,
+  services: Array.isArray(route.query.services) ? route.query.services : (route.query.services ? route.query.services.split(',') : [])
+});
 
 const setupStripe = async () => {
   try {
@@ -31,7 +40,7 @@ const handleSubmit = async () => {
 
   paymentError.value = null;
   try {
-    const {error, paymentMethod} = await stripe.value.createPaymentMethod({
+    const { error, paymentMethod } = await stripe.value.createPaymentMethod({
       type: 'card',
       card: cardElement.value,
     });
@@ -44,9 +53,11 @@ const handleSubmit = async () => {
 
     const response = await axiosInstance.post('/stripe/charge', {
       paymentMethodId: paymentMethod.id,
+      amount: totalPrice.value * 100, // Le montant en centimes
     });
 
     if (response.data.success) {
+      localStorage.setItem('reservationDetails', JSON.stringify(reservationDetails.value));
       router.push('/payment-success');
     } else {
       paymentError.value = 'Erreur lors du traitement du paiement';

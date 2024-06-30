@@ -15,14 +15,15 @@ import NewHouse from '/src/vues/administrationVues/News/NewHouse.vue';
 import NewProvider from '/src/vues/administrationVues/News/NewProvider.vue';
 import SignUpPage from '/src/vues/clientsVues/SignUpPage.vue';
 import CataloguePage from "/src/vues/clientsVues/CataloguePage.vue";
-import HousingDetailsPage from "/src/vues/clientsVues/HousingDetailsPage.vue";
+import HousingDetailsPage from "/src/vues/clientsVues/reservations/HousingDetailsPage.vue";
 
 import AddProvider from "/src/vues/administrationVues/News/Provider/AddProvider.vue";
 import AddServiceToProvider from "/src/vues/administrationVues/News/Provider/AddServiceToProvider.vue";
 import AddServiceType from "/src/vues/administrationVues/News/Provider/AddServiceType.vue";
-import PaymentPage from "/src/vues/clientsVues/PaymentPage.vue";
-import PaymentSuccess from "/src/vues/clientsVues/PaymentSuccess.vue";
-
+import PaymentPage from "/src/vues/clientsVues/reservations/PaymentPage.vue";
+import PaymentSuccess from "/src/vues/clientsVues/reservations/PaymentSuccess.vue";
+import BookingConfirmation from "/src/vues/clientsVues/reservations/BookingConfirmationPage.vue";
+import OrderSummaryPage from "/src/vues/clientsVues/reservations/OrderSummaryPage.vue";
 
 const routes = [
     {path: '/login', name: 'Login', component: LoginPage},
@@ -33,10 +34,22 @@ const routes = [
     {path: '/payment-success', name: 'Payment-Success', component: PaymentSuccess},
     {path: '/housing/:id', name: 'HousingDetails', component: HousingDetailsPage},
     {
+        path: '/order-summary',
+        name: 'OrderSummary',
+        component: OrderSummaryPage,
+        beforeEnter: useAuthGuard(['admin', 'staff', 'customer', 'owner', 'provider'])
+    },
+    {
         path: '/add-provider',
         name: 'Add-Provider',
         component: AddProvider,
         beforeEnter: useAuthGuard(['admin', 'staff'])
+    },
+    {
+        path: '/booking-confirmation',
+        name: 'BookingConfirmation',
+        component: BookingConfirmation,
+        beforeEnter: useAuthGuard(['admin', 'staff', 'customer', 'owner', 'provider'])
     },
     {
         path: '/add-serviceType',

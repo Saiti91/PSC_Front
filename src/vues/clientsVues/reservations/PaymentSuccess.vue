@@ -1,13 +1,28 @@
 <script setup>
-import HeaderComponent from '../../components/HeaderComponent.vue';
-import FooterComponent from '../../components/FooterComponent.vue';
+import HeaderComponent from '../../../components/HeaderComponent.vue';
+import FooterComponent from '../../../components/FooterComponent.vue';
 import { useRouter } from 'vue-router';
+import axiosInstance from "@/utils/Axios.js";
 
 const router = useRouter();
+
+const saveReservation = async () => {
+  const reservationDetails = JSON.parse(localStorage.getItem('reservationDetails'));
+  try {
+    await axiosInstance.post('/reservations', reservationDetails);
+    localStorage.removeItem('reservationDetails');
+  } catch (error) {
+    console.error('Erreur lors de l\'enregistrement de la réservation:', error);
+  }
+};
 
 const goHome = () => {
   router.push('/');
 };
+
+onMounted(() => {
+  saveReservation();
+});
 </script>
 
 <template>
@@ -22,7 +37,6 @@ const goHome = () => {
     <FooterComponent />
   </div>
 </template>
-
 
 <style scoped>
 .payment-success {

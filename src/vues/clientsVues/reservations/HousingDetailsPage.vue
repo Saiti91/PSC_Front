@@ -1,8 +1,7 @@
 <script setup>
-import HeaderComponent from '../../components/HeaderComponent.vue'
-import FooterComponent from '../../components/FooterComponent.vue'
-import { useRoute } from 'vue-router';
-import { useRouter } from 'vue-router';
+import HeaderComponent from '/src/components/HeaderComponent.vue';
+import FooterComponent from '/src/components/FooterComponent.vue';
+import {useRoute, useRouter} from 'vue-router';
 import {onMounted, ref} from "vue";
 import axiosInstance from "@/utils/Axios.js";
 
@@ -20,12 +19,12 @@ const dateError = ref(false);
 const startDateError = ref(false);
 const endDateError = ref(false);
 
-//séparation des champs avec plusieurs infos
+// Séparation des champs avec plusieurs infos
 const parseStringArray = (stringArray) => {
   return stringArray.replace(/{|}/g, '').split(',');
 };
 
-//récupération des infos de l'appartement
+// Récupération des infos de l'appartement
 const fetchApartmentDetails = async () => {
   error.value = null;
   try {
@@ -40,7 +39,6 @@ const fetchApartmentDetails = async () => {
       capacity: response.data.capacity,
       available: response.data.available,
       apartment_type: response.data.apartment_type,
-      //numberofroom: response.data.numberofroom,
       pool: response.data.pool,
       price: response.data.price,
       owner_email: response.data.owner_email,
@@ -51,7 +49,7 @@ const fetchApartmentDetails = async () => {
       street: response.data.street,
       CP: response.data.CP,
       town: response.data.town,
-      images: parseStringArray(response.data.images),  // Assurez-vous que les images sont disponibles ici
+      images: parseStringArray(response.data.images),
       features: parseStringArray(response.data.features)
     };
   } catch (err) {
@@ -59,16 +57,16 @@ const fetchApartmentDetails = async () => {
   }
 };
 
-//choisi image principale
+// Choisir l'image principale
 const selectImage = (image) => {
   selectedImage.value = image;
 };
 
-//formulaire de réservation
+// Formulaire de réservation
 const handleReservation = () => {
-  showError.value = false; //pour vérifier que tous les champs sont remplis
+  showError.value = false; // pour vérifier que tous les champs sont remplis
 
-  //vérification des dates (date début avant date de fin et pas dans le passé
+  // Vérification des dates (date début avant date de fin et pas dans le passé)
   dateError.value = false;
   startDateError.value = false;
   endDateError.value = false;
@@ -102,8 +100,17 @@ const handleReservation = () => {
     return;
   }
 
-  // Si tout est valide, rediriger vers une page de confirmation ou traiter la réservation
-  router.push({ name: 'BookingConfirmation' });
+  // Si tout est valide, rediriger vers la page de résumé avec les paramètres nécessaires
+  router.push({
+    name: 'OrderSummary',
+    query: {
+      apartmentId: apartmentId.value,
+      startDate: startDate.value,
+      endDate: endDate.value,
+      guests: guests.value,
+      town: apartments.value.town
+    }
+  });
 };
 
 onMounted(fetchApartmentDetails);
@@ -111,15 +118,17 @@ onMounted(fetchApartmentDetails);
 
 <template>
   <div class="ui container full-width" style="min-height: 100vh; display: flex; flex-direction: column;">
-    <HeaderComponent />
+    <HeaderComponent/>
     <div class="spacer"></div>
     <div class="ui stackable grid">
       <div class="eight wide column">
         <div class="main-image">
-          <img src="" :alt="`Image de ${apartments.name}`">
+          <img v-if="apartments.images && apartments.images.length" :src="selectedImage || apartments.images[0]"
+               :alt="`Image de ${apartments.name}`">
         </div>
         <div class="image-thumbnails">
-          <img v-for="(image, index) in apartments.images" :src="image" :alt="`Vignette de ${apartments.name} ${index + 1}`" :key="index" @click="selectImage(image)">
+          <img v-for="(image, index) in apartments.images" :src="image"
+               :alt="`Vignette de ${apartments.name} ${index + 1}`" :key="index" @click="selectImage(image)">
         </div>
       </div>
       <div class="eight wide column">
@@ -127,35 +136,33 @@ onMounted(fetchApartmentDetails);
         <div class="meta">
           <span class="location">{{ apartments.town }}</span>
         </div>
-        <!--
-        <div class="stars">
-          <div class="ui star rating" :data-rating="apartments.stars" data-max-rating="5"></div>
-        </div>
-        -->
         <div class="reservation">
           <div class="ui form">
             <div class="field">
-              <h3>{{$t('booking')}}</h3>
-              <label for="start-date">{{$t('from')}}</label>
-              <input type="date" id="start-date" v-model="startDate" :class="{'error': showError && (startDateError || !startDate)}" />
-              <label for="end-date">{{$t('to')}}</label>
-              <input type="date" id="end-date" v-model="endDate" :class="{'error': showError && (endDateError || !endDate)}" />
+              <h3>{{ $t('booking') }}</h3>
+              <label for="start-date">{{ $t('from') }}</label>
+              <input type="date" id="start-date" v-model="startDate"
+                     :class="{'error': showError && (startDateError || !startDate)}"/>
+              <label for="end-date">{{ $t('to') }}</label>
+              <input type="date" id="end-date" v-model="endDate"
+                     :class="{'error': showError && (endDateError || !endDate)}"/>
             </div>
             <div class="field">
               <label for="guests">{{ $t('nb-people') }}</label>
-              <input type="number" id="guests" v-model="guests" :class="{'error': showError && !guests}" min="1" />
+              <input type="number" id="guests" v-model="guests" :class="{'error': showError && !guests}" min="1"/>
             </div>
-            <button class="ui primary button" @click="handleReservation">{{ $t('book-now')}}</button>
+            <button class="ui primary button" @click="handleReservation">{{ $t('book-now') }}</button>
           </div>
-          <p v-if="showError && (!startDate || !endDate || !guests)" class="error-message">{{ $t('mandatory-fields') }}</p>
+          <p v-if="showError && (!startDate || !endDate || !guests)" class="error-message">{{
+              $t('mandatory-fields')
+            }}</p>
           <p v-if="dateError" class="error-message">{{ $t('invalid-dates') }}</p>
         </div>
       </div>
     </div>
-    <FooterComponent />
+    <FooterComponent/>
   </div>
 </template>
-
 
 <style scoped>
 .spacer {
@@ -189,4 +196,3 @@ onMounted(fetchApartmentDetails);
   margin-top: 5px;
 }
 </style>
-
