@@ -25,6 +25,8 @@ import PaymentSuccess from "/src/vues/clientsVues/reservations/PaymentSuccess.vu
 import BookingConfirmation from "/src/vues/clientsVues/reservations/BookingConfirmationPage.vue";
 import OrderSummaryPage from "/src/vues/clientsVues/reservations/OrderSummaryPage.vue";
 import JoinUsPage from "/src/vues/clientsVues/JoinUsPage.vue";
+import JoinProviderPage from "/src/vues/clientsVues/JoinProviderPage.vue";
+import JoinHousingPage from "/src/vues/clientsVues/JoinHousingPage.vue";
 
 const routes = [
     {path: '/login', name: 'Login', component: LoginPage},
@@ -34,6 +36,8 @@ const routes = [
     {path: '/payment', name: 'Payment', component: PaymentPage},
     {path: '/payment-success', name: 'Payment-Success', component: PaymentSuccess},
     {path: '/join-us', name: 'Join-Us', component: JoinUsPage},
+    {path: '/join-provider', name: 'Join-Provider', component: JoinProviderPage},
+    {path: '/join-housing', name: 'Join-Housing', component: JoinHousingPage},
     {path: '/housing/:id', name: 'HousingDetails', component: HousingDetailsPage},
     {
         path: '/order-summary',

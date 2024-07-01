@@ -21,13 +21,13 @@
       <div class="eight wide column">
         <div class="ui segment">
           <h2>{{ $t('wish-trust-property')}}</h2>
-          <button class="ui primary button" @click="navigateTo('JoinHousing')">{{ $t('join-us-btn') }}</button>
+          <button class="ui primary button" @click="navigateTo('Join-Housing')">{{ $t('join-us-btn') }}</button>
         </div>
       </div>
       <div class="eight wide column">
         <div class="ui segment">
           <h2>{{ $t('wish-work-us') }}</h2>
-          <button class="ui primary button" @click="navigateTo('JoinProvider')">{{ $t('join-us-btn') }}</button>
+          <button class="ui primary button" @click="navigateTo('Join-Provider')">{{ $t('join-us-btn') }}</button>
         </div>
       </div>
     </div>
