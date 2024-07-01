@@ -83,10 +83,9 @@ onMounted(() => {
     <HeaderComponent/>
     <div class="spacer"></div>
     <div class="ui segment">
-      <h1 class="ui header">Paiement Réussi</h1>
-      <p>Merci pour votre paiement ! Votre transaction a été complétée avec succès.</p>
-      <p>Nous vous enverrons un email de confirmation sous peu.</p>
-      <button class="ui primary button" @click="goHome">Retour à l'accueil</button>
+      <h1 class="ui header">{{ $t('payment_success_title') }}</h1>
+      <p>{{ $t('payment_success_p') }}</p>
+      <button class="ui primary button" @click="goHome">{{ $t('payment_success_btn') }}</button>
     </div>
     <FooterComponent/>
   </div>
