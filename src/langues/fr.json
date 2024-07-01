@@ -41,6 +41,8 @@
   "house": "Maison",
   "housing-details": "Plus d'information",
   "invalid-dates": "Dates invalides",
+  "join-us": "Voulez-vous nous rejoindre ?",
+  "join-us-btn": "Nous rejoindre",
   "last-name": "Nom de famille",
   "last_Name": "Nom de famille",
   "load-more": "Voir plus",
@@ -59,6 +61,9 @@
   "owner": "Buyeur",
   "password": "Mot de passe",
   "password_confirmation": "Confirmation du mot de passe",
+  "payment_success_btn": "Retour à l'accueil",
+  "payment_success_p": "Merci pour votre paiement ! Votre transaction a été complétée avec succès.",
+  "payment_success_title": "Paiement Réussi",
   "permissions": "Permissions",
   "please_select_one": "Veuillez en sélectionner un",
   "previous": "Précédent",
@@ -99,5 +104,7 @@
   "verify_email": "Vérifier l'adresse mail",
   "verify_link": "Un lien de vérification a été envoyé à votre adresse e-mail.",
   "villa": "Villa",
-  "welcome": "Bienvenue"
+  "welcome": "Bienvenue",
+  "wish-trust-property": "Vous souhaitez nous confier votre bien ?",
+  "wish-work-us": "Vous souhaitez travailler avec nous ?"
 }

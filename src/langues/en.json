@@ -41,6 +41,8 @@
   "house": "House",
   "housing-details": "More information",
   "invalid-dates": "Invalid dates",
+  "join-us": "Would you like to join us?",
+  "join-us-btn": "Join us",
   "last-name": "Last name",
   "last_Name": "Last Name",
   "load-more": "Load more",
@@ -59,6 +61,9 @@
   "owner": "Owner",
   "password": "Password",
   "password_confirmation": "Password Confirmation",
+  "payment_success_btn": "Back to home page",
+  "payment_success_p": "Thank you for your payment! Your transaction has been successfully completed.",
+  "payment_success_title": "Successful Payment",
   "permissions": "Permissions",
   "please_select_one": "Please select one",
   "previous": "Previous",
@@ -99,5 +104,7 @@
   "verify_email": "Verify Your Email Address",
   "verify_link": "A fresh verification link has been sent to your email address.",
   "villa": "Villa",
-  "welcome": "Welcome"
+  "welcome": "Welcome",
+  "wish-trust-property": "Would you like to entrust your property to us?",
+  "wish-work-us": "Would you like to work with us?"
 }
