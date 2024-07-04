@@ -1,8 +1,8 @@
 <script setup>
 import HeaderComponent from '/src/components/HeaderComponent.vue';
 import FooterComponent from '/src/components/FooterComponent.vue';
-import {useRoute, useRouter} from 'vue-router';
-import {onMounted, ref} from "vue";
+import { useRoute, useRouter } from 'vue-router';
+import { onMounted, ref } from "vue";
 import axiosInstance from "@/utils/Axios.js";
 
 const route = useRoute();
@@ -19,12 +19,12 @@ const dateError = ref(false);
 const startDateError = ref(false);
 const endDateError = ref(false);
 
-// Séparation des champs avec plusieurs infos
+// Function to parse string arrays
 const parseStringArray = (stringArray) => {
   return stringArray.replace(/{|}/g, '').split(',');
 };
 
-// Récupération des infos de l'appartement
+// Fetch apartment details
 const fetchApartmentDetails = async () => {
   error.value = null;
   try {
@@ -57,16 +57,16 @@ const fetchApartmentDetails = async () => {
   }
 };
 
-// Choisir l'image principale
+// Function to select main image
 const selectImage = (image) => {
   selectedImage.value = image;
 };
 
-// Formulaire de réservation
+// Function to handle reservation
 const handleReservation = () => {
-  showError.value = false; // pour vérifier que tous les champs sont remplis
+  showError.value = false;
 
-  // Vérification des dates (date début avant date de fin et pas dans le passé)
+  // Validate dates
   dateError.value = false;
   startDateError.value = false;
   endDateError.value = false;
@@ -74,13 +74,11 @@ const handleReservation = () => {
   const start = new Date(startDate.value).setHours(0, 0, 0, 0);
   const end = new Date(endDate.value).setHours(0, 0, 0, 0);
 
-  // Validation des champs requis
   if (!startDate.value || !endDate.value || !guests.value) {
     showError.value = true;
     return;
   }
 
-  // Validation des dates
   let invalidDates = false;
   if (start >= end) {
     dateError.value = true;
@@ -100,7 +98,6 @@ const handleReservation = () => {
     return;
   }
 
-  // Si tout est valide, rediriger vers la page de résumé avec les paramètres nécessaires
   router.push({
     name: 'OrderSummary',
     query: {
@@ -108,6 +105,7 @@ const handleReservation = () => {
       startDate: startDate.value,
       endDate: endDate.value,
       guests: guests.value,
+      price: parseFloat(apartments.value.price),
       town: apartments.value.town
     }
   });
@@ -123,12 +121,10 @@ onMounted(fetchApartmentDetails);
     <div class="ui stackable grid">
       <div class="eight wide column">
         <div class="main-image">
-          <img v-if="apartments.images && apartments.images.length" :src="selectedImage || apartments.images[0]"
-               :alt="`Image de ${apartments.name}`">
+          <img v-if="apartments.images && apartments.images.length" :src="selectedImage || apartments.images[0]" :alt="`Image de ${apartments.name}`">
         </div>
         <div class="image-thumbnails">
-          <img v-for="(image, index) in apartments.images" :src="image"
-               :alt="`Vignette de ${apartments.name} ${index + 1}`" :key="index" @click="selectImage(image)">
+          <img v-for="(image, index) in apartments.images" :src="image" :alt="`Vignette de ${apartments.name} ${index + 1}`" :key="index" @click="selectImage(image)">
         </div>
       </div>
       <div class="eight wide column">
@@ -139,24 +135,21 @@ onMounted(fetchApartmentDetails);
         <div class="reservation">
           <div class="ui form">
             <div class="field">
-              <h3>{{ $t('booking') }}</h3>
-              <label for="start-date">{{ $t('from') }}</label>
-              <input type="date" id="start-date" v-model="startDate"
-                     :class="{'error': showError && (startDateError || !startDate)}"/>
-              <label for="end-date">{{ $t('to') }}</label>
-              <input type="date" id="end-date" v-model="endDate"
-                     :class="{'error': showError && (endDateError || !endDate)}"/>
+              <h3>Réservation</h3>
+              <label for="start-date">De</label>
+              <input type="date" id="start-date" v-model="startDate" :class="{'error': showError && (startDateError || !startDate)}"/>
+              <label for="end-date">À</label>
+              <input type="date" id="end-date" v-model="endDate" :class="{'error': showError && (endDateError || !endDate)}"/>
             </div>
             <div class="field">
-              <label for="guests">{{ $t('nb-people') }}</label>
+              <label for="guests">Nombre de personnes</label>
               <input type="number" id="guests" v-model="guests" :class="{'error': showError && !guests}" min="1"/>
             </div>
-            <button class="ui primary button" @click="handleReservation">{{ $t('book-now') }}</button>
+            <button class="ui primary button" @click="handleReservation">Réserver maintenant</button>
           </div>
-          <p v-if="showError && (!startDate || !endDate || !guests)" class="error-message">{{
-              $t('mandatory-fields')
-            }}</p>
-          <p v-if="dateError" class="error-message">{{ $t('invalid-dates') }}</p>
+          <p v-if="showError && (!startDate || !endDate || !guests)" class="error-message">Veuillez remplir tous les
+            champs obligatoires</p>
+          <p v-if="dateError" class="error-message">Dates invalides</p>
         </div>
       </div>
     </div>

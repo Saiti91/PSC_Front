@@ -23,6 +23,7 @@ const reservationDetails = ref({
 });
 
 const setupStripe = async () => {
+  console.log("Reservation details:", reservationDetails);
   try {
     stripe.value = await loadStripe('pk_test_51PX7r7FYikej8zQ9TWuGDqr9ew7vxrMC1QNZIAlQZRnDHtJChmlkURIWO2k7NqXY4dLSqxYx3jJOx9o7clWPjEKe00gJ3nq1uY');
     elements.value = stripe.value.elements();
@@ -76,7 +77,7 @@ onMounted(() => {
 
 <template>
   <div class="ui container">
-    <HeaderComponent />
+    <HeaderComponent/>
     <div class="spacer"></div>
     <div class="ui segment">
       <h2 class="ui header">Page de Paiement</h2>
@@ -91,7 +92,7 @@ onMounted(() => {
         <p>{{ paymentError }}</p>
       </div>
     </div>
-    <FooterComponent />
+    <FooterComponent/>
   </div>
 </template>
 

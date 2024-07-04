@@ -47,7 +47,7 @@ const saveReservation = async () => {
     customer: parseInt(decodedToken.uid, 10),
     date_start: formatDate(reservationDetails.startDate),
     date_end: formatDate(reservationDetails.endDate),
-    services: reservationDetails.services,
+    services: reservationDetails.services.map(service => service.servicesproviders_id).filter(id => id !== undefined),
     totalPrice: parseFloat(reservationDetails.totalPrice),
     apartment_id: parseInt(reservationDetails.apartment_id, 10)
   };
@@ -80,14 +80,14 @@ onMounted(() => {
 
 <template>
   <div class="payment-success ui container">
-    <HeaderComponent/>
+    <HeaderComponent />
     <div class="spacer"></div>
     <div class="ui segment">
       <h1 class="ui header">{{ $t('payment_success_title') }}</h1>
       <p>{{ $t('payment_success_p') }}</p>
       <button class="ui primary button" @click="goHome">{{ $t('payment_success_btn') }}</button>
     </div>
-    <FooterComponent/>
+    <FooterComponent />
   </div>
 </template>
 
