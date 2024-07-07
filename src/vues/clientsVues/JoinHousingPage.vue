@@ -2,6 +2,7 @@
 import HeaderComponent from '../../components/HeaderComponent.vue';
 import FooterComponent from '../../components/FooterComponent.vue';
 import { ref } from 'vue';
+import axiosInstance from "@/utils/Axios.js";
 
 const formData = ref({
   streetNumber: '',
@@ -23,26 +24,56 @@ const formData = ref({
     terrace: false,
     balcony: false,
     sauna: false,
-    otherChecked: false, // New property for the "Other" checkbox
-    otherDescription: '' // Text input for describing "Other" feature
+    otherChecked: false,
+    otherDescription: ''
   },
   agree: false
 });
 
+const errors = ref({
+  streetNumber: false,
+  streetName: false, // Corrected from 'street'
+  postalCode: false,
+  city: false,
+  apartmentType: false, // Corrected from 'housingType'
+  area: false,
+  guests: false,
+  bedrooms: false,
+  price: false,
+  agree: false,
+  otherDescription: false
+});
+
 const hasErrors = ref(false);
 
-const submitForm = () => {
-  hasErrors.value = !formData.value.agree; // Simple validation for agreement
-  if (!hasErrors.value) {
-    // Simulate form submission
-    console.log('Form Data:', formData.value);
-    // Here you would typically send the data to your API
+const validateForm = () => {
+  hasErrors.value = false;
+
+  for (const field in errors.value) {
+    // Only validate non-optional fields or those that have a specific validation rule
+    if (['otherDescription'].includes(field)) {
+      errors.value[field] = formData.value.features.otherChecked && !formData.value.features.otherDescription;
+    } else {
+      errors.value[field] = !formData.value[field];
+    }
+
+    hasErrors.value = hasErrors.value || errors.value[field];
   }
 };
 
-
+const submitForm = async () => {
+  validateForm();
+  if (!hasErrors.value) {
+    try {
+      const response = await axiosInstance.post('/join-housing', formData.value);
+      console.log('Form submitted:', response.data);
+      // Redirection après succès, par exemple vers une page de confirmation
+    } catch (error) {
+      console.error('Form submission error:', error);
+    }
+  }
+};
 </script>
-
 
 <template>
   <div class="ui container full-width" style="min-height: 100vh; display: flex; flex-direction: column;">
@@ -56,13 +87,13 @@ const submitForm = () => {
           <div class="ui segment">
             <h3>{{ $t('property-address') }}</h3>
             <div class="fields">
-              <div class="eight wide field">
+              <div class="eight wide field" :class="{ 'error': errors.streetNumber }">
                 <label>{{ $t('street-number') }}</label>
                 <input v-model="formData.streetNumber" type="text" placeholder="2">
               </div>
-              <div class="eight wide field">
+              <div class="eight wide field" :class="{ 'error': errors.streetName }">
                 <label>{{ $t('street-name') }}</label>
-                <input v-model="formData.streetName" type="text" placeholder="Avenue Chrales de Gaulle">
+                <input v-model="formData.streetName" type="text" placeholder="Avenue Charles de Gaulle">
               </div>
             </div>
             <div class="field">
@@ -80,16 +111,16 @@ const submitForm = () => {
               </div>
             </div>
             <div class="fields">
-              <div class="eight wide field">
+              <div class="eight wide field" :class="{ 'error': errors.city }">
                 <label>{{ $t('city') }}</label>
                 <input v-model="formData.city" type="text" placeholder="Paris" required>
               </div>
-              <div class="eight wide field">
+              <div class="eight wide field" :class="{ 'error': errors.postalCode }">
                 <label>{{ $t('postal-code') }}</label>
                 <input v-model="formData.postalCode" type="text" placeholder="75004" required>
               </div>
             </div>
-            <div class="field">
+            <div class="field" :class="{ 'error': errors.apartmentType }">
               <label>{{ $t('housing-type') }}</label>
               <input v-model="formData.apartmentType" type="text" placeholder=" T3" required>
             </div>
@@ -98,19 +129,19 @@ const submitForm = () => {
           <div class="ui segment">
             <h3>{{ $t('property-details') }}</h3>
             <div class="fields">
-              <div class="four wide field">
+              <div class="four wide field" :class="{ 'error': errors.area }">
                 <label>{{ $t('area') }}</label>
                 <input v-model="formData.area" type="number" placeholder="45" required>
               </div>
-              <div class="four wide field">
+              <div class="four wide field" :class="{ 'error': errors.guests }">
                 <label>{{ $t('guests') }}</label>
                 <input v-model="formData.guests" type="number" placeholder="6" required>
               </div>
-              <div class="four wide field">
+              <div class="four wide field" :class="{ 'error': errors.bedrooms }">
                 <label>{{ $t('bedrooms') }}</label>
                 <input v-model="formData.bedrooms" type="number" placeholder="2" required>
               </div>
-              <div class="four wide field">
+              <div class="four wide field" :class="{ 'error': errors.price }">
                 <label>{{ $t('price') }}</label>
                 <input v-model="formData.price" type="number" placeholder="150" required>
               </div>
@@ -147,15 +178,14 @@ const submitForm = () => {
               <input v-model="formData.features.otherChecked" type="checkbox" id="other">
               <label for="other" class="spaced-label">{{ $t('other') }}</label>
             </div>
-            <div v-if="formData.features.otherChecked" class="field spaced">
+            <div v-if="formData.features.otherChecked" class="field spaced" :class="{ 'error': errors.otherDescription }">
               <label>{{ $t('other-description') }}</label>
               <input v-model="formData.features.otherDescription" type="text" placeholder="lit bébé">
             </div>
           </div>
-          <!-- Captcha and Submit -->
+          <!-- Submit -->
           <div class="ui segment">
-
-            <div class="field">
+            <div class="field" :class="{ 'error': errors.agree }">
               <div class="ui checkbox">
                 <input v-model="formData.agree" type="checkbox" id="agree" required>
                 <label for="agree">{{ $t('agree') }}</label>
@@ -174,7 +204,6 @@ const submitForm = () => {
     <FooterComponent />
   </div>
 </template>
-
 
 <style scoped>
 .spacer {
@@ -196,4 +225,17 @@ const submitForm = () => {
 .field.spaced {
   margin-top: 10px; /* Espacement entre la checkbox "Autre" et le champ texte */
 }
+
+.field.error input,
+.field.error textarea {
+  border-color: red !important;
+}
+.field.error .ui.checkbox input[type="checkbox"] + label {
+  color: red !important;
+}
+
+.ui.checkbox {
+  margin-bottom: 10px;
+}
 </style>
+

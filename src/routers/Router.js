@@ -43,9 +43,12 @@ const routes = [
     {path: '/payment-success', name: 'Payment-Success', component: PaymentSuccess},
     {path: '/join-us', name: 'Join-Us', component: JoinUsPage},
     {path: '/join-provider', name: 'Join-Provider', component: JoinProviderPage},
-    {path: '/join-housing', name: 'Join-Housing', component: JoinHousingPage},
     {path: '/housing/:id', name: 'HousingDetails', component: HousingDetailsPage},
 
+    {   path: '/join-housing',
+        name: 'Join-Housing',
+        component: JoinHousingPage,
+        beforeEnter: useAuthGuard(['admin', 'staff', 'customer', 'owner'])},
     {
         path: '/order-summary',
         name: 'OrderSummary',
