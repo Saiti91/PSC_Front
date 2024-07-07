@@ -28,6 +28,12 @@ import JoinUsPage from "/src/vues/clientsVues/JoinUsPage.vue";
 import JoinProviderPage from "/src/vues/clientsVues/JoinProviderPage.vue";
 import JoinHousingPage from "/src/vues/clientsVues/JoinHousingPage.vue";
 
+import DocsPage from '/src/vues/serviceVues/DocsPage.vue';
+import HomeServicePage from '/src/vues/serviceVues/HomeServicePage.vue';
+import InterventionPage from '/src/vues/serviceVues/InterventionPage.vue';
+import PersoPage from '/src/vues/serviceVues/PersoPage.vue';
+import PlaningPage from '/src/vues/serviceVues/PlaningPage.vue';
+
 const routes = [
     {path: '/login', name: 'Login', component: LoginPage},
     {path: '/', name: 'Accueil', component: AccueilPage},
@@ -39,6 +45,7 @@ const routes = [
     {path: '/join-provider', name: 'Join-Provider', component: JoinProviderPage},
     {path: '/join-housing', name: 'Join-Housing', component: JoinHousingPage},
     {path: '/housing/:id', name: 'HousingDetails', component: HousingDetailsPage},
+
     {
         path: '/order-summary',
         name: 'OrderSummary',
@@ -132,7 +139,44 @@ const routes = [
         name: 'ApartmentDetails',
         component: ApartmentDetails,
         beforeEnter: useAuthGuard(['admin', 'staff'])
+    },
+
+
+    //SERVICE
+
+
+    {
+        path: '/DocsPage',
+        name: 'DocsPage',
+        component: DocsPage,
+        beforeEnter: useAuthGuard(['admin', 'provider'])
+    },
+    {
+        path: '/HomeServicePage',
+        name: 'HomeServicePage',
+        component: HomeServicePage,
+        beforeEnter: useAuthGuard(['admin', 'provider'])
+    },
+    {
+        path: '/InterventionPage',
+        name: 'InterventionPage',
+        component: InterventionPage,
+        beforeEnter: useAuthGuard(['admin', 'provider'])
+    },
+    {
+        path: '/PersoPage',
+        name: 'PersoPage',
+        component: PersoPage,
+        beforeEnter: useAuthGuard(['admin', 'provider'])
+    },
+    {
+        path: '/PlaningPage',
+        name: 'PlaningPage',
+        component: PlaningPage,
+        beforeEnter: useAuthGuard(['admin', 'provider'])
     }
+
+
 ];
 
 const router = createRouter({

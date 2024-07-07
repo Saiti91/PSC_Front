@@ -38,6 +38,8 @@ const submitForm = async () => {
       const decodedToken = VueJwtDecode.decode(token);
       if (decodedToken.urole === 'admin') {
         router.push('/accueil-admin')
+      } else if (decodedToken.urole === 'provider') {
+        router.push('/HomeServicePage')
       } else {
         router.push('/');
       }
