@@ -9,22 +9,28 @@ import axiosInstance from "@/utils/Axios.js";
 
 <template>
   <div class="account-page">
-  <div class="menu-container">
-    <HeaderComponent />
-    <div class="account-menu">
-      <AccountMenuComponent />
-      <div class="account-content">
-        <router-view />
+    <div class="menu-container">
+      <HeaderComponent />
+      <div class="account-menu">
+        <AccountMenuComponent />
+        <div class="account-content">
+          <router-view />
+        </div>
       </div>
+      <div class="spacer"></div>
     </div>
-    </div>
+  <p>général</p>
     <FooterComponent />
   </div>
 </template>
 
 <style scoped>
+.spacer {
+  margin-top: 7%;
+}
+
 .menu-container {
-  margin-top: 4%;
+  margin-top: 5%;
 }
 
 .account-page {
