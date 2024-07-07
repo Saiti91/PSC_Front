@@ -1,5 +1,6 @@
 <!-- MainComponent.vue -->
 <script setup>
+import axiosInstance from '/src/utils/Axios.js';
 import HeaderComponent from '../../components/HeaderServiceVue.vue'
 import FooterComponent from '../../components/FooterComponent.vue'
 import 'semantic-ui-css/semantic.min.css';
@@ -39,33 +40,34 @@ import axiosInstance from "@/utils/Axios.js";
           </h4>
         </td>
         <td class="lundi">
-          10h 242 reuilli diderot, Paris<br>
-          15h 242 reuilli diderot, Paris
+          <div class="menage">10h 242 reuilli diderot, Paris</div>
+          <div class="plomberie">15h 242 reuilli diderot, Paris</div>
         </td>
         <td class="mardi">
-          10h 242 reuilli diderot, Paris<br>
-          15h 242 reuilli diderot, Paris
+          <div>10h 242 reuilli diderot, Paris</div>
+          <div>15h 242 reuilli diderot, Paris</div>
         </td>
         <td class="mercredi">
-          10h 242 reuilli diderot, Paris<br>
-          15h 242 reuilli diderot, Paris
+          <div>10h 242 reuilli diderot, Paris</div>
+          <div>15h 242 reuilli diderot, Paris</div>
         </td>
         <td class="jeudi">
-          10h 242 reuilli diderot, Paris<br>
-          15h 242 reuilli diderot, Paris
+          <div>10h 242 reuilli diderot, Paris</div>
+          <div>15h 242 reuilli diderot, Paris</div>
         </td>
         <td class="vendredi">
-          10h 242 reuilli diderot, Paris<br>
-          15h 242 reuilli diderot, Paris
+          <div>10h 242 reuilli diderot, Paris</div>
+          <div>15h 242 reuilli diderot, Paris</div>
         </td>
         <td class="samedi">
-          10h 242 reuilli diderot, Paris<br>
-          15h 242 reuilli diderot, Paris
+          <div>10h 242 reuilli diderot, Paris</div>
+          <div>15h 242 reuilli diderot, Paris</div>
         </td>
         <td class="dimanche">
-          10h 242 reuilli diderot, Paris<br>
-          15h 242 reuilli diderot, Paris
+          <div>10h 242 reuilli diderot, Paris</div>
+          <div>15h 242 reuilli diderot, Paris</div>
         </td>
+
       </tr>
       </tbody>
     </table>
@@ -84,8 +86,8 @@ import axiosInstance from "@/utils/Axios.js";
   margin-top: 7%;
 }
 
-
-
+.menage {background-color: blue}
+.plomberie {background-color: green}
 
 
 
