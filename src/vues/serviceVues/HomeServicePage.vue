@@ -1,11 +1,11 @@
 <!-- MainComponent.vue -->
 <script setup>
-import axiosInstance from '/src/utils/Axios.js';
+import {onMounted, ref} from "vue";
+import axiosInstance from "@/utils/Axios.js";
 import HeaderComponent from '../../components/HeaderServiceVue.vue'
 import FooterComponent from '../../components/FooterComponent.vue'
 import 'semantic-ui-css/semantic.min.css';
-import {onMounted, ref} from "vue";
-import axiosInstance from "@/utils/Axios.js";
+
 
 
 </script>
