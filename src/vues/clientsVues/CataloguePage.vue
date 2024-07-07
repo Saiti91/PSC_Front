@@ -4,7 +4,7 @@ import FooterComponent from '../../components/FooterComponent.vue'
 import {onMounted, ref} from "vue";
 import axiosInstance from "@/utils/Axios.js";
 
-const apartments = ref([]); //tous les appart
+const apartments = ref([]); //tous les apparts
 const error = ref(null);
 const displayedApartments = ref([]);  // appart affichés
 const displayedCount = ref(12);       // Nd appart a afficher
@@ -46,33 +46,33 @@ onMounted(fetchApartments);
 
 <template>
   <div class="ui container full-width" style="min-height: 100vh; display: flex; flex-direction: column;">
-    <HeaderComponent />
+    <HeaderComponent/>
     <div class="spacer"></div>
     <div class="ui stackable four column grid">
       <div class="column" v-for="apartment in displayedApartments" :key="apartment.apartments_id">
         <router-link :to="`/housing/${apartment.apartments_id}`" class="ui card">
-        <div class="ui card">
-          <div class="image">
-            <img src="" alt="Image de {{ apartment.name }}">
-          </div>
-          <div class="content">
-            <a class="header">{{ apartment.name }}</a>
-            <div class="meta">
-              <span class="location">{{ apartment.town }}</span>
+          <div class="ui card">
+            <div class="image">
+              <img src="" alt="Image de {{ apartment.name }}">
             </div>
-            <div class="extra content">
-              <!-- étoiles
-              <div class="ui star rating" :data-rating="property.stars" data-max-rating="5"></div> -->
+            <div class="content">
+              <a class="header">{{ apartment.name }}</a>
+              <div class="meta">
+                <span class="location">{{ apartment.town }}</span>
+              </div>
+              <div class="extra content">
+                <!-- étoiles
+                <div class="ui star rating" :data-rating="property.stars" data-max-rating="5"></div> -->
+              </div>
             </div>
           </div>
-        </div>
         </router-link>
       </div>
     </div>
     <div class="ui center aligned basic segment">
       <button class="ui button" @click="loadMore">{{ $t('load-more') }}</button>
     </div>
-    <FooterComponent />
+    <FooterComponent/>
   </div>
 </template>
 
@@ -84,6 +84,7 @@ onMounted(fetchApartments);
 .ui.card {
   width: 100%; /* Assure que les cartes prennent toute la largeur de la colonne */
 }
+
 .ui.stackable.five.column.grid > .column {
   padding: 0.5rem; /* Espacement entre les colonnes */
 }

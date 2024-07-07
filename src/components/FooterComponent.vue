@@ -1,10 +1,10 @@
 <template>
   <div class="ui inverted vertical footer segment">
     <div class="ui horizontal inverted small divided link list">
-      <a class="item" href="#">{{$t('site_Map')}}</a>
-      <a class="item" href="#">{{$t('contact')}}</a>
-      <a class="item" href="#">{{$t('terms_and_Conditions')}}</a>
-      <a class="item" href="#">{{$t('privacy_Policy')}}</a>
+      <a class="item" href="#">{{ $t('site_Map') }}</a>
+      <a class="item" href="#">{{ $t('contact') }}</a>
+      <a class="item" href="#">{{ $t('terms_and_Conditions') }}</a>
+      <a class="item" href="#">{{ $t('privacy_Policy') }}</a>
     </div>
   </div>
 </template>

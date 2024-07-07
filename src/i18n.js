@@ -1,6 +1,6 @@
 // src/i18n.js
 
-import { createI18n } from 'vue-i18n';
+import {createI18n} from 'vue-i18n';
 
 // Importez explicitement les fichiers de traduction
 import en from './langues/en.json';

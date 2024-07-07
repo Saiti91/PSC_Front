@@ -1,10 +1,10 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import HeaderComponent from '/src/components/HeaderAdmin.vue';
 import FooterComponent from '/src/components/FooterComponent.vue';
 import axiosInstance from '/src/utils/Axios.js';
 import 'semantic-ui-css/semantic.min.css';
-import { useRouter } from 'vue-router';
+import {useRouter} from 'vue-router';
 import DeleteModal from '@/components/DeleteModal.vue';
 import SuccessModal from '@/components/SuccessModal.vue';
 

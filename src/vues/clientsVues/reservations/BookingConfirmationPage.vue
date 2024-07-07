@@ -1,5 +1,5 @@
 <script setup>
-import { useRoute, useRouter } from 'vue-router';
+import {useRoute, useRouter} from 'vue-router';
 import HeaderComponent from '../../../components/HeaderComponent.vue';
 import FooterComponent from '../../../components/FooterComponent.vue';
 
@@ -42,7 +42,7 @@ const goBack = () => {
 
 <template>
   <div class="booking-confirmation">
-    <HeaderComponent />
+    <HeaderComponent/>
     <div class="spacer"></div>
     <div class="container">
       <h1>Confirmation de réservation</h1>
@@ -62,7 +62,7 @@ const goBack = () => {
       <button @click="goBack">Modifier la réservation</button>
       <button @click="goToPayment">Procéder au paiement</button>
     </div>
-    <FooterComponent />
+    <FooterComponent/>
   </div>
 </template>
 

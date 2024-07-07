@@ -3,7 +3,7 @@
 import HeaderComponent from '../../components/HeaderComponent.vue'
 import FooterComponent from '../../components/FooterComponent.vue'
 import 'semantic-ui-css/semantic.min.css';
-import { onMounted, ref } from "vue";
+import {onMounted, ref} from "vue";
 import axiosInstance from "@/utils/Axios.js";
 
 const apartments = ref([]);
@@ -47,8 +47,9 @@ onMounted(fetchApartments);
 </script>
 
 <template>
-  <div class="ui container full-width" style="min-height: 100vh; display: flex; flex-direction: column; overflow: hidden;">
-    <HeaderComponent />
+  <div class="ui container full-width"
+       style="min-height: 100vh; display: flex; flex-direction: column; overflow: hidden;">
+    <HeaderComponent/>
     <div class="spacer"></div>
     <router-link to="/housing">
       <h2 class="clickable-title">{{ $t('our-housing') }}</h2>
@@ -86,7 +87,7 @@ onMounted(fetchApartments);
         </div>
       </div>
     </div>
-    <FooterComponent />
+    <FooterComponent/>
   </div>
 </template>
 

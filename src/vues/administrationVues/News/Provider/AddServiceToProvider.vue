@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import {onMounted, ref} from 'vue';
 import axios from '/src/utils/Axios.js';
 import HeaderComponent from '/src/components/HeaderAdmin.vue';
 import FooterComponent from '/src/components/FooterComponent.vue';
@@ -8,7 +8,7 @@ import SuccessModalComponent from '/src/components/SuccessModal.vue';
 const providers = ref([]);
 const serviceTypes = ref([]);
 const selectedProviderId = ref(null);
-const newService = ref({ serviceType_id: null, price: 0 });
+const newService = ref({serviceType_id: null, price: 0});
 
 const error = ref(null);
 const showModal = ref(false);
@@ -80,7 +80,8 @@ onMounted(() => {
       <div class="field">
         <label>Sélectionner une entreprise</label>
         <select v-model="selectedProviderId" required>
-          <option v-for="provider in providers" :key="provider.servicesproviders_id" :value="provider.servicesproviders_id">
+          <option v-for="provider in providers" :key="provider.servicesproviders_id"
+                  :value="provider.servicesproviders_id">
             {{ provider.name }}
           </option>
         </select>
@@ -95,7 +96,7 @@ onMounted(() => {
       </div>
       <div class="field">
         <label>Prix</label>
-        <input type="number" v-model="newService.price" required />
+        <input type="number" v-model="newService.price" required/>
       </div>
       <button type="submit" class="ui button primary">Ajouter Service</button>
       <div v-if="error" class="ui red message">{{ error }}</div>

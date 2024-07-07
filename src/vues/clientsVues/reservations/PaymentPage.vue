@@ -1,9 +1,9 @@
 <script setup>
 import HeaderComponent from '../../../components/HeaderComponent.vue';
 import FooterComponent from '../../../components/FooterComponent.vue';
-import { ref, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { loadStripe } from '@stripe/stripe-js';
+import {onMounted, ref} from 'vue';
+import {useRoute, useRouter} from 'vue-router';
+import {loadStripe} from '@stripe/stripe-js';
 import axiosInstance from "@/utils/Axios.js";
 
 const stripe = ref(null);
@@ -41,7 +41,7 @@ const handleSubmit = async () => {
 
   paymentError.value = null;
   try {
-    const { error, paymentMethod } = await stripe.value.createPaymentMethod({
+    const {error, paymentMethod} = await stripe.value.createPaymentMethod({
       type: 'card',
       card: cardElement.value,
     });
@@ -86,7 +86,9 @@ onMounted(() => {
           <label for="card-element">Informations de Carte</label>
           <div id="card-element" class="ui segment"></div>
         </div>
-        <button type="submit" class="ui primary button" :class="{ loading: isSubmitting }" :disabled="isSubmitting">Payer</button>
+        <button type="submit" class="ui primary button" :class="{ loading: isSubmitting }" :disabled="isSubmitting">
+          Payer
+        </button>
       </form>
       <div v-if="paymentError" class="ui negative message">
         <p>{{ paymentError }}</p>

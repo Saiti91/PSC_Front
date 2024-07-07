@@ -1,8 +1,8 @@
 <script setup>
 import HeaderComponent from '../../../components/HeaderComponent.vue';
 import FooterComponent from '../../../components/FooterComponent.vue';
-import { onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import {onMounted, ref} from 'vue';
+import {useRoute, useRouter} from 'vue-router';
 import axiosInstance from "@/utils/Axios.js";
 
 const router = useRouter();
@@ -52,7 +52,7 @@ const toggleService = (service) => {
 const goBack = () => {
   router.push({
     name: 'HousingDetails',
-    params: { id: reservationDetails.value.apartment_id },
+    params: {id: reservationDetails.value.apartment_id},
     query: {
       startDate: reservationDetails.value.startDate,
       endDate: reservationDetails.value.endDate,

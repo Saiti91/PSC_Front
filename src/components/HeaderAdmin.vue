@@ -1,12 +1,12 @@
 <script setup>
-import {onMounted, ref} from 'vue';
+import {onMounted} from 'vue';
 import {useLocale} from '/src/composables/useLocale.js';
 import {useRouter} from 'vue-router';
 import Cookies from 'js-cookie';
 import 'semantic-ui-css/semantic.min.css';
 
 // i18n setup
-const {locale,availableLocales, changeLocale, currentLocale} = useLocale();
+const {locale, availableLocales, changeLocale, currentLocale} = useLocale();
 
 // Component setup
 const router = useRouter();

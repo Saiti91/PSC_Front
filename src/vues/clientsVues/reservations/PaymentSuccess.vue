@@ -1,8 +1,8 @@
 <script setup>
 import HeaderComponent from '../../../components/HeaderComponent.vue';
 import FooterComponent from '../../../components/FooterComponent.vue';
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import {onMounted} from 'vue';
+import {useRouter} from 'vue-router';
 import axiosInstance from "@/utils/Axios.js";
 import Cookies from 'js-cookie';
 import jwtDecode from 'vue-jwt-decode';
@@ -80,14 +80,14 @@ onMounted(() => {
 
 <template>
   <div class="payment-success ui container">
-    <HeaderComponent />
+    <HeaderComponent/>
     <div class="spacer"></div>
     <div class="ui segment">
       <h1 class="ui header">{{ $t('payment_success_title') }}</h1>
       <p>{{ $t('payment_success_p') }}</p>
       <button class="ui primary button" @click="goHome">{{ $t('payment_success_btn') }}</button>
     </div>
-    <FooterComponent />
+    <FooterComponent/>
   </div>
 </template>
 

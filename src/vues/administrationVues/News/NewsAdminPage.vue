@@ -1,10 +1,9 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import {ref} from 'vue';
 import HeaderComponent from '/src/components/HeaderAdmin.vue';
 import FooterComponent from '/src/components/FooterComponent.vue';
-import axiosInstance from '/src/utils/Axios.js';
 import 'semantic-ui-css/semantic.min.css';
-import { useRouter } from 'vue-router'
+import {useRouter} from 'vue-router'
 
 const apartments = ref([]);
 const currentPage = ref(1);

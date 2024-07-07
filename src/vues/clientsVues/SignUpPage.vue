@@ -2,8 +2,7 @@
 import {ref} from 'vue';
 import {useRouter} from 'vue-router';
 import 'semantic-ui-css/semantic.min.css';
-import axiosInstance from "@/utils/Axios.js";
-import { useI18n } from 'vue-i18n'; // Importation de useI18n
+import {useI18n} from 'vue-i18n'; // Importation de useI18n
 
 const email = ref('');
 const password = ref('');
@@ -15,7 +14,7 @@ const message = ref(false);
 const error = ref(null);
 const success = ref(null);
 
-const { t } = useI18n(); // Obtenir la fonction t pour les traductions
+const {t} = useI18n();
 
 
 const submitForm = async () => {
@@ -91,7 +90,8 @@ const submitForm = async () => {
           <div class="field">
             <div class="ui left icon input">
               <i class="lock icon"></i>
-              <input type="password" v-model="confirmPassword" name="confirmPassword" :placeholder="$t('confirm_password')" required>
+              <input type="password" v-model="confirmPassword" name="confirmPassword"
+                     :placeholder="$t('confirm_password')" required>
             </div>
           </div>
           <button class="ui fluid large teal submit button" type="submit">{{ $t('sign_up') }}</button>

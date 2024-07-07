@@ -1,10 +1,10 @@
 <script setup>
-import { ref, computed } from 'vue';
-import { useI18n } from 'vue-i18n';
+import {computed, ref} from 'vue';
+import {useI18n} from 'vue-i18n';
 import Cookies from 'js-cookie';
 import VueJwtDecode from 'vue-jwt-decode';
 
-const { locale, availableLocales } = useI18n();
+const {locale, availableLocales} = useI18n();
 
 const changeLocale = (lang) => {
   locale.value = lang;

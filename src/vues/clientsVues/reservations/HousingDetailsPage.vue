@@ -1,8 +1,8 @@
 <script setup>
 import HeaderComponent from '/src/components/HeaderComponent.vue';
 import FooterComponent from '/src/components/FooterComponent.vue';
-import { useRoute, useRouter } from 'vue-router';
-import { onMounted, ref } from "vue";
+import {useRoute, useRouter} from 'vue-router';
+import {onMounted, ref} from "vue";
 import axiosInstance from "@/utils/Axios.js";
 
 const route = useRoute();
@@ -121,10 +121,12 @@ onMounted(fetchApartmentDetails);
     <div class="ui stackable grid">
       <div class="eight wide column">
         <div class="main-image">
-          <img v-if="apartments.images && apartments.images.length" :src="selectedImage || apartments.images[0]" :alt="`Image de ${apartments.name}`">
+          <img v-if="apartments.images && apartments.images.length" :src="selectedImage || apartments.images[0]"
+               :alt="`Image de ${apartments.name}`">
         </div>
         <div class="image-thumbnails">
-          <img v-for="(image, index) in apartments.images" :src="image" :alt="`Vignette de ${apartments.name} ${index + 1}`" :key="index" @click="selectImage(image)">
+          <img v-for="(image, index) in apartments.images" :src="image"
+               :alt="`Vignette de ${apartments.name} ${index + 1}`" :key="index" @click="selectImage(image)">
         </div>
       </div>
       <div class="eight wide column">
@@ -137,9 +139,11 @@ onMounted(fetchApartmentDetails);
             <div class="field">
               <h3>Réservation</h3>
               <label for="start-date">De</label>
-              <input type="date" id="start-date" v-model="startDate" :class="{'error': showError && (startDateError || !startDate)}"/>
+              <input type="date" id="start-date" v-model="startDate"
+                     :class="{'error': showError && (startDateError || !startDate)}"/>
               <label for="end-date">À</label>
-              <input type="date" id="end-date" v-model="endDate" :class="{'error': showError && (endDateError || !endDate)}"/>
+              <input type="date" id="end-date" v-model="endDate"
+                     :class="{'error': showError && (endDateError || !endDate)}"/>
             </div>
             <div class="field">
               <label for="guests">Nombre de personnes</label>

@@ -8,3 +8,7 @@
 .vuecal__cell-events-count {
     display: none;
 }
+
+.spacer {
+    margin-top: 7%;
+}
