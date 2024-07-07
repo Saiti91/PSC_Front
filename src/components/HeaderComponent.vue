@@ -50,6 +50,7 @@ const logout = () => {
         <router-link to="/" class="item">{{ $t('home') }}</router-link>
         <router-link to="/housing" class="item">{{ $t('our-housing') }}</router-link>
         <router-link to="/join-us" class="item">{{ $t('join-us-btn') }}</router-link>
+        <router-link v-if="isAuthenticated" to="/my-account" class="item">{{ $t('account') }}</router-link>
         <router-link to="" class="item">{{ $t('about') }}</router-link>
         <router-link to="" class="item">{{ $t('contact') }}</router-link>
         <div class="ui simple dropdown item">

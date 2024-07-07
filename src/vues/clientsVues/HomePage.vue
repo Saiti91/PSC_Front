@@ -87,6 +87,14 @@ onMounted(fetchApartments);
         </div>
       </div>
     </div>
+    <!-- Bannière nous rejoindre -->
+    <div class="banner-wrapper">
+      <router-link to="/join-us">
+        <div class="ui message clickable-banner">
+          <p>{{ $t('join-us-home_msg')}}</p>
+        </div>
+      </router-link>
+    </div>
     <FooterComponent/>
   </div>
 </template>
@@ -149,6 +157,41 @@ onMounted(fetchApartments);
   right: -40px;
 }
 
+/* Styles pour la bannière */
+.banner-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 20px 0;
+}
+
+.clickable-banner {
+  width: calc(100% - 40px); /* Full width minus margin */
+  max-width: 1200px; /* Maximum width to avoid too wide banner on large screens */
+  background-color: #f0f0f0; /* Light background color */
+  border: 2px solid #ddd; /* Border */
+  padding: 30px; /* Padding inside the banner */
+  text-align: center; /* Center the text */
+  transition: background-color 0.3s ease, border-color 0.3s ease; /* Transition for hover effect */
+  cursor: pointer; /* Pointer cursor on hover */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+}
+
+.clickable-banner:hover {
+  background-color: #e0e0e0; /* Slightly darker background on hover */
+  border-color: #ccc; /* Slightly darker border on hover */
+}
+
+.clickable-banner p {
+  margin: 0;
+  font-size: 1.5em; /* Larger font size */
+  font-weight: bold;
+  color: #333; /* Dark text color */
+}
+
+/* footer */
 .ui.footer .list {
   color: #ccc !important;
 }

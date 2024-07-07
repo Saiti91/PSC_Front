@@ -1,11 +1,12 @@
 // src/routers/Router.js
 import {createRouter, createWebHistory} from 'vue-router';
 import LoginPage from '/src/vues/LoginPage.vue';
-import AccueilPage from '/src/vues/clientsVues/HomePage.vue';
+import useAuthGuard from '/src/components/Auth/AuthGuard.js';
+
+// Administration
 import AccueilAdminPage from '/src/vues/administrationVues/HomeAdminPage.vue';
 import ServiceAdminPage from '/src/vues/administrationVues/Services/ServicesAdminPage.vue';
 import UserAdminPage from '/src/vues/administrationVues/Users/UsersAdminPage.vue';
-import useAuthGuard from '/src/components/Auth/AuthGuard.js';
 import AddUser from '/src/vues/administrationVues/Users/AddUserPage.vue';
 import UserDetails from '/src/vues/administrationVues/Users/UserDetailsPage.vue';
 import ApartmentDetails from '/src/vues/administrationVues/Apartments/ApartmentDetailsPage.vue';
@@ -13,26 +14,37 @@ import ApartmentAdmin from '/src/vues/administrationVues/Apartments/ApartmentAdm
 import NewsAdmin from '/src/vues/administrationVues/News/NewsAdminPage.vue';
 import NewHouse from '/src/vues/administrationVues/News/NewHouse.vue';
 import NewProvider from '/src/vues/administrationVues/News/NewProvider.vue';
-import SignUpPage from '/src/vues/clientsVues/SignUpPage.vue';
-import CataloguePage from "/src/vues/clientsVues/CataloguePage.vue";
-import HousingDetailsPage from "/src/vues/clientsVues/reservations/HousingDetailsPage.vue";
-
 import AddProvider from "/src/vues/administrationVues/News/Provider/AddProvider.vue";
 import AddServiceToProvider from "/src/vues/administrationVues/News/Provider/AddServiceToProvider.vue";
 import AddServiceType from "/src/vues/administrationVues/News/Provider/AddServiceType.vue";
+
+// Client
+import AccueilPage from '/src/vues/clientsVues/HomePage.vue';
+import SignUpPage from '/src/vues/clientsVues/SignUpPage.vue';
+import CataloguePage from "/src/vues/clientsVues/CataloguePage.vue";
+import HousingDetailsPage from "/src/vues/clientsVues/reservations/HousingDetailsPage.vue";
+import MyAccountPage from "/src/vues/clientsVues/accountVues/MyAccountPage.vue";
+import JoinUsPage from "/src/vues/clientsVues/JoinUsPage.vue";
+import JoinProviderPage from "/src/vues/clientsVues/JoinProviderPage.vue";
+import JoinHousingPage from "/src/vues/clientsVues/JoinHousingPage.vue";
 import PaymentPage from "/src/vues/clientsVues/reservations/PaymentPage.vue";
 import PaymentSuccess from "/src/vues/clientsVues/reservations/PaymentSuccess.vue";
 import BookingConfirmation from "/src/vues/clientsVues/reservations/BookingConfirmationPage.vue";
 import OrderSummaryPage from "/src/vues/clientsVues/reservations/OrderSummaryPage.vue";
-import JoinUsPage from "/src/vues/clientsVues/JoinUsPage.vue";
-import JoinProviderPage from "/src/vues/clientsVues/JoinProviderPage.vue";
-import JoinHousingPage from "/src/vues/clientsVues/JoinHousingPage.vue";
+import MyDetailsPage from "/src/vues/clientsVues/accountVues/MyDetailsPage.vue";
+import MyFuturBookingsPage from "/src/vues/clientsVues/accountVues/MyFuturBookingsPage.vue";
+import MyPastBookingsPage from "/src/vues/clientsVues/accountVues/MyPastBookingsPage.vue";
+import MyHousingPage from "/src/vues/clientsVues/accountVues/MyHousingPage.vue";
+import MySubscriptionPage from "/src/vues/clientsVues/accountVues/MySubscriptionPage.vue";
 
+// Service
 import DocsPage from '/src/vues/serviceVues/DocsPage.vue';
 import HomeServicePage from '/src/vues/serviceVues/HomeServicePage.vue';
 import InterventionPage from '/src/vues/serviceVues/InterventionPage.vue';
 import PersoPage from '/src/vues/serviceVues/PersoPage.vue';
 import PlaningPage from '/src/vues/serviceVues/PlaningPage.vue';
+
+
 
 const routes = [
     {path: '/login', name: 'Login', component: LoginPage},
@@ -48,7 +60,40 @@ const routes = [
     {   path: '/join-housing',
         name: 'Join-Housing',
         component: JoinHousingPage,
-        beforeEnter: useAuthGuard(['admin', 'staff', 'customer', 'owner'])},
+        beforeEnter: useAuthGuard(['admin', 'staff', 'customer', 'owner'])
+    },
+
+    //Mon compte
+    {   path: '/my-account',
+        name: 'My-Account',
+        component: MyAccountPage,
+        beforeEnter: useAuthGuard(['admin', 'staff', 'customer', 'owner'])
+    },
+    {   path: '/my-details',
+        name: 'My-Details',
+        component: MyDetailsPage,
+        beforeEnter: useAuthGuard(['admin', 'staff', 'customer', 'owner'])
+    },
+    {   path: '/my-future-bookings',
+        name: 'My-Future-Bookings',
+        component: MyFuturBookingsPage,
+        beforeEnter: useAuthGuard(['admin', 'staff', 'customer', 'owner'])
+    },
+    {   path: '/my-past-bookings',
+        name: 'My-Past-Bookings',
+        component: MyPastBookingsPage,
+        beforeEnter: useAuthGuard(['admin', 'staff', 'customer', 'owner'])
+    },
+    {   path: '/my-housing',
+        name: 'My-Housing',
+        component: MyHousingPage,
+        beforeEnter: useAuthGuard(['admin', 'staff', 'customer', 'owner'])
+    },
+    {   path: '/my-subscription',
+        name: 'My-Subscription',
+        component: MySubscriptionPage,
+        beforeEnter: useAuthGuard(['admin', 'staff', 'customer', 'owner'])
+    },
     {
         path: '/order-summary',
         name: 'OrderSummary',
