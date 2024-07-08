@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, reactive, ref} from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import HeaderComponent from '/src/components/HeaderAdmin.vue';
 import FooterComponent from '/src/components/FooterComponent.vue';
 import axiosInstance from '/src/utils/Axios.js';
@@ -15,6 +15,7 @@ const form = reactive({
     town: ''
   },
   phone: '',
+  email: '',
   services: []
 });
 
@@ -30,7 +31,7 @@ const fetchServices = async () => {
     const response = await axiosInstance.get('/services/type');
     serviceOptions.value = response.data;
     serviceOptions.value.forEach(service => {
-      form.services.push({id: service.servicetypes_id, name: service.name, price: '', selected: false});
+      form.services.push({ id: service.servicetypes_id, name: service.name, price: '', selected: false });
     });
   } catch (err) {
     error.value = err.response ? err.response.data.message : err.message;
@@ -71,6 +72,7 @@ const submitForm = async () => {
         town: form.address.town,
       },
       phone: form.phone,
+      email: form.email,
       services: selectedServices
     };
 
@@ -93,6 +95,7 @@ const resetForm = () => {
   form.name = '';
   form.address = {number: '', street: '', CP: '', town: ''};
   form.phone = '';
+  form.email = '';
   form.services = [];
 };
 
@@ -118,6 +121,10 @@ onMounted(fetchServices);
       <div class="field">
         <label>Téléphone</label>
         <input type="text" v-model="form.phone" required/>
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" v-model="form.email" required/>
       </div>
       <div class="field">
         <label>Services</label>

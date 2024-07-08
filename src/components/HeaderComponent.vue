@@ -34,6 +34,7 @@ const logout = () => {
   Cookies.remove('token');
   isAuthenticated.value = false;
   // Redirection ou autre logique après déconnexion
+  router.push('/');
 };
 
 </script>

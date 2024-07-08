@@ -1,8 +1,8 @@
 <script setup>
 import HeaderComponent from '../../../components/HeaderComponent.vue';
 import FooterComponent from '../../../components/FooterComponent.vue';
-import {onMounted} from 'vue';
-import {useRouter} from 'vue-router';
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import axiosInstance from "@/utils/Axios.js";
 import Cookies from 'js-cookie';
 import jwtDecode from 'vue-jwt-decode';
@@ -47,7 +47,10 @@ const saveReservation = async () => {
     customer: parseInt(decodedToken.uid, 10),
     date_start: formatDate(reservationDetails.startDate),
     date_end: formatDate(reservationDetails.endDate),
-    services: reservationDetails.services.map(service => service.servicesproviders_id).filter(id => id !== undefined),
+    services: reservationDetails.services.map(service => ({
+      serviceType_id: service.serviceType_id,
+      serviceProvider_id: service.servicesproviders_id // Corrected field name
+    })),
     totalPrice: parseFloat(reservationDetails.totalPrice),
     apartment_id: parseInt(reservationDetails.apartment_id, 10)
   };
@@ -83,15 +86,18 @@ onMounted(() => {
     <HeaderComponent/>
     <div class="spacer"></div>
     <div class="ui segment">
-      <h1 class="ui header">{{ $t('payment_success_title') }}</h1>
-      <p>{{ $t('payment_success_p') }}</p>
-      <button class="ui primary button" @click="goHome">{{ $t('payment_success_btn') }}</button>
+      <h1 class="ui header">Paiement Réussi</h1>
+      <p>Votre paiement a été effectué avec succès.</p>
+      <button class="ui primary button" @click="goHome">Retour à l'accueil</button>
     </div>
     <FooterComponent/>
   </div>
 </template>
 
 <style scoped>
+.spacer {
+  margin-top: 7%;
+}
 .payment-success {
   display: flex;
   flex-direction: column;

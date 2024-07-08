@@ -1,8 +1,8 @@
 <script setup>
 import HeaderComponent from '../../../components/HeaderComponent.vue';
 import FooterComponent from '../../../components/FooterComponent.vue';
-import {onMounted, ref} from 'vue';
-import {useRoute, useRouter} from 'vue-router';
+import { onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import axiosInstance from "@/utils/Axios.js";
 
 const router = useRouter();
@@ -12,9 +12,11 @@ const reservationDetails = ref({
   apartment_id: route.query.apartment_id,
   startDate: route.query.startDate,
   endDate: route.query.endDate,
-  price: parseFloat(route.query.price), // Ensuring price is treated as a float
+  price: parseFloat(route.query.price),
   guests: route.query.guests,
-  town: route.query.town
+  town: route.query.town,
+  services: [],
+  totalPrice: '0.00'
 });
 
 const services = ref([]);
@@ -32,32 +34,39 @@ const fetchServices = async () => {
 };
 
 const calculateTotalPrice = () => {
-  let basePrice = reservationDetails.value.price || 0; // Use the base price from reservation details
+  let basePrice = reservationDetails.value.price || 0;
   selectedServices.value.forEach(service => {
-    basePrice += parseFloat(service.services[0].price); // Ensuring service price is treated as a float
+    if (service.price) {
+      basePrice += parseFloat(service.price);
+    }
   });
-  totalPrice.value = basePrice;
+  totalPrice.value = basePrice.toFixed(2);
+  reservationDetails.value.totalPrice = totalPrice.value;
 };
 
 const toggleService = (service) => {
-  const index = selectedServices.value.findIndex(s => s.servicesproviders_id === service.servicesproviders_id);
+  const index = selectedServices.value.findIndex(s => s.servicesproviders_id === service.servicesproviders_id && s.serviceType_id === service.services[0]?.serviceType_id);
   if (index !== -1) {
     selectedServices.value.splice(index, 1);
   } else {
-    selectedServices.value.push(service);
+    selectedServices.value.push({
+      servicesproviders_id: service.servicesproviders_id,
+      serviceType_id: service.services[0]?.serviceType_id,
+      price: service.services[0]?.price
+    });
   }
+  reservationDetails.value.services = [...selectedServices.value];
   calculateTotalPrice();
 };
 
 const goBack = () => {
   router.push({
     name: 'HousingDetails',
-    params: {id: reservationDetails.value.apartment_id},
+    params: { id: reservationDetails.value.apartment_id },
     query: {
       startDate: reservationDetails.value.startDate,
       endDate: reservationDetails.value.endDate,
-      guests: reservationDetails.value.guests,
-      services: selectedServices.value.map(service => service.servicesproviders_id).join(',')
+      guests: reservationDetails.value.guests
     }
   });
 };
@@ -69,13 +78,13 @@ const goToPayment = () => {
     totalPrice: totalPrice.value
   };
   localStorage.setItem('reservationDetails', JSON.stringify(reservationData));
+  console.log('Données de réservation:', reservationData);
   router.push({
     name: 'Payment',
     query: {
       apartment_id: reservationDetails.value.apartment_id,
       startDate: reservationDetails.value.startDate,
       endDate: reservationDetails.value.endDate,
-      services: selectedServices.value.map(service => service.servicesproviders_id).join(','), // Pass the services
       totalPrice: totalPrice.value
     }
   });
@@ -111,8 +120,8 @@ onMounted(() => {
                 type="checkbox"
                 :value="service"
                 @change="toggleService(service)">
-            <label>{{ service.provider_name }} - {{ service.services[0].serviceType_name }} -
-              {{ service.services[0].price }}€</label>
+            <label>{{ service.provider_name }} - {{ service.services[0]?.serviceType_name }} -
+              {{ service.services[0]?.price }}€</label>
           </div>
         </div>
       </div>

@@ -1,9 +1,9 @@
 <script setup>
 import HeaderComponent from '../../../components/HeaderComponent.vue';
 import FooterComponent from '../../../components/FooterComponent.vue';
-import {onMounted, ref} from 'vue';
-import {useRoute, useRouter} from 'vue-router';
-import {loadStripe} from '@stripe/stripe-js';
+import { onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { loadStripe } from '@stripe/stripe-js';
 import axiosInstance from "@/utils/Axios.js";
 
 const stripe = ref(null);
@@ -14,18 +14,19 @@ const isSubmitting = ref(false);
 const router = useRouter();
 const route = useRoute();
 
-const reservationDetails = ref({
-  apartment_id: route.query.apartment_id,
-  startDate: route.query.startDate,
-  endDate: route.query.endDate,
-  services: Array.isArray(route.query.services) ? route.query.services : (route.query.services ? route.query.services.split(',') : []),
-  totalPrice: route.query.totalPrice
-});
+const reservationDetails = ref(
+    JSON.parse(localStorage.getItem('reservationDetails')) || {
+      apartment_id: route.query.apartment_id,
+      startDate: route.query.startDate,
+      endDate: route.query.endDate,
+      services: [],
+      totalPrice: route.query.totalPrice
+    }
+);
 
 const setupStripe = async () => {
-  console.log("Reservation details:", reservationDetails);
   try {
-    stripe.value = await loadStripe('pk_test_51PX7r7FYikej8zQ9TWuGDqr9ew7vxrMC1QNZIAlQZRnDHtJChmlkURIWO2k7NqXY4dLSqxYx3jJOx9o7clWPjEKe00gJ3nq1uY');
+    stripe.value = await loadStripe(import.meta.env.VITE_STRIPE_KEY);
     elements.value = stripe.value.elements();
     cardElement.value = elements.value.create('card');
     cardElement.value.mount('#card-element');
@@ -41,7 +42,7 @@ const handleSubmit = async () => {
 
   paymentError.value = null;
   try {
-    const {error, paymentMethod} = await stripe.value.createPaymentMethod({
+    const { error, paymentMethod } = await stripe.value.createPaymentMethod({
       type: 'card',
       card: cardElement.value,
     });
@@ -77,7 +78,7 @@ onMounted(() => {
 
 <template>
   <div class="ui container">
-    <HeaderComponent/>
+    <HeaderComponent />
     <div class="spacer"></div>
     <div class="ui segment">
       <h2 class="ui header">Page de Paiement</h2>
@@ -94,11 +95,14 @@ onMounted(() => {
         <p>{{ paymentError }}</p>
       </div>
     </div>
-    <FooterComponent/>
+    <FooterComponent />
   </div>
 </template>
 
 <style scoped>
+.spacer {
+  margin-top: 15%;
+}
 .ui.container {
   margin-top: 50px;
 }
