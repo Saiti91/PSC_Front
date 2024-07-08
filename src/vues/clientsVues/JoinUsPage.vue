@@ -58,10 +58,17 @@ const log = () => {
           <button class="ui primary button" @click="navigateTo('Login')">{{ $t('login') }}</button>
         </div>
       </div>
-      <div class="eight wide column">
+      <div v-if="isAuthenticated" class="eight wide column">
         <div class="ui segment">
           <h2>{{ $t('wish-work-us') }}</h2>
           <button class="ui primary button" @click="navigateTo('Join-Provider')">{{ $t('join-us-btn') }}</button>
+        </div>
+      </div>
+      <div v-if="!isAuthenticated" class="eight wide column">
+        <div class="ui segment">
+          <h2>{{ $t('wish-work-us') }}</h2>
+          <p>{{ $t('join-provider-txt') }}</p>
+          <button class="ui primary button" @click="navigateTo('Login')">{{ $t('login') }}</button>
         </div>
       </div>
     </div>
