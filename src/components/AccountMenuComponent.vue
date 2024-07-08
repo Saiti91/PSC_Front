@@ -20,10 +20,12 @@ const isRouteActive = (route) => activeRoute.value === route;
       <i class="user icon"></i>
       {{ $t('my-details') }}
     </router-link>
+    <!--
     <router-link to="/my-subscription" class="item" :class="{ active: isRouteActive('/my-subscription') }">
       <i class="credit card icon"></i>
       {{ $t('my-subscription') }}
     </router-link>
+    -->
     <router-link to="/my-past-bookings" class="item" :class="{ active: isRouteActive('/my-past-bookings') }">
       <i class="history icon"></i>
       {{ $t('my-past-bookings') }}
