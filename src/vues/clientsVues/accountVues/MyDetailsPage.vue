@@ -10,13 +10,7 @@ import Cookies from 'js-cookie';
 import VueJwtDecode from 'vue-jwt-decode';
 
 const route = useRoute();
-//const userId = ref(route.params.id);
-const user = ref({
-  lastName: '',
-  firstName: '',
-  email: '',
-  password: '',
-});
+
 const error = ref(null);
 
 const token = Cookies.get('token');
@@ -82,11 +76,11 @@ onMounted(fetchUserDetails);
           <form @submit.prevent="submitForm" class="ui form" v-if="user">
             <div class="field">
               <label>{{ $t('last-name') }}</label>
-              <input v-model="user.lastName" :readonly="!isEditing" type="text">
+              <input v-model="user.last_name" :readonly="!isEditing" type="text">
             </div>
             <div class="field">
               <label>{{ $t('first-name') }}</label>
-              <input v-model="user.firstName" :readonly="!isEditing" type="text">
+              <input v-model="user.first_name" :readonly="!isEditing" type="text">
             </div>
             <div class="field">
               <label>{{ $t('email') }}</label>
