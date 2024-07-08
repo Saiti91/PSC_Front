@@ -34,7 +34,6 @@ const logout = () => {
   Cookies.remove('token');
   isAuthenticated.value = false;
   // Redirection ou autre logique après déconnexion
-  router.push('/');
 };
 
 </script>
@@ -48,12 +47,11 @@ const logout = () => {
       <div class="right menu">
         <router-link v-if="!isAuthenticated" to="/login" class="item">{{ $t('login') }}</router-link>
         <a v-if="isAuthenticated" @click="logout" class="item">{{ $t('logout') }}</a>
-        <router-link to="/" class="item">{{ $t('home') }}</router-link>
-        <router-link to="/housing" class="item">{{ $t('our-housing') }}</router-link>
-        <router-link to="/join-us" class="item">{{ $t('join-us-btn') }}</router-link>
-        <router-link v-if="isAuthenticated" to="/my-account" class="item">{{ $t('account') }}</router-link>
-        <router-link to="" class="item">{{ $t('about') }}</router-link>
-        <router-link to="" class="item">{{ $t('contact') }}</router-link>
+        <router-link to="/HomeServicePage" class="item">{{ $t('Accueil') }}</router-link>
+        <router-link to="/DocsPage" class="item">{{ $t('Mes documents') }}</router-link>
+        <router-link to="/InterventionPage" class="item">{{ $t('Mes Interventions') }}</router-link>
+        <router-link to="/PersoPage" class="item">{{ $t('Mes Infos') }}</router-link>
+        <router-link to="/PlaningPage" class="item">{{ $t('Mon Planing') }}</router-link>
         <div class="ui simple dropdown item">
           <i class="world icon"></i> {{ currentLocale }}
           <div class="menu">
