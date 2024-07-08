@@ -20,21 +20,22 @@ const user = ref({
 const error = ref(null);
 
 const token = Cookies.get('token');
-console.log(token)
-const decodedToken2 = VueJwtDecode.decode(token);
-console.log(decodedToken2)
+
 // Fetch user details
 const fetchUserDetails = async () => {
   error.value = null;
     const decodedToken = VueJwtDecode.decode(token);
     console.log(decodedToken)
     const userId = parseInt(decodedToken.uid,10)
+  //comprendre pourquoi requête ne marche pas
   try {
-    const response = await axiosInstance.get(`/users/${userId}/`);
+    const response = await axiosInstance.get(`/users/${decodedToken.uid}/`);
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     user.value = response.data;
+    console.log(user.value)
+    console.log(response.data)
   } catch (err) {
     error.value = err.message;
   }
@@ -80,24 +81,25 @@ onMounted(fetchUserDetails);
           <h2>{{ $t('personal-info') }}</h2>
           <form @submit.prevent="submitForm" class="ui form" v-if="user">
             <div class="field">
-              <label>Nom</label>
+              <label>{{ $t('last-name') }}</label>
               <input v-model="user.lastName" :readonly="!isEditing" type="text">
             </div>
             <div class="field">
-              <label>Prénom</label>
+              <label>{{ $t('first-name') }}</label>
               <input v-model="user.firstName" :readonly="!isEditing" type="text">
             </div>
             <div class="field">
-              <label>Adresse email</label>
+              <label>{{ $t('email') }}</label>
               <input v-model="user.email" :readonly="!isEditing" type="email">
             </div>
             <div class="field">
-              <label>Mot de passe</label>
+              <label>{{ $t('password') }}</label>
               <input v-model="user.password" :readonly="!isEditing" type="password">
             </div>
             <div>
-              <button v-if="!isEditing" class="ui button primary" @click="startEditing">Modifier</button>
-              <button v-if="isEditing || showSaveButton" class="ui button primary" type="submit">Valider les modifications</button>
+              <button v-if="!isEditing" class="ui button primary" @click="startEditing">{{ $t('edit') }}</button>
+              <button v-if="isEditing || showSaveButton" class="ui button primary" type="submit">
+                {{ $t('validate-changes') }}</button>
             </div>
           </form>
           <div v-if="error" class="ui error message">{{ error }}</div>
