@@ -1,64 +1,68 @@
 <script setup>
 import AccountMenuComponent from "/src/components/AccountMenuComponent.vue";
-import HeaderComponent from '/src/components/HeaderComponent.vue';
-import FooterComponent from '/src/components/FooterComponent.vue';
+import HeaderComponent from "/src/components/HeaderComponent.vue";
+import FooterComponent from "/src/components/FooterComponent.vue";
 import Swal from "sweetalert2";
-import { ref, watch } from "vue";
+import axiosInstance from "@/utils/Axios.js";
+import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
+import Cookies from 'js-cookie';
+import VueJwtDecode from 'vue-jwt-decode';
 
-// Données du formulaire
-const formData = ref({
-  lastName: "Doe",
-  firstName: "John",
-  email: "john.doe@example.com",
-  password: "********",
-});
+const route = useRoute();
 
-const originalFormData = ref({ ...formData.value }); // Sauvegarde des données originales
+const error = ref(null);
 
-const modifiedFields = ref([]);
+const token = Cookies.get('token');
+
+// Fetch user details
+const fetchUserDetails = async () => {
+  error.value = null;
+    const decodedToken = VueJwtDecode.decode(token);
+    console.log(decodedToken)
+    const userId = parseInt(decodedToken.uid,10)
+  //comprendre pourquoi requête ne marche pas
+  try {
+    const response = await axiosInstance.get(`/users/${decodedToken.uid}/`);
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    user.value = response.data;
+    console.log(user.value)
+    console.log(response.data)
+  } catch (err) {
+    error.value = err.message;
+  }
+};
+
 const showSaveButton = ref(false);
 const isEditing = ref(false);
 
-// Vérifie si un champ a été modifié
-const isModified = (field) => {
-  return modifiedFields.value.includes(field);
-};
-
-// Commence l'édition des champs
+// Start editing
 const startEditing = () => {
   isEditing.value = true;
   showSaveButton.value = true;
 };
 
-// Soumet le formulaire
+// Submit form
 const submitForm = () => {
-  // Enregistrement dans la BDD (simulé ici)
   saveChanges();
 };
 
-// Sauvegarde des modifications dans la base de données (simulé ici)
-const saveChanges = () => {
-  // Ici vous pouvez simuler une requête HTTP avec Axios ou autre
-  // Dans notre exemple, nous allons simplement simuler un délai de 1 seconde
-  setTimeout(() => {
+// Save changes
+const saveChanges = async () => {
+  error.value = null;
+  try {
+    await axiosInstance.put(`/users/${userId.value}/`, user.value);
     Swal.fire("Modifications enregistrées", "", "success");
-    originalFormData.value = { ...formData.value }; // Mettre à jour les données originales
-    modifiedFields.value = []; // Réinitialiser les champs modifiés
     showSaveButton.value = false;
-    isEditing.value = false; // Terminer l'édition
-  }, 1000);
+    isEditing.value = false;
+  } catch (err) {
+    error.value = err.message;
+  }
 };
 
-// Vérifie les modifications lors de la saisie
-watch(formData, (newValue, oldValue) => {
-  modifiedFields.value = []; // Réinitialiser les champs modifiés
-  for (const field in newValue) {
-    if (newValue[field] !== originalFormData.value[field]) {
-      modifiedFields.value.push(field);
-    }
-  }
-  showSaveButton.value = modifiedFields.value.length > 0 && isEditing.value;
-});
+onMounted(fetchUserDetails);
 </script>
 
 <template>
@@ -68,29 +72,31 @@ watch(formData, (newValue, oldValue) => {
       <AccountMenuComponent />
       <div class="content-container">
         <div class="content">
-          <h2>Informations personnelles</h2>
-          <form @submit.prevent="submitForm" class="ui form">
+          <h2>{{ $t('personal-info') }}</h2>
+          <form @submit.prevent="submitForm" class="ui form" v-if="user">
             <div class="field">
-              <label>Nom</label>
-              <input v-model="formData.lastName" :readonly="!isEditing" type="text">
+              <label>{{ $t('last-name') }}</label>
+              <input v-model="user.last_name" :readonly="!isEditing" type="text">
             </div>
             <div class="field">
-              <label>Prénom</label>
-              <input v-model="formData.firstName" :readonly="!isEditing" type="text">
+              <label>{{ $t('first-name') }}</label>
+              <input v-model="user.first_name" :readonly="!isEditing" type="text">
             </div>
             <div class="field">
-              <label>Adresse email</label>
-              <input v-model="formData.email" :readonly="!isEditing" type="email">
+              <label>{{ $t('email') }}</label>
+              <input v-model="user.email" :readonly="!isEditing" type="email">
             </div>
             <div class="field">
-              <label>Mot de passe</label>
-              <input v-model="formData.password" :readonly="!isEditing" type="password">
+              <label>{{ $t('password') }}</label>
+              <input v-model="user.password" :readonly="!isEditing" type="password">
             </div>
             <div>
-              <button v-if="!isEditing" class="ui button primary" @click="startEditing">Modifier</button>
-              <button v-if="isEditing || showSaveButton" class="ui button primary" type="submit">Valider les modifications</button>
+              <button v-if="!isEditing" class="ui button primary" @click="startEditing">{{ $t('edit') }}</button>
+              <button v-if="isEditing || showSaveButton" class="ui button primary" type="submit">
+                {{ $t('validate-changes') }}</button>
             </div>
           </form>
+          <div v-if="error" class="ui error message">{{ error }}</div>
         </div>
       </div>
     </div>
@@ -98,10 +104,11 @@ watch(formData, (newValue, oldValue) => {
   </div>
 </template>
 
+
 <style scoped>
 .account-container {
   display: flex;
-  margin-top: 70px; /* Ajuster pour la hauteur du header */
+  margin-top: 5%;
 }
 
 .content-container {
@@ -117,7 +124,7 @@ watch(formData, (newValue, oldValue) => {
 }
 
 .field {
-  margin-bottom: 15px; /* Espacement entre les champs */
+  margin-bottom: 15px;
 }
 
 footer {
