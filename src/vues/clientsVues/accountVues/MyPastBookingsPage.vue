@@ -13,6 +13,11 @@ const error = ref(null);
 const reservations = ref([]);
 const noReservations = ref(false);
 
+const formatDate = (date) => {
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  return new Date(date).toLocaleDateString(undefined, options);
+};
+
 const fetchUserBookings = async () => {
   error.value = null;
   const decodedToken = VueJwtDecode.decode(token);
@@ -77,8 +82,8 @@ onMounted(fetchUserBookings);
                     <span class="location">{{ reservation.apartmentDetails.town }}</span>
                   </div>
                   <div class="extra content">
-                    <div>{{ new Date(reservation.date_start).toLocaleDateString() }}</div>
-                    <div>{{ new Date(reservation.date_end).toLocaleDateString() }}</div>
+                    <div>{{  formatDate(reservation.date_start) }}</div>
+                    <div>{{  formatDate(reservation.date_end) }}</div>
                   </div>
                 </div>
               </div>
