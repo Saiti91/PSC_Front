@@ -1,7 +1,7 @@
 <script setup>
 import AccountMenuComponent from "/src/components/AccountMenuComponent.vue";
-import HeaderComponent from '/src/components/HeaderComponent.vue'
-import FooterComponent from '/src/components/FooterComponent.vue'
+import HeaderComponent from '/src/components/HeaderComponent.vue';
+import FooterComponent from '/src/components/FooterComponent.vue';
 import 'semantic-ui-css/semantic.min.css';
 import { onMounted, ref } from "vue";
 import axiosInstance from "@/utils/Axios.js";
@@ -11,7 +11,7 @@ import Swal from "sweetalert2";
 
 const token = Cookies.get('token');
 const error = ref(null);
-const user = ref([]);
+const reservations = ref([]);
 
 const fetchUserBookings = async () => {
   error.value = null;
@@ -19,55 +19,69 @@ const fetchUserBookings = async () => {
   const userId = parseInt(decodedToken.uid, 10);
 
   try {
+    console.log(`Fetching reservations for user ID: ${userId}`);
     const response = await axiosInstance.get(`/reservations/users/${userId}/`);
+    console.log('Response status:', response.status);
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const allReservations = response.data;
-    const pastReservations = allReservations.filter(reservation => new Date(reservation.endDate) < new Date());
-    user.value = pastReservations;
+    console.log(allReservations)
+    const pastReservations = allReservations.filter(reservation => new Date(reservation.date_start) < new Date());
+    reservations.value = pastReservations;
+    for (const reservation of reservations.value) {
+      const apartmentId = reservation.apartment_id;
+      console.log(apartmentId)
+      try {
+        const responseApartement = await axiosInstance.get(`/apartments/${apartmentId}/`);
+        reservation.apartmentDetails = responseApartement.data; // Ajouter les détails de l'appartement à la réservation
+        console.log(reservation.apartmentDetails)
+      } catch (err) {
+        console.error(`Error fetching apartment details for apartment ID ${apartmentId}:`, err);
+      }
+    }
+    console.log(reservations.value);
   } catch (err) {
     error.value = err.message;
+    console.error("Error fetching reservations:", err);
   }
 };
 
-onMounted(fetchUserBookings)
+onMounted(fetchUserBookings);
 </script>
 
 <template>
   <div>
-    <HeaderComponent />
+    <HeaderComponent/>
     <div class="account-container">
-      <AccountMenuComponent />
+      <AccountMenuComponent/>
       <div class="content-container">
         <div class="content">
           <h2>{{ $t('my-past-bookings') }}</h2>
           <div v-if="error" class="ui negative message">{{ error }}</div>
           <div v-else class="ui stackable four column grid">
-            <div class="column" v-for="reservation in user" :key="reservation.reservationId">
-              <router-link :to="`/housing/${reservation.apartmentId}`" class="ui card">
+            <div class="column" v-for="reservation in reservations" :key="reservation.reservation_id">
                 <div class="ui card">
                   <div class="image">
-                    <img :src="reservation.apartmentImage" :alt="`Image de ${reservation.apartmentName}`">
+                    <img :src="reservation.apartmentDetails.image" :alt="`Image de ${reservation.apartmentDetails.name}`">
                   </div>
                   <div class="content">
-                    <a class="header">{{ reservation.apartmentName }}</a>
+                    <a class="header">{{ reservation.apartmentDetails.name }}</a>
                     <div class="meta">
-                      <span class="location">{{ reservation.apartmentTown }}</span>
+                      <span class="location">{{ reservation.apartmentDetails.town }}</span>
                     </div>
                     <div class="extra content">
-                      <!-- étoiles -->
-                      <div class="ui star rating" :data-rating="reservation.stars" data-max-rating="5"></div>
+                      <div >{{ reservation.date_start }}</div>
+                      <div >{{ reservation.date_end }}</div>
                     </div>
                   </div>
                 </div>
-              </router-link>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <FooterComponent />
+    <FooterComponent/>
   </div>
 </template>
 
