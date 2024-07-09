@@ -1,6 +1,6 @@
 <script setup>
-import {onMounted, ref} from 'vue';
-import {useRoute} from 'vue-router';
+import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import axiosInstance from '/src/utils/Axios.js';
 import HeaderComponent from "/src/components/HeaderAdmin.vue";
 import FooterComponent from "/src/components/FooterComponent.vue";
@@ -12,11 +12,11 @@ const route = useRoute();
 const apartmentId = ref(route.params.id);
 const apartments = ref({});
 const error = ref(null);
-const events = ref([]); // Define events state
+const events = ref([]);
 
 const parseStringArray = (stringArray) => {
   try {
-    const cleanedString = stringArray.slice(1, -1); // Retirer les accolades
+    const cleanedString = stringArray.slice(1, -1);
     const parsedArray = cleanedString.split('","').map(str => {
       const relativePath = str.replace(/"/g, '').replace(/^D:\\\\Projet_PCS\\\\src\\\\assets\\\\housing\\\\6\\\\/, '/assets/housing/6/');
       return relativePath;
@@ -33,7 +33,7 @@ const transformCalendarData = (calendar) => {
   return calendar.map(event => ({
     start: event.date,
     end: event.date,
-    available: event.available
+    title: event.available ? 'available' : 'reserved'
   }));
 };
 
@@ -69,7 +69,6 @@ const fetchApartmentDetails = async () => {
       rules: response.data.rules || '',
       calendar: response.data.calendar || []
     };
-    // Transform and set events
     events.value = transformCalendarData(apartments.value.calendar);
   } catch (err) {
     error.value = err.message;
@@ -82,14 +81,14 @@ const handleCellClick = async (date) => {
   console.log('Clicked Date:', clickedDate);
 
   const event = events.value.find(e => e.start === clickedDate);
-  const newAvailability = !event;
+  const newStatus = event && event.title === 'available' ? 'available' : 'unavailable';
 
   const requestData = {
     apartment_id: apartmentId.value,
     dates: [
       {
         date: clickedDate,
-        available: !newAvailability
+        available: newStatus
       }
     ]
   };
@@ -97,8 +96,7 @@ const handleCellClick = async (date) => {
 
   try {
     await axiosInstance.patch(`/apartmentsCalendar/availability/${apartmentId.value}/`, requestData);
-    console.log(`Date: ${clickedDate}, Available: ${newAvailability}`);
-    // Refetch apartment details to update the calendar
+    console.log(`Date: ${clickedDate}, Status: ${newStatus}`);
     await fetchApartmentDetails();
   } catch (err) {
     console.log(`Failed to update availability: ${err.message}`);
@@ -126,8 +124,7 @@ onMounted(fetchApartmentDetails);
 
       <div class="ui two column stackable grid">
         <div class="column">
-          <PhotoCarousel v-if="apartments.images && apartments.images.length" :photos="apartments.images"
-                         class="ui medium images"/>
+          <PhotoCarousel v-if="apartments.images && apartments.images.length" :photos="apartments.images" class="ui medium images"/>
         </div>
         <div class="column">
           <div class="ui segment">
