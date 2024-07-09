@@ -42,7 +42,6 @@ const saveReservation = async () => {
     return date.toISOString().split('T')[0];
   };
 
-  // Add the customer field and other necessary fields
   const dataToSend = {
     customer: parseInt(decodedToken.uid, 10),
     date_start: formatDate(reservationDetails.startDate),
