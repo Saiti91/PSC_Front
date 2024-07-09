@@ -3,32 +3,33 @@ import AccountMenuComponent from "/src/components/AccountMenuComponent.vue";
 import HeaderComponent from '/src/components/HeaderComponent.vue'
 import FooterComponent from '/src/components/FooterComponent.vue'
 import 'semantic-ui-css/semantic.min.css';
-import {onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
 import axiosInstance from "@/utils/Axios.js";
 import Cookies from "js-cookie";
 import VueJwtDecode from 'vue-jwt-decode';
 import Swal from "sweetalert2";
 
 const token = Cookies.get('token');
+const error = ref(null);
 
-// Trouvez comment faire marcher cette fonction :
-// - régler pb droit pour suppression
-// - voir comment on fait pour que ça marche avec le bouton
-// - s'assurer que si l'utilisateur est proprio d'un bien il ne puisse pas supprimer lui-même son compte
 const deleteUser = async () => {
   error.value = null;
   const decodedToken = VueJwtDecode.decode(token);
-  console.log(decodedToken)
+  const userId = parseInt(decodedToken.uid,10)
   try {
-    const response = await axiosInstance.delete(`/users/${decodedToken.uid}/`);
-    if (response.status !== 200) {
+    const response = await axiosInstance.delete(`/users/${userId}/`);
+    if (response.status == 403) {
+      Swal.fire("Erreur", "Vous n'avez pas les droits nécessaires pour supprimer cet utilisateur", "error");
+    } else if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
+    } else {
+      Swal.fire("Succès", "Utilisateur supprimé avec succès", "success");
+      // Vous pouvez rediriger l'utilisateur vers une autre page après la suppression
+      // router.push('/some-page');
     }
-    user.value = response.data;
-    console.log(user.value)
-    console.log(response.data)
   } catch (err) {
     error.value = err.message;
+    Swal.fire("Erreur", error.value, "error");
   }
 };
 </script>
@@ -42,13 +43,14 @@ const deleteUser = async () => {
         <div class="content">
           <h2>{{ $t('left-title') }}</h2>
           <p>{{ $t('left-txt') }}</p>
-          <button  class="ui button primary" type="submit">{{ $t('left-btn') }}</button>
+          <button class="ui button primary" @click="deleteUser">{{ $t('left-btn') }}</button>
         </div>
       </div>
     </div>
     <FooterComponent />
   </div>
 </template>
+
 
 
 <style scoped>
