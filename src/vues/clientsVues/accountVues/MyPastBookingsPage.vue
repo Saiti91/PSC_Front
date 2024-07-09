@@ -26,12 +26,10 @@ const fetchUserBookings = async () => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const allReservations = response.data;
-    console.log(allReservations)
     const pastReservations = allReservations.filter(reservation => new Date(reservation.date_start) < new Date());
     reservations.value = pastReservations;
     for (const reservation of reservations.value) {
       const apartmentId = reservation.apartment_id;
-      console.log(apartmentId)
       try {
         const responseApartement = await axiosInstance.get(`/apartments/${apartmentId}/`);
         reservation.apartmentDetails = responseApartement.data; // Ajouter les détails de l'appartement à la réservation
@@ -40,7 +38,6 @@ const fetchUserBookings = async () => {
         console.error(`Error fetching apartment details for apartment ID ${apartmentId}:`, err);
       }
     }
-    console.log(reservations.value);
   } catch (err) {
     error.value = err.message;
     console.error("Error fetching reservations:", err);
