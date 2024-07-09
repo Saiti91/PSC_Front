@@ -12,23 +12,24 @@ import VueJwtDecode from 'vue-jwt-decode';
 const route = useRoute();
 
 const error = ref(null);
-const user = ref(null);
+const user = ref({});
 const token = Cookies.get('token');
 const decodedToken = VueJwtDecode.decode(token);
-const userId = parseInt(decodedToken.uid,10)
+const userId = parseInt(decodedToken.uid, 10);
+console.log(token);
 
 // Fetch user details
 const fetchUserDetails = async () => {
   error.value = null;
   try {
     const response = await axiosInstance.get(`/users/${userId}/`);
-    console.log(response.data)
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    user.value = response.data;
-    console.log(user.value)
-    console.log(response.data)
+    const data = response.data;
+    data.telephone = data.telephone || ''; // Assurez-vous que telephone est une chaîne vide s'il est null
+    user.value = data;
+    console.log(response.data);
   } catch (err) {
     error.value = err.message;
   }
@@ -52,7 +53,18 @@ const submitForm = () => {
 const saveChanges = async () => {
   error.value = null;
   try {
-    await axiosInstance.post(`/users/${userId}/`, user.value);
+    const userPayload = { ...user.value };
+    delete userPayload.created_at; // Suppression de la propriété created_at
+    if (userPayload.telephone === '') {
+      delete userPayload.telephone; // Supprimez telephone s'il est vide
+    }
+    if (userPayload.address_id === null) {
+      delete userPayload.address_id; // Supprimez address_id s'il est null
+    }
+    if (userPayload.serviceprovider_id === null) {
+      delete userPayload.serviceprovider_id; // Supprimez serviceprovider_id s'il est null
+    }
+    await axiosInstance.patch(`/users/${userId}/`, userPayload);
     Swal.fire("Modifications enregistrées", "", "success");
     showSaveButton.value = false;
     isEditing.value = false;
@@ -63,6 +75,10 @@ const saveChanges = async () => {
 
 onMounted(fetchUserDetails);
 </script>
+
+
+
+
 
 <template>
   <div>
@@ -86,6 +102,10 @@ onMounted(fetchUserDetails);
               <input v-model="user.email" :readonly="!isEditing" type="email">
             </div>
             <div class="field">
+              <label>{{ $t('phone') }}</label>
+              <input v-model="user.telephone" :readonly="!isEditing" type="tel">
+            </div>
+            <div class="field">
               <label>{{ $t('password') }}</label>
               <input v-model="user.password" :readonly="!isEditing" type="password">
             </div>
@@ -97,6 +117,7 @@ onMounted(fetchUserDetails);
           </form>
           <div v-if="error" class="ui error message">{{ error }}</div>
         </div>
+        <div class="spacer"></div>
       </div>
     </div>
     <FooterComponent />
@@ -105,6 +126,10 @@ onMounted(fetchUserDetails);
 
 
 <style scoped>
+.spacer {
+  margin-top: 7%;
+}
+
 .account-container {
   display: flex;
   margin-top: 5%;
