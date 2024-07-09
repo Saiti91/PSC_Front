@@ -18,12 +18,11 @@ const token = Cookies.get('token');
 // Fetch user details
 const fetchUserDetails = async () => {
   error.value = null;
-    const decodedToken = VueJwtDecode.decode(token);
-    console.log(decodedToken)
-    const userId = parseInt(decodedToken.uid,10)
-  //comprendre pourquoi requête ne marche pas
+  const decodedToken = VueJwtDecode.decode(token);
+  const userId = parseInt(decodedToken.uid,10)
   try {
-    const response = await axiosInstance.get(`/users/${decodedToken.uid}/`);
+    const response = await axiosInstance.get(`/users/${userId}/`);
+    console.log(response.data)
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
