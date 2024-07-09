@@ -19,7 +19,7 @@ const deleteUser = async () => {
   try {
     const response = await axiosInstance.delete(`/users/${userId}/`);
     if (response.status == 403) {
-      Swal.fire("Erreur", "Vous n'avez pas les droits nécessaires pour supprimer cet utilisateur", "error");
+      Swal.fire("Erreur", "Vous ne pouvez pas supprimer votre compte si vous nous avez confié un bien. Faites une demande auprès de l'assistance pour vous retirer de nos services", "error");
     } else if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     } else {

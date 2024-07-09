@@ -18,18 +18,20 @@ const fetchUserBookings = async () => {
   error.value = null;
   const decodedToken = VueJwtDecode.decode(token);
   console.log(decodedToken)
+  const userId = parseInt(decodedToken.uid,10)
   try {
-    const response = await axiosInstance.get(`/reservations/${decodedToken.uid}/`);
+    const response = await axiosInstance.get(`/reservations/users/${userId}/`);
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     user.value = response.data;
-    console.log(user.value)
     console.log(response.data)
   } catch (err) {
     error.value = err.message;
   }
 };
+
+onMounted(fetchUserBookings)
 </script>
 
 <template>
@@ -41,7 +43,7 @@ const fetchUserBookings = async () => {
         <div class="content">
           <h2>{{ $t('my-past-bookings') }}</h2>
           <div class="ui stackable four column grid">
-            <div class="column" v-for="rservations in displayedApartments" :key="apartment.apartments_id">
+            <div class="column" v-for="reservations in displayedReservations" :key="reservations.reservationsid">
               <router-link :to="`/housing/${apartment.apartments_id}`" class="ui card">
                 <div class="ui card">
                   <div class="image">
