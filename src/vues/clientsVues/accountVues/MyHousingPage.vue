@@ -1,11 +1,205 @@
 <script setup>
+import AccountMenuComponent from "/src/components/AccountMenuComponent.vue";
+import HeaderComponent from "/src/components/HeaderComponent.vue";
+import FooterComponent from "/src/components/FooterComponent.vue";
+import Swal from "sweetalert2";
+import axiosInstance from "@/utils/Axios.js";
+import { onMounted, ref } from 'vue';
+import Cookies from 'js-cookie';
+import VueJwtDecode from 'vue-jwt-decode';
+import { useRoute } from 'vue-router';
+import VueCal from 'vue-cal';
+import 'vue-cal/dist/vuecal.css';
+import PhotoCarousel from '/src/components/PhotoCarousel.vue';
 
+const route = useRoute();
+
+const error = ref(null);
+const user = ref({});
+const apartments = ref([]);
+const token = Cookies.get('token');
+const decodedToken = VueJwtDecode.decode(token);
+const role = decodedToken.urole;
+const userId = parseInt(decodedToken.uid, 10);
+
+// Définir la fonction fetchUserDetails en dehors de la condition
+const fetchUserDetails = async () => {
+  error.value = null;
+  try {
+    const response = await axiosInstance.get(`/users/${userId}/`);
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = response.data;
+    data.telephone = data.telephone || '';
+    user.value = data;
+    console.log(response.data);
+
+    // Récupérer les biens de l'utilisateur
+    const apartmentsResponse = await axiosInstance.get(`/apartments/user/${userId}/`);
+    if (apartmentsResponse.status !== 200) {
+      throw new Error(`HTTP error! status: ${apartmentsResponse.status}`);
+    }
+    apartments.value = apartmentsResponse.data.map(apartment => {
+      apartment.events = transformCalendarData(apartment.calendar);
+      return apartment;
+    });
+  } catch (err) {
+    error.value = err.message;
+  }
+};
+
+// Lancer la requête fetchUserDetails seulement si le rôle est différent de customer
+if (role !== 'customer') {
+  onMounted(fetchUserDetails);
+}
+
+// Parse string array
+const parseStringArray = (stringArray) => {
+  try {
+    const cleanedString = stringArray.slice(1, -1);
+    const parsedArray = cleanedString.split('","').map(str => {
+      const relativePath = str.replace(/"/g, '');
+      return relativePath;
+    });
+    console.log('Parsed images:', parsedArray);
+    return parsedArray;
+  } catch (e) {
+    console.error('Error parsing string array:', e);
+    return [];
+  }
+};
+
+// Transform calendar data
+const transformCalendarData = (calendar) => {
+  return calendar.map(event => ({
+    start: event.date,
+    end: event.date,
+    available: event.available
+  }));
+};
+
+// Handle cell click
+const handleCellClick = async (apartmentId, date) => {
+  console.log('Cell clicked:', date);
+  const clickedDate = date.toLocaleDateString('en-CA');
+  console.log('Clicked Date:', clickedDate);
+
+  const apartment = apartments.value.find(apartment => apartment.apartments_id === apartmentId);
+  const event = apartment.events.find(e => e.start === clickedDate);
+  const newAvailability = !event;
+
+  const requestData = {
+    apartment_id: apartmentId,
+    dates: [
+      {
+        date: clickedDate,
+        available: !newAvailability
+      }
+    ]
+  };
+  console.log("Sending PATCH request with data:", requestData);
+
+  try {
+    await axiosInstance.patch(`/apartmentsCalendar/availability/${apartmentId}/`, requestData);
+    console.log(`Date: ${clickedDate}, Available: ${newAvailability}`);
+    // Refetch apartment details to update the calendar
+    await fetchUserDetails();
+  } catch (err) {
+    console.log(`Failed to update availability: ${err.message}`);
+  }
+};
 </script>
 
 <template>
-<p>mes biens</p>
+  <div>
+    <HeaderComponent/>
+    <div class="account-container">
+      <AccountMenuComponent/>
+      <div class="content-container">
+        <div class="content">
+          <h2>{{ $t('my-housing') }}</h2>
+          <p v-if="role === 'customer'">Vous ne nous avez pas encore confié de bien</p>
+          <div v-else>
+            <div v-for="apartment in apartments" :key="apartment.apartments_id" class="ui segment">
+              <header class="ui header">
+                <h1>{{ apartment.apartments_id }}</h1>
+                <p>{{ apartment.street }}, {{ apartment.town }}</p>
+              </header>
+              <div class="ui divider"></div>
+              <div class="ui two column stackable grid">
+                <div class="column">
+                  <PhotoCarousel v-if="apartment.images && apartment.images.length" :photos="apartment.images"
+                                 class="ui medium images"/>
+                </div>
+                <div class="column">
+                  <div class="ui segment">
+                    <h2 class="ui header">Informations de base</h2>
+                    <p><strong>Prix :</strong> {{ apartment.price }}€</p>
+                    <p><strong>Surface :</strong> {{ apartment.surface }} m²</p>
+                    <p><strong>Nombre de chambres :</strong> {{ apartment.numberofroom }}</p>
+                    <p><strong>Disponibilité :</strong> {{ apartment.available }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="ui segment">
+                <h2 class="ui header">Description détaillée</h2>
+                <p>{{ apartment.description }}</p>
+                <h3 class="ui header">Équipements</h3>
+                <ul class="ui list">
+                  <li v-for="amenity in apartment.features" :key="amenity">{{ amenity }}</li>
+                </ul>
+                <vue-cal
+                    xsmall
+                    :disable-views="['day','year','years','week']"
+                    events-count-on-year-view
+                    active-view="month"
+                    :events="apartment.events"
+                    @cell-click="date => handleCellClick(apartment.apartments_id, date)">
+                </vue-cal>
+              </div>
+              <div class="ui segment">
+                <h2 class="ui header">Informations supplémentaires</h2>
+                <p><strong>Règles de location :</strong> {{ apartment.rules }}</p>
+                <p><strong>Conditions de paiement :</strong></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="spacer"></div>
+      </div>
+    </div>
+    <FooterComponent/>
+  </div>
 </template>
 
 <style scoped>
+.spacer {
+  margin-top: 7%;
+}
 
+.account-container {
+  display: flex;
+  margin-top: 5%;
+}
+
+.content-container {
+  flex: 1;
+  padding: 20px;
+}
+
+.content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.field {
+  margin-bottom: 15px;
+}
+
+footer {
+  margin-top: auto;
+}
 </style>
