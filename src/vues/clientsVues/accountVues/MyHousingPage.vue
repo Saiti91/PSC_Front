@@ -41,6 +41,8 @@ const fetchUserDetails = async () => {
       throw new Error(`HTTP error! status: ${apartmentsResponse.status}`);
     }
     apartments.value = apartmentsResponse.data.map(apartment => {
+      apartment.images = parseStringArray(apartment.images);
+      apartment.features = parseFeaturesString(apartment.features);
       apartment.events = transformCalendarData(apartment.calendar);
       return apartment;
     });
@@ -49,8 +51,8 @@ const fetchUserDetails = async () => {
   }
 };
 
-// Lancer la requête fetchUserDetails seulement si le rôle est différent de customer
-if (role !== 'customer') {
+// Lancer la requête fetchUserDetails seulement si le rôle est égal à owner (évite les erreurs 404)
+if (role === 'owner') {
   onMounted(fetchUserDetails);
 }
 
@@ -59,10 +61,10 @@ const parseStringArray = (stringArray) => {
   try {
     const cleanedString = stringArray.slice(1, -1);
     const parsedArray = cleanedString.split('","').map(str => {
-      const relativePath = str.replace(/"/g, '');
+      const relativePath = str.replace(/"/g, '').replace(/{/g, '').replace(/}/g, '');
       return relativePath;
     });
-    console.log('Parsed images:', parsedArray);
+    console.log('Parsed array:', parsedArray);
     return parsedArray;
   } catch (e) {
     console.error('Error parsing string array:', e);
@@ -70,12 +72,23 @@ const parseStringArray = (stringArray) => {
   }
 };
 
+// Parse features string
+const parseFeaturesString = (string) => {
+  try {
+    return string.split(',').map(item => item.replace(/"/g, '').replace(/{/g, '').replace(/}/g, '').trim());
+  } catch (e) {
+    console.error('Error parsing features string:', e);
+    return [];
+  }
+};
+
 // Transform calendar data
 const transformCalendarData = (calendar) => {
   return calendar.map(event => ({
-    start: event.date,
-    end: event.date,
-    available: event.available
+    start: new Date(event.date).toISOString(),
+    end: new Date(event.date).toISOString(),
+    title: event.available ? 'Disponible' : 'Non disponible',
+    class: event.available ? 'available' : 'unavailable'
   }));
 };
 
@@ -109,7 +122,24 @@ const handleCellClick = async (apartmentId, date) => {
     console.log(`Failed to update availability: ${err.message}`);
   }
 };
+
+// Formater la description
+const formattedDescription = (description) => {
+  if (!description) {
+    return '';
+  }
+
+  try {
+    const descObject = JSON.parse(description);
+    return Object.entries(descObject)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(', ');
+  } catch (e) {
+    return description; // Retourne la description originale si JSON.parse échoue
+  }
+};
 </script>
+
 
 <template>
   <div>
@@ -119,32 +149,25 @@ const handleCellClick = async (apartmentId, date) => {
       <div class="content-container">
         <div class="content">
           <h2>{{ $t('my-housing') }}</h2>
-          <p v-if="role === 'customer'">Vous ne nous avez pas encore confié de bien</p>
+          <p v-if="role !== 'owner'">Vous ne nous avez pas encore confié de bien</p>
           <div v-else>
-            <div v-for="apartment in apartments" :key="apartment.apartments_id" class="ui segment">
+            <div v-for="apartment in apartments" :key="apartment.apartments_id" class="ui segment apartment-segment">
               <header class="ui header">
-                <h1>{{ apartment.apartments_id }}</h1>
+                <h1>{{ apartment.name }}</h1>
                 <p>{{ apartment.street }}, {{ apartment.town }}</p>
               </header>
               <div class="ui divider"></div>
-              <div class="ui two column stackable grid">
-                <div class="column">
-                  <PhotoCarousel v-if="apartment.images && apartment.images.length" :photos="apartment.images"
-                                 class="ui medium images"/>
-                </div>
-                <div class="column">
-                  <div class="ui segment">
-                    <h2 class="ui header">Informations de base</h2>
-                    <p><strong>Prix :</strong> {{ apartment.price }}€</p>
-                    <p><strong>Surface :</strong> {{ apartment.surface }} m²</p>
-                    <p><strong>Nombre de chambres :</strong> {{ apartment.numberofroom }}</p>
-                    <p><strong>Disponibilité :</strong> {{ apartment.available }}</p>
-                  </div>
-                </div>
+              <PhotoCarousel v-if="apartment.images && apartment.images.length" :photos="apartment.images"
+                             class="ui medium images"/>
+              <div class="ui segment">
+                <h2 class="ui header">Informations de base</h2>
+                <p><strong>Prix :</strong> {{ apartment.price }}€</p>
+                <p><strong>Surface :</strong> {{ apartment.surface }} m²</p>
+                <p><strong>Nombre de chambres :</strong> {{ apartment.numberofroom }}</p>
               </div>
               <div class="ui segment">
                 <h2 class="ui header">Description détaillée</h2>
-                <p>{{ apartment.description }}</p>
+                <p>{{ formattedDescription(apartment.description) }}</p>
                 <h3 class="ui header">Équipements</h3>
                 <ul class="ui list">
                   <li v-for="amenity in apartment.features" :key="amenity">{{ amenity }}</li>
@@ -175,31 +198,49 @@ const handleCellClick = async (apartmentId, date) => {
 
 <style scoped>
 .spacer {
-  margin-top: 7%;
+margin-top: 7%;
 }
 
 .account-container {
-  display: flex;
-  margin-top: 5%;
+display: flex;
+margin-top: 5%;
 }
 
 .content-container {
-  flex: 1;
-  padding: 20px;
+flex: 1;
+padding: 20px;
+box-sizing: border-box;
 }
 
 .content {
-  background: #fff;
-  padding: 20px;
-  border-radius: 4px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+background: #fff;
+padding: 20px;
+border-radius: 4px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.apartment-segment {
+max-width: 100%;
+box-sizing: border-box;
+margin-bottom: 20px;
+}
+
+.ui.segment {
+margin-top: 20px;
 }
 
 .field {
-  margin-bottom: 15px;
+margin-bottom: 15px;
 }
 
 footer {
-  margin-top: auto;
+margin-top: auto;
+}
+
+.ui.medium.images {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
 }
 </style>
+
