@@ -5,7 +5,31 @@ import axiosInstance from "@/utils/Axios.js";
 import HeaderComponent from '../../components/HeaderServiceVue.vue'
 import FooterComponent from '../../components/FooterComponent.vue'
 import 'semantic-ui-css/semantic.min.css';
+import Cookies from 'js-cookie';
+import VueJwtDecode from 'vue-jwt-decode';
 
+const calendar = ref(null);
+const error = ref(null);
+
+
+const fetchcalendar = async () => {
+  error.value = null;
+  const token  = Cookies.get('token');
+  const decodedToken = VueJwtDecode.decode(token);
+  console.log(decodedToken)
+  const userId = parseInt(decodedToken.uid,10)
+  try {
+    const response = await axiosInstance.get(`/serviceCalendar/${userId}/`);
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    calendar.value = response.data;
+    console.log(response.data);
+  } catch (err) {
+    error.value = err.message;
+  }
+};
+onMounted(fetchcalendar);
 
 
 </script>
