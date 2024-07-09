@@ -4,10 +4,10 @@ import HeaderComponent from "/src/components/HeaderComponent.vue";
 import FooterComponent from "/src/components/FooterComponent.vue";
 import Swal from "sweetalert2";
 import axiosInstance from "@/utils/Axios.js";
-import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import {onMounted, ref} from 'vue';
 import Cookies from 'js-cookie';
 import VueJwtDecode from 'vue-jwt-decode';
+import {useRoute} from 'vue-router';
 
 const route = useRoute();
 
@@ -27,7 +27,7 @@ const fetchUserDetails = async () => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = response.data;
-    data.telephone = data.telephone || ''; // Assurez-vous que telephone est une chaîne vide s'il est null
+    data.telephone = data.telephone || '';
     user.value = data;
     console.log(response.data);
   } catch (err) {
@@ -53,7 +53,7 @@ const submitForm = () => {
 const saveChanges = async () => {
   error.value = null;
   try {
-    const userPayload = { ...user.value };
+    const userPayload = {...user.value};
     delete userPayload.created_at; // Suppression de la propriété created_at
     if (userPayload.telephone === '') {
       delete userPayload.telephone; // Supprimez telephone s'il est vide
@@ -77,14 +77,11 @@ onMounted(fetchUserDetails);
 </script>
 
 
-
-
-
 <template>
   <div>
-    <HeaderComponent />
+    <HeaderComponent/>
     <div class="account-container">
-      <AccountMenuComponent />
+      <AccountMenuComponent/>
       <div class="content-container">
         <div class="content">
           <h2>{{ $t('personal-info') }}</h2>
@@ -112,7 +109,8 @@ onMounted(fetchUserDetails);
             <div>
               <button v-if="!isEditing" class="ui button primary" @click="startEditing">{{ $t('edit') }}</button>
               <button v-if="isEditing || showSaveButton" class="ui button primary" type="submit">
-                {{ $t('validate-changes') }}</button>
+                {{ $t('validate-changes') }}
+              </button>
             </div>
           </form>
           <div v-if="error" class="ui error message">{{ error }}</div>
@@ -120,7 +118,7 @@ onMounted(fetchUserDetails);
         <div class="spacer"></div>
       </div>
     </div>
-    <FooterComponent />
+    <FooterComponent/>
   </div>
 </template>
 
