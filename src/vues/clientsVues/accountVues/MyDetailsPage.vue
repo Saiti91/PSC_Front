@@ -12,14 +12,14 @@ import VueJwtDecode from 'vue-jwt-decode';
 const route = useRoute();
 
 const error = ref(null);
-
+const user = ref(null);
 const token = Cookies.get('token');
+const decodedToken = VueJwtDecode.decode(token);
+const userId = parseInt(decodedToken.uid,10)
 
 // Fetch user details
 const fetchUserDetails = async () => {
   error.value = null;
-  const decodedToken = VueJwtDecode.decode(token);
-  const userId = parseInt(decodedToken.uid,10)
   try {
     const response = await axiosInstance.get(`/users/${userId}/`);
     console.log(response.data)
@@ -52,7 +52,7 @@ const submitForm = () => {
 const saveChanges = async () => {
   error.value = null;
   try {
-    await axiosInstance.put(`/users/${userId.value}/`, user.value);
+    await axiosInstance.post(`/users/${userId}/`, user.value);
     Swal.fire("Modifications enregistrées", "", "success");
     showSaveButton.value = false;
     isEditing.value = false;
