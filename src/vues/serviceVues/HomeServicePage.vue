@@ -16,7 +16,6 @@ const fetchcalendar = async () => {
   error.value = null;
   const token  = Cookies.get('token');
   const decodedToken = VueJwtDecode.decode(token);
-  console.log(decodedToken)
   const userId = parseInt(decodedToken.uid,10)
   try {
     const response = await axiosInstance.get(`/serviceCalendar/${userId}/`);
