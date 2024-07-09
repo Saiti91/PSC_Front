@@ -1,23 +1,23 @@
-<!-- MainComponent.vue -->
 <script setup>
-import {onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
 import axiosInstance from "@/utils/Axios.js";
-import HeaderComponent from '../../components/HeaderServiceVue.vue'
-import FooterComponent from '../../components/FooterComponent.vue'
+import HeaderComponent from '../../components/HeaderServiceVue.vue';
+import FooterComponent from '../../components/FooterComponent.vue';
 import 'semantic-ui-css/semantic.min.css';
 import Cookies from 'js-cookie';
 import VueJwtDecode from 'vue-jwt-decode';
 
-const calendar = ref(null);
+const calendar = ref([]);
 const error = ref(null);
+const loading = ref(false);
 
-
-const fetchcalendar = async () => {
+const fetchCalendar = async () => {
   error.value = null;
-  const token  = Cookies.get('token');
-  const decodedToken = VueJwtDecode.decode(token);
-  const userId = parseInt(decodedToken.uid,10)
+  loading.value = true;
   try {
+    const token = Cookies.get('token');
+    const decodedToken = VueJwtDecode.decode(token);
+    const userId = parseInt(decodedToken.uid, 10);
     const response = await axiosInstance.get(`/serviceCalendar/${userId}/`);
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -26,20 +26,23 @@ const fetchcalendar = async () => {
     console.log(response.data);
   } catch (err) {
     error.value = err.message;
+  } finally {
+    loading.value = false;
   }
 };
-onMounted(fetchcalendar);
 
-
+onMounted(fetchCalendar);
 </script>
 
 <template>
-  <div class="ui container full-width"
-       style="min-height: 100vh; display: flex; flex-direction: column; overflow: hidden;">
+  <div class="ui container full-width" style="min-height: 100vh; display: flex; flex-direction: column; overflow: hidden;">
     <HeaderComponent/>
     <div class="spacer"></div>
 
-    <table class="ui very basic collapsing celled table">
+    <div v-if="loading" class="ui active centered inline loader"></div>
+    <div v-if="error" class="ui negative message">{{ error }}</div>
+
+    <table v-if="!loading && !error" class="ui very basic collapsing celled table">
       <thead>
       <tr>
         <th>Employee</th>
@@ -53,48 +56,19 @@ onMounted(fetchcalendar);
       </tr>
       </thead>
       <tbody>
-      <tr>
+      <tr v-for="entry in calendar" :key="entry.employeeId">
         <td>
           <h4 class="ui image header">
-            <img src="../../assets/Services/Avatar1.jpeg" class="ui mini rounded image">
-            <div class="content">
-              employé 1
-            </div>
+            <img :src="entry.employeeAvatar" class="ui mini rounded image">
+            <div class="content">{{ entry.employeeName }}</div>
           </h4>
         </td>
-        <td class="lundi">
-          <div class="menage">10h 242 reuilli diderot, Paris</div>
-          <div class="plomberie">15h 242 reuilli diderot, Paris</div>
+        <td class="lundi" v-for="day in entry.schedule" :key="day.date">
+          <div v-for="task in day.tasks" :key="task.id" :class="task.type">{{ task.time }} {{ task.address }}</div>
         </td>
-        <td class="mardi">
-          <div>10h 242 reuilli diderot, Paris</div>
-          <div>15h 242 reuilli diderot, Paris</div>
-        </td>
-        <td class="mercredi">
-          <div>10h 242 reuilli diderot, Paris</div>
-          <div>15h 242 reuilli diderot, Paris</div>
-        </td>
-        <td class="jeudi">
-          <div>10h 242 reuilli diderot, Paris</div>
-          <div>15h 242 reuilli diderot, Paris</div>
-        </td>
-        <td class="vendredi">
-          <div>10h 242 reuilli diderot, Paris</div>
-          <div>15h 242 reuilli diderot, Paris</div>
-        </td>
-        <td class="samedi">
-          <div>10h 242 reuilli diderot, Paris</div>
-          <div>15h 242 reuilli diderot, Paris</div>
-        </td>
-        <td class="dimanche">
-          <div>10h 242 reuilli diderot, Paris</div>
-          <div>15h 242 reuilli diderot, Paris</div>
-        </td>
-
       </tr>
       </tbody>
     </table>
-
 
     <FooterComponent/>
   </div>
@@ -109,26 +83,13 @@ onMounted(fetchcalendar);
   margin-top: 7%;
 }
 
-.menage {background-color: blue}
-.plomberie {background-color: green}
+.menage {
+  background-color: blue;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.plomberie {
+  background-color: green;
+}
 
 .ui.special.cards {
   width: 250px; /* Width of each card */

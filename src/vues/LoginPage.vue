@@ -4,6 +4,7 @@ import {useRouter} from 'vue-router';
 import Cookies from 'js-cookie';
 import VueJwtDecode from 'vue-jwt-decode';
 import 'semantic-ui-css/semantic.min.css';
+import axiosInstance from "@/utils/Axios.js";
 
 const email = ref('');
 const password = ref('');
@@ -16,39 +17,29 @@ const submitForm = async () => {
   };
 
   try {
-    const response = await fetch('http://localhost:80/auth/login/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    });
-
-    if (!response.ok) {
+    const response = await axiosInstance.post('auth/login/', data);
+    if (response.status !== 200) {
       console.error(`Error: ${response.status}`);
       return;
     }
 
-    const authHeader = response.headers.get('Authorization');
-    const token = authHeader?.split(' ')[1];
+    const authHeader = response.headers.authorization;
+    const token = authHeader ? authHeader.split(' ')[1] : null;
     if (token) {
       Cookies.set('token', token);
       console.log('Token stored in cookies:', token);
 
       const decodedToken = VueJwtDecode.decode(token);
       if (decodedToken.urole === 'admin') {
-        router.push('/accueil-admin')
+        router.push('/accueil-admin');
       } else if (decodedToken.urole === 'provider') {
-        router.push('/HomeServicePage')
+        router.push('/HomeServicePage');
       } else {
         router.push('/');
       }
     } else {
       console.error('Token not found in response headers');
     }
-
-    const responseData = await response.json();
-    console.log(responseData);
   } catch (error) {
     console.error('An error occurred:', error);
   }
