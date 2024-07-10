@@ -52,6 +52,7 @@ const fetchApartmentDetails = async () => {
       images: parseStringArray(response.data.images),
       features: parseStringArray(response.data.features)
     };
+    console.log(apartments.value);
   } catch (err) {
     error.value = err.message;
   }
@@ -128,6 +129,19 @@ onMounted(fetchApartmentDetails);
           <img v-for="(image, index) in apartments.images" :src="image"
                :alt="`Vignette de ${apartments.name} ${index + 1}`" :key="index" @click="selectImage(image)">
         </div>
+        <div class="features-table">
+          <h3>Équipements</h3>
+          <table class="ui celled table">
+            <tbody>
+            <tr v-for="feature in apartments.features" :key="feature">
+              <td>{{ feature.replace(/[\{\}"]/g, '') }}</td>
+            </tr>
+            <tr>
+              <td>Capacité: {{ apartments.capacity }} personnes</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
       <div class="eight wide column">
         <h2>{{ apartments.name }}</h2>
@@ -155,6 +169,17 @@ onMounted(fetchApartmentDetails);
             champs obligatoires</p>
           <p v-if="dateError" class="error-message">Dates invalides</p>
         </div>
+        <div class="address-price">
+          <h3>Adresse</h3>
+          <p>{{ apartments.street }}</p>
+          <p v-if="apartments.addressComplement">{{ apartments.addressComplement }}</p>
+          <p v-if="apartments.building || apartments.apartmentNumber">
+            <span v-if="apartments.building">Bâtiment {{ apartments.building }}</span><span v-if="apartments.building && apartments.apartmentNumber">, </span><span v-if="apartments.apartmentNumber">Numéro d'appartement{{ apartments.apartmentNumber }}</span>
+          </p>
+          <p>{{ apartments.CP }}, {{ apartments.town }}</p>
+          <h3>Prix par nuit</h3>
+          <p>{{ apartments.price }}€</p>
+        </div>
       </div>
     </div>
     <FooterComponent/>
@@ -163,33 +188,35 @@ onMounted(fetchApartmentDetails);
 
 <style scoped>
 .spacer {
-  margin-top: 9%;
+  margin-top: 7%;
 }
 
-.main-image img {
-  width: 100%;
-  height: auto;
+.ui.container.full-width {
+  max-width: 1200px;
+  padding: 20px;
+}
+
+.main-image {
+  margin-bottom: 20px;
 }
 
 .image-thumbnails img {
-  width: 80px;
-  height: auto;
-  margin-right: 10px;
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
   cursor: pointer;
-  border: 2px solid transparent;
+  margin-right: 10px;
 }
 
-.image-thumbnails img:hover,
-.image-thumbnails img.active {
-  border: 2px solid #21BA45; /* Couleur verte de Semantic UI */
+.features-table {
+  margin-top: 20px;
 }
 
-.error {
-  border-color: red !important;
+.address-price {
+  margin-top: 20px;
 }
 
 .error-message {
   color: red;
-  margin-top: 5px;
 }
 </style>
