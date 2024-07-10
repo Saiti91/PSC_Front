@@ -1,15 +1,15 @@
 <script setup>
 import HeaderComponent from '/src/components/HeaderComponent.vue';
 import FooterComponent from '/src/components/FooterComponent.vue';
-import {useRoute, useRouter} from 'vue-router';
-import {onMounted, ref} from "vue";
+import { useRoute, useRouter } from 'vue-router';
+import { onMounted, ref } from "vue";
 import axiosInstance from "@/utils/Axios.js";
 
 const route = useRoute();
+const router = useRouter(); // Ensure useRouter is imported and assigned to router
 const apartments = ref({});
 const apartment_id = ref(route.params.id);
 const error = ref(null);
-const router = useRouter();
 const selectedImage = ref(null);
 const guests = ref('');
 const showError = ref(false);
@@ -18,6 +18,7 @@ const endDate = ref('');
 const dateError = ref(false);
 const startDateError = ref(false);
 const endDateError = ref(false);
+const availabilityError = ref(false);
 
 // Function to parse string arrays
 const parseStringArray = (stringArray) => {
@@ -63,14 +64,29 @@ const selectImage = (image) => {
   selectedImage.value = image;
 };
 
-// Function to handle reservation
-const handleReservation = () => {
-  showError.value = false;
+// Function to check date availability
+const checkAvailability = async () => {
+  try {
+    const response = await axiosInstance.post('/apartments/availabilities', {
+      start_date: startDate.value,
+      end_date: endDate.value,
+      apartment_id: apartment_id.value
+    });
+    console.log('Availability response:', response.data);
+    return response.data;
+  } catch (err) {
+    console.error('Error checking availability:', err);
+    return false;
+  }
+};
 
-  // Validate dates
+// Function to handle reservation
+const handleReservation = async () => {
+  showError.value = false;
   dateError.value = false;
   startDateError.value = false;
   endDateError.value = false;
+  availabilityError.value = false;
   const today = new Date().setHours(0, 0, 0, 0);
   const start = new Date(startDate.value).setHours(0, 0, 0, 0);
   const end = new Date(endDate.value).setHours(0, 0, 0, 0);
@@ -95,6 +111,13 @@ const handleReservation = () => {
   }
   if (invalidDates) {
     dateError.value = true;
+    showError.value = true;
+    return;
+  }
+
+  const available = await checkAvailability();
+  if (!available) {
+    availabilityError.value = true;
     showError.value = true;
     return;
   }
@@ -168,6 +191,7 @@ onMounted(fetchApartmentDetails);
           <p v-if="showError && (!startDate || !endDate || !guests)" class="error-message">Veuillez remplir tous les
             champs obligatoires</p>
           <p v-if="dateError" class="error-message">Dates invalides</p>
+          <p v-if="availabilityError" class="error-message">Ces dates ne sont pas disponibles</p>
         </div>
         <div class="address-price">
           <h3>Adresse</h3>
