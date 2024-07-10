@@ -187,11 +187,11 @@ onMounted(fetchApartmentDetails);
       </div>
     </div>
 
-    <!-- Nouvelle section d'affichage des données de l'appartement -->
-    <div class="ui grid">
-      <div class="sixteen wide column">
+    <!-- Caractéristique de l'appartement -->
+    <div class="ui stackable grid">
+      <div class="eight wide column">
         <div class="apartment-details">
-          <h3>Détails de l'appartement</h3>
+          <h3>Caractéristiques de l'appartement</h3>
           <div class="ui list">
             <div class="item">
               <i class="building icon"></i>
@@ -233,58 +233,44 @@ onMounted(fetchApartmentDetails);
               </div>
             </div>
           </div>
-
-          <h3>Adresse</h3>
-          <div class="ui list">
-            <div class="item">
-              <i class="home icon"></i>
-              <div class="content">
-                <div class="header">Rue</div>
-                <div class="description">{{ apartments.street }}</div>
-              </div>
-            </div>
-            <div class="item">
-              <i class="building icon"></i>
-              <div class="content">
-                <div class="header">Bâtiment</div>
-                <div class="description">{{ apartments.building }}</div>
-              </div>
-            </div>
-            <div class="item">
-              <i class="numbered list icon"></i>
-              <div class="content">
-                <div class="header">Numéro d'appartement</div>
-                <div class="description">{{ apartments.number }}</div>
-              </div>
-            </div>
-            <div class="item">
-              <i class="marker icon"></i>
-              <div class="content">
-                <div class="header">Ville</div>
-                <div class="description">{{ apartments.town }}</div>
-              </div>
-            </div>
-            <div class="item" v-if="apartments.addressComplement">
-              <i class="info icon"></i>
-              <div class="content">
-                <div class="header">Complément d'adresse</div>
-                <div class="description">{{ apartments.addressComplement }}</div>
-              </div>
+        </div>
+      </div>
+      <!-- Adresse de l'appartement -->
+      <div class="eight wide column">
+        <h3>Adresse</h3>
+        <div class="ui list">
+          <div class="item">
+            <i class="home icon"></i>
+            <div class="content">
+              <div class="header">Rue</div>
+              <div class="description">{{ apartments.number}} rue {{ apartments.street }}</div>
+              <div class="description" v-if="apartments.addressComplement">{{ apartments.addressComplement }}</div>
             </div>
           </div>
-
-          <h3>Contact</h3>
-          <div class="ui list">
-            <div class="item">
-              <i class="mail icon"></i>
-              <div class="content">
-                <div class="header">Email</div>
-                <div class="description">{{ apartments.owner_email }}</div>
-              </div>
+          <div class="item" v-if="apartments.building">
+            <i class="building icon"></i>
+            <div class="content">
+              <div class="header">Bâtiment</div>
+              <div class="description">{{ apartments.building }}</div>
+            </div>
+          </div>
+          <div class="item" v-if="apartments.apartmentNumber">
+            <i class="numbered list icon"></i>
+            <div class="content">
+              <div class="header">Numéro d'appartement</div>
+              <div class="description">{{ apartments.apartmentNumber }}</div>
+            </div>
+          </div>
+          <div class="item">
+            <i class="marker icon"></i>
+            <div class="content">
+              <div class="header">Ville</div>
+              <div class="description">{{ apartments.CP }} {{ apartments.town }}</div>
             </div>
           </div>
         </div>
       </div>
+      <div class="spacer"></div>
     </div>
     <!-- Fin de la nouvelle section -->
 
