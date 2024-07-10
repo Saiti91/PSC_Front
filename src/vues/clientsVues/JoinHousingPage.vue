@@ -4,14 +4,16 @@ import FooterComponent from '../../components/FooterComponent.vue';
 import { ref } from 'vue';
 import axiosInstance from "@/utils/Axios.js";
 
-const formData = ref({
-  streetNumber: '',
-  streetName: '',
-  addressComplement: '',
-  building: '',
-  apartmentNumber: '',
-  city: '',
-  postalCode: '',
+const form = ref({
+  address: {
+    streetNumber: '',
+    streetName: '',
+    addressComplement: '',
+    building: '',
+    apartmentNumber: '',
+    city: '',
+    postalCode: ''
+  },
   apartmentType: '',
   area: '',
   guests: '',
@@ -20,14 +22,12 @@ const formData = ref({
   propertyName: '',
   features: {
     pool: false,
-    garden: false,
-    terrace: false,
+    wifi: false,
+    parking: false,
     balcony: false,
-    sauna: false,
-    otherChecked: false,
-    otherDescription: ''
+    air_conditioning: false
   },
-  agree: false
+  images : []
 });
 
 const errors = ref({
@@ -45,32 +45,80 @@ const errors = ref({
 });
 
 const hasErrors = ref(false);
+const imagePreviews = ref([]); // Holds the image preview URLs
 
-const validateForm = () => {
-  hasErrors.value = false;
-
-  for (const field in errors.value) {
-    // Only validate non-optional fields or those that have a specific validation rule
-    if (['otherDescription'].includes(field)) {
-      errors.value[field] = formData.value.features.otherChecked && !formData.value.features.otherDescription;
+//Pour uploader des images
+const handleFileUpload = (files) => {
+  for (let i = 0; i < files.length; i++) {
+    if (files[i].type === 'image/png' || files[i].type === 'image/jpeg') {
+      form.value.images.push(files[i]);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        imagePreviews.value.push(e.target.result);
+      };
+      reader.readAsDataURL(files[i]);
     } else {
-      errors.value[field] = !formData.value[field];
+      alert('Only PNG or JPEG images are allowed');
     }
-
-    hasErrors.value = hasErrors.value || errors.value[field];
   }
 };
 
+const onFileChange = (event) => {
+  handleFileUpload(event.target.files);
+};
+
+const onDrop = (event) => {
+  event.preventDefault();
+  handleFileUpload(event.dataTransfer.files);
+};
+
+const onDragOver = (event) => {
+  event.preventDefault();
+};
+
+const resetForm = () => {
+  form.value = JSON.parse(JSON.stringify(originalFormData)); // Reset form to original values
+  imagePreviews.value = [];
+};
+
+//envois du formulaire
 const submitForm = async () => {
-  validateForm();
-  if (!hasErrors.value) {
-    try {
-      const response = await axiosInstance.post('/join-housing', formData.value);
-      console.log('Form submitted:', response.data);
-      // Redirection après succès, par exemple vers une page de confirmation
-    } catch (error) {
-      console.error('Form submission error:', error);
+  error.value = null; // Clear previous error message
+  console.log(form.value);
+  try {
+    const formData = new FormData();
+    for (const key in form.value) {
+      if (key === 'address') {
+        // Ajouter chaque propriété de l'objet address séparément
+        for (const addressKey in form.value.address) {
+          formData.append(`address[${addressKey}]`, form.value.address[addressKey]);
+        }
+      } else if (key === 'images') {
+        for (let i = 0; i < form.value.images.length; i++) {
+          formData.append('images', form.value.images[i]);
+        }
+      } else {
+        formData.append(key, form.value[key]);
+      }
     }
+    console.log(form.value);
+    const response = await axiosInstance.post('/apartments', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    console.log(response.data);
+
+    // Set success modal details
+    successTitle.value = 'Création réussie';
+    successMessage.value = 'L\'appartement a été créé avec succès.';
+    successDetails.value = response.data;
+    showModal.value = true;
+
+    // Réinitialiser le formulaire
+    resetForm();
+  } catch (err) {
+    error.value = err.response ? err.response.data.message : err.message;
   }
 };
 </script>
@@ -89,41 +137,47 @@ const submitForm = async () => {
             <div class="fields">
               <div class="eight wide field" :class="{ 'error': errors.streetNumber }">
                 <label>{{ $t('street-number') }}</label>
-                <input v-model="formData.streetNumber" type="text" placeholder="2">
+                <input v-model="form.streetNumber" type="text" placeholder="2">
               </div>
               <div class="eight wide field" :class="{ 'error': errors.streetName }">
                 <label>{{ $t('street-name') }}</label>
-                <input v-model="formData.streetName" type="text" placeholder="Avenue Charles de Gaulle">
+                <input v-model="form.streetName" type="text" placeholder="Avenue Charles de Gaulle">
               </div>
             </div>
             <div class="field">
               <label>{{ $t('address-complement') }}</label>
-              <input v-model="formData.addressComplement" type="text" placeholder="chez Madame Michel">
+              <input v-model="form.addressComplement" type="text" placeholder="chez Madame Michel">
             </div>
             <div class="fields">
               <div class="eight wide field">
                 <label>{{ $t('building') }}</label>
-                <input v-model="formData.building" type="text" placeholder="A">
+                <input v-model="form.building" type="text" placeholder="A">
               </div>
               <div class="eight wide field">
                 <label>{{ $t('apartment-number') }}</label>
-                <input v-model="formData.apartmentNumber" type="text" placeholder="12">
+                <input v-model="form.apartmentNumber" type="text" placeholder="12">
               </div>
             </div>
             <div class="fields">
               <div class="eight wide field" :class="{ 'error': errors.city }">
                 <label>{{ $t('city') }}</label>
-                <input v-model="formData.city" type="text" placeholder="Paris" required>
+                <input v-model="form.city" type="text" placeholder="Paris" required>
               </div>
               <div class="eight wide field" :class="{ 'error': errors.postalCode }">
                 <label>{{ $t('postal-code') }}</label>
-                <input v-model="formData.postalCode" type="text" placeholder="75004" required>
+                <input v-model="form.postalCode" type="text" placeholder="75004" required>
               </div>
             </div>
-            <div class="field" :class="{ 'error': errors.apartmentType }">
-              <label>{{ $t('housing-type') }}</label>
-              <input v-model="formData.apartmentType" type="text" placeholder=" T3" required>
-            </div>
+            <label>{{ $t('housing-type') }}</label>
+            <select v-model="form.apartmentType" required>
+              <option value="" disabled>Choose an option</option>
+              <option value="Apartment">Apartment</option>
+              <option value="House">House</option>
+              <option value="Studio">Studio</option>
+              <option value="Flat">Flat</option>
+              <option value="Villa">Villa</option>
+              <option value="Chalet">Chalet</option>
+            </select>
           </div>
           <!-- Property Details -->
           <div class="ui segment">
@@ -131,49 +185,50 @@ const submitForm = async () => {
             <div class="fields">
               <div class="four wide field" :class="{ 'error': errors.area }">
                 <label>{{ $t('area') }}</label>
-                <input v-model="formData.area" type="number" placeholder="45" required>
+                <input v-model="form.area" type="number" placeholder="45" required>
               </div>
               <div class="four wide field" :class="{ 'error': errors.guests }">
                 <label>{{ $t('guests') }}</label>
-                <input v-model="formData.guests" type="number" placeholder="6" required>
+                <input v-model="form.guests" type="number" placeholder="6" required>
               </div>
               <div class="four wide field" :class="{ 'error': errors.bedrooms }">
                 <label>{{ $t('bedrooms') }}</label>
-                <input v-model="formData.bedrooms" type="number" placeholder="2" required>
+                <input v-model="form.bedrooms" type="number" placeholder="2" required>
               </div>
               <div class="four wide field" :class="{ 'error': errors.price }">
                 <label>{{ $t('price') }}</label>
-                <input v-model="formData.price" type="number" placeholder="150" required>
+                <input v-model="form.price" type="number" placeholder="150" required>
               </div>
             </div>
             <div class="field">
               <label>{{ $t('property-name') }}</label>
-              <input v-model="formData.propertyName" type="text" placeholder="Villa au bord de la mer">
+              <input v-model="form.propertyName" type="text" placeholder="Villa au bord de la mer">
             </div>
           </div>
           <!-- Features -->
           <div class="ui segment">
             <h3>{{ $t('features') }}</h3>
             <div class="ui checkbox">
-              <input v-model="formData.features.pool" type="checkbox" id="pool">
+              <input v-model="form.features.pool" type="checkbox" id="pool">
               <label for="pool" class="spaced-label">{{ $t('pool') }}</label>
             </div>
             <div class="ui checkbox">
-              <input v-model="formData.features.garden" type="checkbox" id="garden">
-              <label for="garden" class="spaced-label">{{ $t('garden') }}</label>
+              <input v-model="form.features.wifi" type="checkbox" id="wifi">
+              <label for="wifi" class="spaced-label">Wifi</label>
             </div>
             <div class="ui checkbox">
-              <input v-model="formData.features.terrace" type="checkbox" id="terrace">
-              <label for="terrace" class="spaced-label">{{ $t('terrace') }}</label>
+              <input v-model="form.features.parking" type="checkbox" id="parking">
+              <label for="parking" class="spaced-label">Parking</label>
             </div>
             <div class="ui checkbox">
-              <input v-model="formData.features.balcony" type="checkbox" id="balcony">
+              <input v-model="form.features.balcony" type="checkbox" id="balcony">
               <label for="balcony" class="spaced-label">{{ $t('balcony') }}</label>
             </div>
             <div class="ui checkbox">
-              <input v-model="formData.features.sauna" type="checkbox" id="sauna">
-              <label for="sauna" class="spaced-label">{{ $t('sauna') }}</label>
+              <input v-model="form.features.air_conditioning" type="checkbox" id="air conditioning">
+              <label for="air conditioning" class="spaced-label">Air conditionné</label>
             </div>
+            <!--
             <div class="ui checkbox">
               <input v-model="formData.features.otherChecked" type="checkbox" id="other">
               <label for="other" class="spaced-label">{{ $t('other') }}</label>
@@ -182,12 +237,33 @@ const submitForm = async () => {
               <label>{{ $t('other-description') }}</label>
               <input v-model="formData.features.otherDescription" type="text" placeholder="lit bébé">
             </div>
+            -->
+          </div>
+          <!-- Images -->
+          <div class="field">
+            <label>Image Upload</label>
+            <div class="ui segment" @dragover="onDragOver" @drop="onDrop" @click="$refs.fileInput.click()">
+              <input type="file" @change="onFileChange" accept=".png, .jpeg" multiple style="display: none;"
+                     ref="fileInput"/>
+              <div class="ui placeholder segment">
+                <div class="ui icon header">
+                  <i class="file image outline icon"></i>
+                  Drag & Drop Images Here
+                </div>
+                <div class="ui divider"></div>
+                <div class="ui secondary button">Or Select Files</div>
+              </div>
+              <div v-if="imagePreviews.length" class="ui small images">
+                <img v-for="(src, index) in imagePreviews" :key="index" :src="src" class="ui image"
+                     style="max-width: 150px; margin: 10px 10px 0 0;"/>
+              </div>
+            </div>
           </div>
           <!-- Submit -->
           <div class="ui segment">
             <div class="field" :class="{ 'error': errors.agree }">
               <div class="ui checkbox">
-                <input v-model="formData.agree" type="checkbox" id="agree" required>
+                <input v-model="form.agree" type="checkbox" id="agree" required>
                 <label for="agree">{{ $t('agree') }}</label>
               </div>
             </div>
