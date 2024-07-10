@@ -3,8 +3,10 @@ import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import Cookies from 'js-cookie';
 import VueJwtDecode from 'vue-jwt-decode';
+import {useRouter} from 'vue-router'; // Importer useRouter
 
 const {locale, availableLocales} = useI18n();
+const router = useRouter(); // Utiliser useRouter pour obtenir l'instance du routeur
 
 const changeLocale = (lang) => {
   locale.value = lang;
@@ -33,8 +35,8 @@ if (token) {
 const logout = () => {
   Cookies.remove('token');
   isAuthenticated.value = false;
-  // Redirection ou autre logique après déconnexion
-  router.push('/');
+  // Redirection après déconnexion
+  router.push('/'); // Utiliser le routeur pour rediriger vers la page d'accueil
 };
 
 </script>

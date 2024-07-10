@@ -3,8 +3,10 @@ import {computed, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import Cookies from 'js-cookie';
 import VueJwtDecode from 'vue-jwt-decode';
+import {useRouter} from 'vue-router'; // Importer useRouter
 
 const {locale, availableLocales} = useI18n();
+const router = useRouter(); // Utiliser useRouter pour obtenir l'instance du routeur
 
 const changeLocale = (lang) => {
   locale.value = lang;
@@ -33,7 +35,8 @@ if (token) {
 const logout = () => {
   Cookies.remove('token');
   isAuthenticated.value = false;
-  // Redirection ou autre logique après déconnexion
+  // Redirection après déconnexion
+  router.push('/'); // Utiliser le routeur pour rediriger vers la page d'accueil
 };
 
 </script>
@@ -47,11 +50,9 @@ const logout = () => {
       <div class="right menu">
         <router-link v-if="!isAuthenticated" to="/login" class="item">{{ $t('login') }}</router-link>
         <a v-if="isAuthenticated" @click="logout" class="item">{{ $t('logout') }}</a>
-        <router-link to="/HomeServicePage" class="item">{{ $t('Accueil') }}</router-link>
         <router-link to="/DocsPage" class="item">{{ $t('Mes documents') }}</router-link>
         <router-link to="/InterventionPage" class="item">{{ $t('Mes Interventions') }}</router-link>
         <router-link to="/PersoPage" class="item">{{ $t('Mes Infos') }}</router-link>
-        <router-link to="/PlaningPage" class="item">{{ $t('Mon Planing') }}</router-link>
         <div class="ui simple dropdown item">
           <i class="world icon"></i> {{ currentLocale }}
           <div class="menu">

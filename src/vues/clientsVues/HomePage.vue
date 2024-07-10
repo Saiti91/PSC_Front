@@ -42,13 +42,12 @@ const fetchApartments = async () => {
   }
 };
 
-
 onMounted(fetchApartments);
 </script>
 
 <template>
   <div class="ui container full-width"
-       style="min-height: 100vh; display: flex; flex-direction: column; overflow: hidden;">
+       style="min-height: 100vh; display: flex; flex-direction: column; overflow: hidden; align-items: center;">
     <HeaderComponent/>
     <div class="spacer"></div>
     <router-link to="/housing">
@@ -69,7 +68,7 @@ onMounted(fetchApartments);
                     </div>
                   </div>
                 </div>
-                <img src="" alt="Image de {{ apartment.name }}">
+                <img :src="apartment.images[0]" alt="Image de {{ apartment.name }}">
               </div>
               <div class="content">
                 <a class="header">{{ apartment.name }}</a>
@@ -112,7 +111,9 @@ onMounted(fetchApartments);
   position: relative;
   display: flex;
   align-items: center;
+  justify-content: center; /* Centrer le contenu horizontalement */
   overflow: hidden; /* Hide scrollbars */
+  width: 100%; /* S'assurer que le wrapper prend toute la largeur */
 }
 
 .carousel-container {

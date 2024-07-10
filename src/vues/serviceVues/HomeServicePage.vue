@@ -6,24 +6,68 @@ import FooterComponent from '../../components/FooterComponent.vue';
 import 'semantic-ui-css/semantic.min.css';
 import Cookies from 'js-cookie';
 import VueJwtDecode from 'vue-jwt-decode';
+import VueCal from 'vue-cal';
+import 'vue-cal/dist/vuecal.css';
 
 const calendar = ref([]);
+const events = ref([]);
 const error = ref(null);
 const loading = ref(false);
 
-const fetchCalendar = async () => {
+const transformCalendarData = (calendar) => {
+  return calendar.map(event => {
+    let cssClass = '';
+    switch (event.status_id) {
+      case 1:
+        cssClass = ''; // No color
+        break;
+      case 2:
+        cssClass = 'status-pending'; // Red color
+        break;
+      case 3:
+        cssClass = 'status-reserved'; // Light green color
+        break;
+    }
+    return {
+      start: event.date,
+      end: event.date,
+      title: 'reserved',
+      class: cssClass,
+    };
+  });
+};
+
+const fetchProviderId = async () => {
   error.value = null;
   loading.value = true;
   try {
     const token = Cookies.get('token');
     const decodedToken = VueJwtDecode.decode(token);
     const userId = parseInt(decodedToken.uid, 10);
-    const response = await axiosInstance.get(`/serviceCalendar/${userId}/`);
+    const response = await axiosInstance.get(`/users/provider/${userId}/`);
+    return response.data.serviceprovider_id;
+  } catch (err) {
+    error.value = err.message;
+  } finally {
+    loading.value = false;
+  }
+};
+
+const fetchCalendar = async () => {
+  error.value = null;
+  loading.value = true;
+  try {
+    const provider_id = await fetchProviderId();
+    if (!provider_id) {
+      throw new Error("Provider ID not found");
+    }
+    const response = await axiosInstance.get(`/servicesCalendar/${provider_id}/`);
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    calendar.value = response.data;
     console.log(response.data);
+    calendar.value = response.data;
+    events.value = transformCalendarData(calendar.value);
   } catch (err) {
     error.value = err.message;
   } finally {
@@ -35,40 +79,23 @@ onMounted(fetchCalendar);
 </script>
 
 <template>
-  <div class="ui container full-width" style="min-height: 100vh; display: flex; flex-direction: column; overflow: hidden;">
+  <div class="ui container full-width"
+       style="min-height: 100vh; display: flex; flex-direction: column; overflow: hidden;">
     <HeaderComponent/>
     <div class="spacer"></div>
 
     <div v-if="loading" class="ui active centered inline loader"></div>
     <div v-if="error" class="ui negative message">{{ error }}</div>
 
-    <table v-if="!loading && !error" class="ui very basic collapsing celled table">
-      <thead>
-      <tr>
-        <th>Employee</th>
-        <th class="lundi">Lundi</th>
-        <th class="mardi">Mardi</th>
-        <th class="mercredi">Mercredi</th>
-        <th class="jeudi">Jeudi</th>
-        <th class="vendredi">Vendredi</th>
-        <th class="samedi">Samedi</th>
-        <th class="dimanche">Dimanche</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="entry in calendar" :key="entry.employeeId">
-        <td>
-          <h4 class="ui image header">
-            <img :src="entry.employeeAvatar" class="ui mini rounded image">
-            <div class="content">{{ entry.employeeName }}</div>
-          </h4>
-        </td>
-        <td class="lundi" v-for="day in entry.schedule" :key="day.date">
-          <div v-for="task in day.tasks" :key="task.id" :class="task.type">{{ task.time }} {{ task.address }}</div>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+    <div v-if="!loading && !error" class="calendar-container">
+      <vue-cal
+          xsmall
+          :disable-views="['year','years']"
+          events-count-on-year-view
+          active-view="month"
+          :events="events">
+      </vue-cal>
+    </div>
 
     <FooterComponent/>
   </div>
@@ -83,42 +110,22 @@ onMounted(fetchCalendar);
   margin-top: 7%;
 }
 
-.menage {
-  background-color: blue;
-}
-
-.plomberie {
-  background-color: green;
-}
-
-.ui.special.cards {
-  width: 250px; /* Width of each card */
-}
-
-.scroll-button {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
+.calendar-container {
   display: flex;
-  align-items: center;
   justify-content: center;
-  cursor: pointer;
-  z-index: 1;
-}
-
-.scroll-button.left {
-  position: absolute;
-  left: -40px;
-}
-
-.scroll-button.right {
-  position: absolute;
-  right: -40px;
+  padding: 0 15%;
 }
 
 .ui.footer .list {
   color: #ccc !important;
+}
+
+/* Add the styles for the status colors */
+.status-pending {
+  background-color: rgba(255, 0, 0, 0.3) !important; /* Light red transparent */
+}
+
+.status-reserved {
+  background-color: rgba(0, 255, 0, 0.3) !important; /* Light green transparent */
 }
 </style>

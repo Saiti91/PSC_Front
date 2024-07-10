@@ -1,6 +1,6 @@
 <script setup>
-import {ref} from 'vue';
-import {useRouter} from 'vue-router';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import Cookies from 'js-cookie';
 import VueJwtDecode from 'vue-jwt-decode';
 import 'semantic-ui-css/semantic.min.css';
@@ -8,9 +8,23 @@ import axiosInstance from "@/utils/Axios.js";
 
 const email = ref('');
 const password = ref('');
+const errorMessage = ref('');
 const router = useRouter();
 
+const validateEmail = (email) => {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+};
+
 const submitForm = async () => {
+  errorMessage.value = ''; // Clear previous error message
+
+  if (!validateEmail(email.value)) {
+    errorMessage.value = 'Invalid email format';
+    console.log('Error Message:', errorMessage.value); // Debugging
+    return;
+  }
+
   const data = {
     email: email.value,
     password: password.value
@@ -19,7 +33,8 @@ const submitForm = async () => {
   try {
     const response = await axiosInstance.post('auth/login/', data);
     if (response.status !== 200) {
-      console.error(`Error: ${response.status}`);
+      errorMessage.value = `Error: ${response.status}`;
+      console.log('Error Message:', errorMessage.value); // Debugging
       return;
     }
 
@@ -30,7 +45,7 @@ const submitForm = async () => {
       console.log('Token stored in cookies:', token);
 
       const decodedToken = VueJwtDecode.decode(token);
-      if (decodedToken.urole === 'admin') {
+      if (decodedToken.urole === 'admin' || decodedToken.urole === 'staff') {
         router.push('/accueil-admin');
       } else if (decodedToken.urole === 'provider') {
         router.push('/HomeServicePage');
@@ -38,10 +53,24 @@ const submitForm = async () => {
         router.push('/');
       }
     } else {
-      console.error('Token not found in response headers');
+      errorMessage.value = 'Token not found in response headers';
+      console.log('Error Message:', errorMessage.value);
     }
   } catch (error) {
-    console.error('An error occurred:', error);
+    if (error.response) {
+      if (error.response.status === 401) {
+        errorMessage.value = 'Password or email is incorrect';
+      } else if (error.response.status === 400) {
+        errorMessage.value = 'Bad request: Invalid email or password format';
+      } else if (error.response.data && error.response.data.message) {
+        errorMessage.value = error.response.data.message;
+      } else {
+        errorMessage.value = 'An error occurred';
+      }
+    } else {
+      errorMessage.value = 'An error occurred';
+    }
+    console.log('Error Message:', errorMessage.value); // Debugging
   }
 };
 </script>
@@ -69,7 +98,9 @@ const submitForm = async () => {
           <button class="ui fluid large teal submit button" type="submit">{{ $t('login') }}</button>
         </div>
 
-        <div class="ui error message"></div>
+        <div class="ui error message" v-if="errorMessage">
+          {{ errorMessage }}
+        </div>
       </form>
       <div class="ui message">{{ $t('new_to_us') }}
         <router-link to="/sign-up" class="item">{{ $t('sign_up') }}</router-link>
@@ -79,4 +110,7 @@ const submitForm = async () => {
 </template>
 
 <style scoped>
+.ui.error.message {
+  display: block !important;
+}
 </style>
