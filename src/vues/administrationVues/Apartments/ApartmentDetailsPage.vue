@@ -33,7 +33,7 @@ const transformCalendarData = (calendar) => {
   return calendar.map(event => ({
     start: event.date,
     end: event.date,
-    title: event.available ? 'available' : 'reserved'
+    title: event.available ? 'true' : 'false'
   }));
 };
 
@@ -77,18 +77,18 @@ const fetchApartmentDetails = async () => {
 
 const handleCellClick = async (date) => {
   console.log('Cell clicked:', date);
-  const clickedDate = date.toLocaleDateString('en-CA'); // Format 'YYYY-MM-DD'
+  const clickedDate = date.toLocaleDateString('en-CA');
   console.log('Clicked Date:', clickedDate);
 
-  const event = events.value.find(e => e.start === clickedDate);
-  const newStatus = event && event.title === 'available' ? 'available' : 'unavailable';
+  let event = events.value.find(e => e.start === clickedDate);
+  console.log('Event:', event);
 
   const requestData = {
     apartment_id: apartmentId.value,
     dates: [
       {
         date: clickedDate,
-        available: newStatus
+        available: event ? 'available' : 'unavailable'
       }
     ]
   };
@@ -96,8 +96,8 @@ const handleCellClick = async (date) => {
 
   try {
     await axiosInstance.patch(`/apartmentsCalendar/availability/${apartmentId.value}/`, requestData);
-    console.log(`Date: ${clickedDate}, Status: ${newStatus}`);
-    await fetchApartmentDetails();
+    console.log(`Date: ${clickedDate}, Status: ${event ? 'available' : 'unavailable'}`);
+    await fetchApartmentDetails(); // Rafraîchir les détails de l'appartement pour refléter le statut mis à jour
   } catch (err) {
     console.log(`Failed to update availability: ${err.message}`);
   }
@@ -124,7 +124,8 @@ onMounted(fetchApartmentDetails);
 
       <div class="ui two column stackable grid">
         <div class="column">
-          <PhotoCarousel v-if="apartments.images && apartments.images.length" :photos="apartments.images" class="ui medium images"/>
+          <PhotoCarousel v-if="apartments.images && apartments.images.length" :photos="apartments.images"
+                         class="ui medium images"/>
         </div>
         <div class="column">
           <div class="ui segment">
@@ -145,11 +146,11 @@ onMounted(fetchApartmentDetails);
           <li v-for="amenity in apartments.features" :key="amenity">{{ amenity }}</li>
         </ul>
         <vue-cal
-            xsmall
             :disable-views="['day','year','years','week']"
-            events-count-on-year-view
-            active-view="month"
             :events="events"
+            active-view="month"
+            events-count-on-year-view
+            xsmall
             @cell-click="handleCellClick">
         </vue-cal>
       </div>
