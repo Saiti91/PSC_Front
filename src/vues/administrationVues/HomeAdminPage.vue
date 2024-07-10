@@ -1,4 +1,3 @@
-<!-- MainComponent.vue -->
 <script setup>
 import HeaderComponent from '/src/components/HeaderAdmin.vue'
 import FooterComponent from '/src/components/FooterComponent.vue'

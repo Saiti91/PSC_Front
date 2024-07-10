@@ -44,7 +44,7 @@ const logout = () => {
 <template>
   <div class="ui fixed menu">
     <div class="ui container">
-      <router-link to="/" class="header item logo-container">
+      <router-link to="/HomeServicePage" class="header item logo-container">
         <img class="logo" src="/src/assets/logo.svg" alt="Company Logo">
       </router-link>
       <div class="right menu">
