@@ -50,7 +50,6 @@ const logout = () => {
       <div class="right menu">
         <router-link v-if="!isAuthenticated" to="/login" class="item">{{ $t('login') }}</router-link>
         <a v-if="isAuthenticated" @click="logout" class="item">{{ $t('logout') }}</a>
-        <router-link to="/" class="item">{{ $t('home') }}</router-link>
         <router-link to="/housing" class="item">{{ $t('our-housing') }}</router-link>
         <router-link to="/join-us" class="item">{{ $t('join-us-btn') }}</router-link>
         <router-link v-if="isAuthenticated" to="/my-account" class="item">{{ $t('account') }}</router-link>
