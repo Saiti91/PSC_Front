@@ -15,7 +15,7 @@ const error = ref(null);
 const loading = ref(false);
 
 const transformCalendarData = (calendar) => {
-  return calendar.map(event => {
+  const transformedEvents = calendar.map(event => {
     let cssClass = '';
     switch (event.status_id) {
       case 1:
@@ -28,13 +28,16 @@ const transformCalendarData = (calendar) => {
         cssClass = 'status-reserved'; // Light green color
         break;
     }
+    console.log("Event:", event.date, "Class:", cssClass); // Debugging log
     return {
-      start: event.date,
-      end: event.date,
+      start: event.date.split('T')[0], // Format the date to 'YYYY-MM-DD'
+      end: event.date.split('T')[0], // Format the date to 'YYYY-MM-DD'
       title: 'reserved',
       class: cssClass,
     };
   });
+  console.log("Transformed Events:", transformedEvents);
+  return transformedEvents;
 };
 
 const fetchProviderId = async () => {
@@ -44,7 +47,7 @@ const fetchProviderId = async () => {
     const token = Cookies.get('token');
     const decodedToken = VueJwtDecode.decode(token);
     const userId = parseInt(decodedToken.uid, 10);
-    const response = await axiosInstance.get(`/users/provider/${userId}/`);
+    const response = await axiosInstance.get(`/users/${userId}/`);
     return response.data.serviceprovider_id;
   } catch (err) {
     error.value = err.message;
@@ -65,7 +68,7 @@ const fetchCalendar = async () => {
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    console.log(response.data);
+    console.log("Response data:", response.data);
     calendar.value = response.data;
     events.value = transformCalendarData(calendar.value);
   } catch (err) {
@@ -93,7 +96,7 @@ onMounted(fetchCalendar);
           :disable-views="['year','years']"
           events-count-on-year-view
           active-view="month"
-          :events="events">
+          :events="events.value">
       </vue-cal>
     </div>
 
@@ -101,7 +104,7 @@ onMounted(fetchCalendar);
   </div>
 </template>
 
-<style scoped>
+<style>
 .full-width {
   width: 100% !important;
 }
@@ -127,5 +130,15 @@ onMounted(fetchCalendar);
 
 .status-reserved {
   background-color: rgba(0, 255, 0, 0.3) !important; /* Light green transparent */
+}
+
+/* Debugging styles */
+.status-pending::before,
+.status-reserved::before {
+  content: ' ';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: inherit;
 }
 </style>
