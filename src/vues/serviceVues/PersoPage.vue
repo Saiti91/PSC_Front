@@ -1,5 +1,4 @@
 <script setup>
-import AccountMenuComponent from "/src/components/AccountMenuComponent.vue";
 import HeaderComponent from "/src/components/HeaderService.vue";
 import FooterComponent from "/src/components/FooterComponent.vue";
 import Swal from "sweetalert2";
