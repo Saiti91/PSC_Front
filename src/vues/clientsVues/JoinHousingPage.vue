@@ -102,7 +102,7 @@ const submitForm = async () => {
       }
     }
     console.log(form.value);
-    const response = await axiosInstance.post('/apartments', formData, {
+    const response = await axiosInstance.post('/apartments/request', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }

@@ -22,7 +22,50 @@ const decodedToken = VueJwtDecode.decode(token);
 const role = decodedToken.urole;
 const userId = parseInt(decodedToken.uid, 10);
 
-// Définir la fonction fetchUserDetails en dehors de la condition
+const parseStringArray = (stringArray) => {
+  try {
+    const cleanedString = stringArray.slice(1, -1);
+    const parsedArray = cleanedString.split('","').map(str => {
+      const relativePath = str.replace(/"/g, '').replace(/{/g, '').replace(/}/g, '');
+      return relativePath;
+    });
+    return parsedArray;
+  } catch (e) {
+    console.error('Error parsing string array:', e);
+    return [];
+  }
+};
+
+const parseFeaturesString = (string) => {
+  try {
+    return string.split(',').map(item => item.replace(/"/g, '').replace(/{/g, '').replace(/}/g, '').trim());
+  } catch (e) {
+    console.error('Error parsing features string:', e);
+    return [];
+  }
+};
+
+const transformCalendarData = (calendar) => {
+  return calendar.map(event => ({
+    start: event.date,
+    end: event.date,
+    title: event.available ? 'true' : 'false'
+  }));
+};
+
+const fetchApartmentDetails = async () =>{
+  const apartmentsResponse = await axiosInstance.get(`/apartments/user/${userId}/`);
+  if (apartmentsResponse.status !== 200) {
+    throw new Error(`HTTP error! status: ${apartmentsResponse.status}`);
+  }
+  apartments.value = apartmentsResponse.data.map(apartment => {
+    apartment.images = parseStringArray(apartment.images);
+    apartment.features = parseFeaturesString(apartment.features);
+    apartment.events = transformCalendarData(apartment.calendar);
+    return apartment;
+  });
+}
+
 const fetchUserDetails = async () => {
   error.value = null;
   try {
@@ -33,97 +76,45 @@ const fetchUserDetails = async () => {
     const data = response.data;
     data.telephone = data.telephone || '';
     user.value = data;
-    console.log(response.data);
 
-    // Récupérer les biens de l'utilisateur
-    const apartmentsResponse = await axiosInstance.get(`/apartments/user/${userId}/`);
-    if (apartmentsResponse.status !== 200) {
-      throw new Error(`HTTP error! status: ${apartmentsResponse.status}`);
-    }
-    apartments.value = apartmentsResponse.data.map(apartment => {
-      apartment.images = parseStringArray(apartment.images);
-      apartment.features = parseFeaturesString(apartment.features);
-      apartment.events = transformCalendarData(apartment.calendar);
-      return apartment;
-    });
+    await fetchApartmentDetails();
   } catch (err) {
     error.value = err.message;
   }
 };
 
-// Lancer la requête fetchUserDetails seulement si le rôle est égal à owner (évite les erreurs 404)
 if (role === 'owner') {
   onMounted(fetchUserDetails);
 }
 
-// Parse string array
-const parseStringArray = (stringArray) => {
-  try {
-    const cleanedString = stringArray.slice(1, -1);
-    const parsedArray = cleanedString.split('","').map(str => {
-      const relativePath = str.replace(/"/g, '').replace(/{/g, '').replace(/}/g, '');
-      return relativePath;
-    });
-    console.log('Parsed array:', parsedArray);
-    return parsedArray;
-  } catch (e) {
-    console.error('Error parsing string array:', e);
-    return [];
-  }
-};
-
-// Parse features string
-const parseFeaturesString = (string) => {
-  try {
-    return string.split(',').map(item => item.replace(/"/g, '').replace(/{/g, '').replace(/}/g, '').trim());
-  } catch (e) {
-    console.error('Error parsing features string:', e);
-    return [];
-  }
-};
-
-// Transform calendar data
-const transformCalendarData = (calendar) => {
-  return calendar.map(event => ({
-    start: new Date(event.date).toISOString(),
-    end: new Date(event.date).toISOString(),
-    title: event.available ? 'Disponible' : 'Non disponible',
-    class: event.available ? 'available' : 'unavailable'
-  }));
-};
-
-// Handle cell click
-const handleCellClick = async (apartmentId, date) => {
+const handleCellClick = async (date, apartment) => {
   console.log('Cell clicked:', date);
   const clickedDate = date.toLocaleDateString('en-CA');
   console.log('Clicked Date:', clickedDate);
 
-  const apartment = apartments.value.find(apartment => apartment.apartments_id === apartmentId);
-  const event = apartment.events.find(e => e.start === clickedDate);
-  const newAvailability = !event;
+  let event = apartment.events.find(e => e.start === clickedDate);
+  console.log('Event:', event);
 
   const requestData = {
-    apartment_id: apartmentId,
+    apartment_id: apartment.apartments_id,
     dates: [
       {
         date: clickedDate,
-        available: !newAvailability
+        available: event ? 'available' : 'unavailable'
       }
     ]
   };
   console.log("Sending PATCH request with data:", requestData);
 
   try {
-    await axiosInstance.patch(`/apartmentsCalendar/availability/${apartmentId}/`, requestData);
-    console.log(`Date: ${clickedDate}, Available: ${newAvailability}`);
-    // Refetch apartment details to update the calendar
-    await fetchUserDetails();
+    await axiosInstance.patch(`/apartmentsCalendar/availability/${apartment.apartments_id}/`, requestData);
+    console.log(`Date: ${clickedDate}, Status: ${event ? 'available' : 'unavailable'}`);
+    await fetchApartmentDetails();
   } catch (err) {
     console.log(`Failed to update availability: ${err.message}`);
   }
 };
 
-// Formater la description
 const formattedDescription = (description) => {
   if (!description) {
     return '';
@@ -135,11 +126,10 @@ const formattedDescription = (description) => {
         .map(([key, value]) => `${key}: ${value}`)
         .join(', ');
   } catch (e) {
-    return description; // Retourne la description originale si JSON.parse échoue
+    return description;
   }
 };
 </script>
-
 
 <template>
   <div>
@@ -178,7 +168,7 @@ const formattedDescription = (description) => {
                     events-count-on-year-view
                     active-view="month"
                     :events="apartment.events"
-                    @cell-click="date => handleCellClick(apartment.apartments_id, date)">
+                    @cell-click="date => handleCellClick(date, apartment)">
                 </vue-cal>
               </div>
               <div class="ui segment">
@@ -198,43 +188,43 @@ const formattedDescription = (description) => {
 
 <style scoped>
 .spacer {
-margin-top: 7%;
+  margin-top: 7%;
 }
 
 .account-container {
-display: flex;
-margin-top: 5%;
+  display: flex;
+  margin-top: 5%;
 }
 
 .content-container {
-flex: 1;
-padding: 20px;
-box-sizing: border-box;
+  flex: 1;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .content {
-background: #fff;
-padding: 20px;
-border-radius: 4px;
-box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  padding: 20px;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .apartment-segment {
-max-width: 100%;
-box-sizing: border-box;
-margin-bottom: 20px;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 20px;
 }
 
 .ui.segment {
-margin-top: 20px;
+  margin-top: 20px;
 }
 
 .field {
-margin-bottom: 15px;
+  margin-bottom: 15px;
 }
 
 footer {
-margin-top: auto;
+  margin-top: auto;
 }
 
 .ui.medium.images {
@@ -243,4 +233,3 @@ margin-top: auto;
   margin: 0 auto;
 }
 </style>
-
