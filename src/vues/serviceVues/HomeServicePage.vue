@@ -131,14 +131,4 @@ onMounted(fetchCalendar);
 .status-reserved {
   background-color: rgba(0, 255, 0, 0.3) !important; /* Light green transparent */
 }
-
-/* Debugging styles */
-.status-pending::before,
-.status-reserved::before {
-  content: ' ';
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  background-color: inherit;
-}
 </style>
