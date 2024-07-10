@@ -20,11 +20,27 @@ const fetchApartments = async () => {
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
+    console.log("Fetched Apartments: ", response.data);
     apartments.value = response.data.map(apartment => ({
       apartments_id: apartment.apartments_id,
       name: apartment.name,
       town: apartment.town,
+      addresscomplement: apartment.addresscomplement,
+      apartment_type: apartment.apartment_type,
+      apartmentnumber: apartment.apartmentnumber,
+      apartmentstype_id: apartment.apartmentstype_id,
+      building: apartment.building,
+      capacity: apartment.capacity,
+      cp: apartment.cp,
+      created_at: apartment.created_at,
+      features: parseStringArray(apartment.features),
       images: parseStringArray(apartment.images),
+      number: apartment.number,
+      numberofroom: apartment.numberofroom,
+      owner_email: apartment.owner_email,
+      price: apartment.price,
+      street: apartment.street,
+      surface: apartment.surface,
     }));
     updateDisplayedApartments();
   } catch (err) {

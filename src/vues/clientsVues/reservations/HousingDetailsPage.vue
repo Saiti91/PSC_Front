@@ -6,7 +6,7 @@ import { onMounted, ref } from "vue";
 import axiosInstance from "@/utils/Axios.js";
 
 const route = useRoute();
-const router = useRouter(); // Ensure useRouter is imported and assigned to router
+const router = useRouter();
 const apartments = ref({});
 const apartment_id = ref(route.params.id);
 const error = ref(null);
@@ -19,13 +19,12 @@ const dateError = ref(false);
 const startDateError = ref(false);
 const endDateError = ref(false);
 const availabilityError = ref(false);
+const capacityError = ref(false);
 
-// Function to parse string arrays
 const parseStringArray = (stringArray) => {
   return stringArray.replace(/{|}/g, '').split(',');
 };
 
-// Fetch apartment details
 const fetchApartmentDetails = async () => {
   error.value = null;
   try {
@@ -50,21 +49,19 @@ const fetchApartmentDetails = async () => {
       street: response.data.street,
       CP: response.data.CP,
       town: response.data.town,
-      images: parseStringArray(response.data.images),
-      features: parseStringArray(response.data.features)
+      images: response.data.images ? parseStringArray(response.data.images) : [],
+      features: response.data.features ? parseStringArray(response.data.features) : []
     };
-    console.log(apartments.value);
+    console.log('Fetched apartment:', apartments.value)
   } catch (err) {
     error.value = err.message;
   }
 };
 
-// Function to select main image
 const selectImage = (image) => {
   selectedImage.value = image;
 };
 
-// Function to check date availability
 const checkAvailability = async () => {
   try {
     const response = await axiosInstance.post('/apartments/availabilities', {
@@ -80,13 +77,13 @@ const checkAvailability = async () => {
   }
 };
 
-// Function to handle reservation
 const handleReservation = async () => {
   showError.value = false;
   dateError.value = false;
   startDateError.value = false;
   endDateError.value = false;
   availabilityError.value = false;
+  capacityError.value = false;
   const today = new Date().setHours(0, 0, 0, 0);
   const start = new Date(startDate.value).setHours(0, 0, 0, 0);
   const end = new Date(endDate.value).setHours(0, 0, 0, 0);
@@ -111,6 +108,12 @@ const handleReservation = async () => {
   }
   if (invalidDates) {
     dateError.value = true;
+    showError.value = true;
+    return;
+  }
+
+  if (parseInt(guests.value) > apartments.value.capacity) {
+    capacityError.value = true;
     showError.value = true;
     return;
   }
@@ -152,19 +155,6 @@ onMounted(fetchApartmentDetails);
           <img v-for="(image, index) in apartments.images" :src="image"
                :alt="`Vignette de ${apartments.name} ${index + 1}`" :key="index" @click="selectImage(image)">
         </div>
-        <div class="features-table">
-          <h3>Équipements</h3>
-          <table class="ui celled table">
-            <tbody>
-            <tr v-for="feature in apartments.features" :key="feature">
-              <td>{{ feature.replace(/[\{\}"]/g, '') }}</td>
-            </tr>
-            <tr>
-              <td>Capacité: {{ apartments.capacity }} personnes</td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
       </div>
       <div class="eight wide column">
         <h2>{{ apartments.name }}</h2>
@@ -192,55 +182,157 @@ onMounted(fetchApartmentDetails);
             champs obligatoires</p>
           <p v-if="dateError" class="error-message">Dates invalides</p>
           <p v-if="availabilityError" class="error-message">Ces dates ne sont pas disponibles</p>
-        </div>
-        <div class="address-price">
-          <h3>Adresse</h3>
-          <p>{{ apartments.street }}</p>
-          <p v-if="apartments.addressComplement">{{ apartments.addressComplement }}</p>
-          <p v-if="apartments.building || apartments.apartmentNumber">
-            <span v-if="apartments.building">Bâtiment {{ apartments.building }}</span><span v-if="apartments.building && apartments.apartmentNumber">, </span><span v-if="apartments.apartmentNumber">Numéro d'appartement{{ apartments.apartmentNumber }}</span>
-          </p>
-          <p>{{ apartments.CP }}, {{ apartments.town }}</p>
-          <h3>Prix par nuit</h3>
-          <p>{{ apartments.price }}€</p>
+          <p v-if="capacityError" class="error-message">Le nombre de personnes dépasse la capacité maximale</p>
         </div>
       </div>
     </div>
+
+    <!-- Nouvelle section d'affichage des données de l'appartement -->
+    <div class="ui grid">
+      <div class="sixteen wide column">
+        <div class="apartment-details">
+          <h3>Détails de l'appartement</h3>
+          <div class="ui list">
+            <div class="item">
+              <i class="building icon"></i>
+              <div class="content">
+                <div class="header">Type</div>
+                <div class="description">{{ apartments.apartment_type }}</div>
+              </div>
+            </div>
+            <div class="item">
+              <i class="expand icon"></i>
+              <div class="content">
+                <div class="header">Surface</div>
+                <div class="description">{{ apartments.surface }} m²</div>
+              </div>
+            </div>
+            <div class="item">
+              <i class="users icon"></i>
+              <div class="content">
+                <div class="header">Capacité</div>
+                <div class="description">{{ apartments.capacity }} personnes</div>
+              </div>
+            </div>
+            <div class="item">
+              <i class="dollar sign icon"></i>
+              <div class="content">
+                <div class="header">Prix</div>
+                <div class="description">{{ apartments.price }} €/nuit</div>
+              </div>
+            </div>
+            <div class="item" v-if="apartments.features && apartments.features.length">
+              <i class="check icon"></i>
+              <div class="content">
+                <div class="header">Caractéristiques</div>
+                <div class="description">
+                  <ul>
+                    <li v-for="feature in apartments.features" :key="feature">{{ feature }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h3>Adresse</h3>
+          <div class="ui list">
+            <div class="item">
+              <i class="home icon"></i>
+              <div class="content">
+                <div class="header">Rue</div>
+                <div class="description">{{ apartments.street }}</div>
+              </div>
+            </div>
+            <div class="item">
+              <i class="building icon"></i>
+              <div class="content">
+                <div class="header">Bâtiment</div>
+                <div class="description">{{ apartments.building }}</div>
+              </div>
+            </div>
+            <div class="item">
+              <i class="numbered list icon"></i>
+              <div class="content">
+                <div class="header">Numéro d'appartement</div>
+                <div class="description">{{ apartments.number }}</div>
+              </div>
+            </div>
+            <div class="item">
+              <i class="marker icon"></i>
+              <div class="content">
+                <div class="header">Ville</div>
+                <div class="description">{{ apartments.town }}</div>
+              </div>
+            </div>
+            <div class="item" v-if="apartments.addressComplement">
+              <i class="info icon"></i>
+              <div class="content">
+                <div class="header">Complément d'adresse</div>
+                <div class="description">{{ apartments.addressComplement }}</div>
+              </div>
+            </div>
+          </div>
+
+          <h3>Contact</h3>
+          <div class="ui list">
+            <div class="item">
+              <i class="mail icon"></i>
+              <div class="content">
+                <div class="header">Email</div>
+                <div class="description">{{ apartments.owner_email }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Fin de la nouvelle section -->
+
     <FooterComponent/>
   </div>
 </template>
 
 <style scoped>
 .spacer {
-  margin-top: 7%;
+  margin-top: 9%;
 }
 
-.ui.container.full-width {
-  max-width: 1200px;
-  padding: 20px;
-}
-
-.main-image {
-  margin-bottom: 20px;
+.main-image img {
+  width: 100%;
+  height: auto;
 }
 
 .image-thumbnails img {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  cursor: pointer;
+  width: 80px;
+  height: auto;
   margin-right: 10px;
+  cursor: pointer;
+  border: 2px solid transparent;
 }
 
-.features-table {
-  margin-top: 20px;
+.image-thumbnails img:hover,
+.image-thumbnails img.active {
+  border: 2px solid #21BA45; /* Couleur verte de Semantic UI */
 }
 
-.address-price {
-  margin-top: 20px;
+.error {
+  border-color: red !important;
 }
 
 .error-message {
   color: red;
+  margin-top: 5px;
+}
+
+.apartment-details {
+  margin-top: 20px;
+}
+
+.apartment-details .ui.list .item .header {
+  font-weight: bold;
+}
+
+.apartment-details .ui.list .item .description {
+  margin-top: 5px;
 }
 </style>
